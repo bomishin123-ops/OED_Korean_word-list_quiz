@@ -1,0 +1,753 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>옥스포드 영어사전(OED) 등재 우리말 어휘 학습 앱</title>
+    <!-- React, ReactDOM, Babel CDN -->
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icon CDN -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    
+    <style>
+        @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
+        body { font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif; }
+        
+        .perspective-1000 { perspective: 1000px; }
+        .transform-style-3d { transform-style: preserve-3d; }
+        .backface-hidden { backface-visibility: hidden; -webkit-backface-visibility: hidden; }
+        .rotate-y-180 { transform: rotateY(180deg); }
+        
+        /* Custom scrollbar */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #f1f5f9; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+    </style>
+</head>
+<body class="bg-slate-100 text-slate-800 min-h-screen antialiased selection:bg-indigo-100 selection:text-indigo-700 pb-12">
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const vocabularyData = [
+            // 음식 (Food)
+            { id: 101, term: "bibimbap", meaning: "비빔밥", category: "음식", definition: "A Korean dish of cold or hot boiled rice served with seasoned vegetables, meat, egg, and chili pepper paste.", definitionKo: "밥 위에 나물, 고기, 계란, 고추장 등을 얹어 비벼 먹는 한국의 대표 요리.", example: "Bibimbap is famous for its harmonious blend of colors and healthy ingredients.", exampleKo: "비빔밥은 다양한 색감의 조화와 건강한 재료로 유명하다." },
+            { id: 102, term: "bingsu", meaning: "빙수", category: "음식", definition: "A Korean dessert of finely shaved ice served with sweet toppings such as fruit, condensed milk, or red beans.", definitionKo: "곱게 간 얼음 위에 과일, 연유, 팥 등 달콤한 고명을 올려 먹는 한국 디저트.", example: "Shaved ice bingsu is a classic dessert to cool down during hot summers.", exampleKo: "빙수는 무더운 여름철 더위를 식히기에 좋은 대표적 디저트이다." },
+            { id: 103, term: "bulgogi", meaning: "불고기", category: "음식", definition: "A Korean dish of thinly sliced beef or pork marinated in a savory-sweet soy sauce and grilled or stir-fried.", definitionKo: "얇게 썬 고기를 달콤 짭조름한 양념에 재운 뒤 굽거나 볶아 먹는 음식.", example: "Bulgogi is widely loved for its tender texture and sweet marinade.", exampleKo: "불고기는 부드러운 식감과 달콤한 양념 덕분에 널리 사랑받는다." },
+            { id: 104, term: "chimaek", meaning: "치맥", category: "음식", definition: "A popular Korean pairing of fried chicken and cold beer.", definitionKo: "바삭한 프라이드치킨과 시원한 맥주를 함께 즐기는 음식 문화.", example: "Chimaek is one of the most beloved late-night foods in South Korea.", exampleKo: "치맥은 한국에서 가장 사랑받는 야식 메뉴 중 하나이다." },
+            { id: 105, term: "galbi", meaning: "갈비", category: "음식", definition: "A Korean dish made of marinated beef or pork short ribs, usually grilled at the table.", definitionKo: "양념에 재운 소갈비나 돼지갈비를 석쇠나 불판에 구워 먹는 음식.", example: "We visited a famous Korean restaurant to eat grilled galbi.", exampleKo: "우리는 구운 갈비를 먹기 위해 유명한 한국 식당을 방문했다." },
+            { id: 106, term: "gochujang", meaning: "고추장", category: "음식", definition: "A thick, savory, and spicy fermented condiment made from red chili powder, glutinous rice, and soybeans.", definitionKo: "고춧가루, 찹쌀, 메주 등을 발효시켜 만든 걸쭉하고 매콤한 전통 장.", example: "Gochujang adds a spicy depth of flavor to many Korean dishes.", exampleKo: "고추장은 많은 한국 요리에 매콤하고 깊은 풍미를 더해준다." },
+            { id: 107, term: "japchae", meaning: "잡채", category: "음식", definition: "A dish made of stir-fried sweet potato glass noodles combined with vegetables and meat.", definitionKo: "당면에 여러 채소와 고기를 넣어 볶아 만든 한국의 잔치 음식.", example: "Japchae is often served on special occasions and holidays.", exampleKo: "잡채는 특별한 날이나 명절 상차림에 자주 빠지지 않고 오른다." },
+            { id: 108, term: "kimbap", meaning: "김밥", category: "음식", definition: "A Korean food consisting of cooked rice and vegetables rolled in dried seaweed sheets and sliced.", definitionKo: "밥과 여러 재료를 김으로 말아 한입 크기로 썰어 먹는 음식.", example: "Kimbap is a convenient and nutritious picnic food.", exampleKo: "김밥은 소풍 갈 때 챙겨가기 좋은 간편하고 영양가 높은 음식이다." },
+            { id: 109, term: "kimchi", meaning: "김치", category: "음식", definition: "A traditional Korean side dish made from salted and fermented vegetables with chili and garlic.", definitionKo: "배추나 무 등을 소금에 절인 뒤 고춧가루, 마늘 등으로 양념해 발효시킨 핵심 반찬.", example: "Kimchi is an essential part of almost every Korean meal.", exampleKo: "김치는 거의 모든 한국 식사에 빠지지 않는 필수 반찬이다." },
+            { id: 110, term: "mukbang", meaning: "먹방", category: "음식", definition: "An online broadcast in which a host eats large quantities of food while interacting with viewers.", definitionKo: "진행자가 음식을 맛있게 먹으면서 시청자들과 소통하는 인터넷 방송.", example: "Mukbang videos have become a global trend on social media.", exampleKo: "먹방 영상은 소셜 미디어에서 글로벌 트렌드가 되었다." },
+            { id: 111, term: "tteokbokki", meaning: "떡볶이", category: "음식", definition: "A popular street food made of chewy rice cakes cooked in a sweet and spicy red chili sauce.", definitionKo: "쫄깃한 떡을 매콤달콤한 고추장 양념에 조려 만든 한국의 인기 길거리 음식.", example: "Students often eat tteokbokki after school at local snack shops.", exampleKo: "학생들은 방과 후 분식집에서 떡볶이를 즐겨 먹는다." },
+            { id: 112, term: "banchan", meaning: "반찬", category: "음식", definition: "Small side dishes served alongside rice in a traditional Korean meal.", definitionKo: "한국의 식탁에서 밥과 함께 차려지는 다양한 작은 서브 음식들.", example: "Korean restaurants usually offer complimentary refills for banchan.", exampleKo: "한국 식당에서는 보통 반찬 리필을 무료로 제공한다." },
+            { id: 113, term: "dalgona", meaning: "달고나", category: "음식", definition: "A sugary Korean candy made with melted sugar and baking soda, imprinted with a shape.", definitionKo: "설탕과 베이킹소다를 가열해 만든 단과자로 모양이 찍혀 있는 추억의 과자.", example: "Dalgona gained global fame through popular Korean TV series.", exampleKo: "달고나는 한국의 인기도라마를 통해 세계적인 유명세를 얻었다." },
+            { id: 114, term: "jjigae", meaning: "찌개", category: "음식", definition: "A Korean stew made with meat, seafood, tofu, or kimchi, served bubbling hot.", definitionKo: "고기, 해산물, 두부, 김치 등을 넣고 바글바글 끓여 먹는 국물 요리.", example: "Kimchi jjigae is a comforting staple food in every home.", exampleKo: "김치찌개는 어느 집에서나 즐겨 먹는 정겨운 주식이다." },
+            { id: 115, term: "ramyeon", meaning: "라면", category: "음식", definition: "Korean instant noodles cooked and served in a hot, spicy broth.", definitionKo: "매콤한 국물에 조리하여 신속하게 먹는 한국식 인스턴트 면 요리.", example: "Ramyeon is quick to prepare and hugely popular.", exampleKo: "라면은 조리가 간편하고 인기가 매우 높다." },
+
+            // 문화/미디어 (Culture)
+            { id: 201, term: "chaebol", meaning: "재벌", category: "문화/미디어", definition: "A large, family-owned business conglomerate in South Korea.", definitionKo: "한 가문이 소유하고 지배하는 한국의 대규모 기업 집단.", example: "A chaebol plays a major role in South Korea's economy.", exampleKo: "재벌은 한국 경제에서 중요한 비중을 차지한다." },
+            { id: 202, term: "gisaeng", meaning: "기생", category: "문화/미디어", definition: "A female entertainer in traditional Korea trained in music, dance, poetry, and conversation.", definitionKo: "전통 사회에서 음악, 춤, 시, 대화 기예를 익혀 활동했던 여성 예능인.", example: "Gisaeng contributed significantly to the preservation of traditional music.", exampleKo: "기생은 전통 음악과 예능의 보존에 크게 기여했다." },
+            { id: 203, term: "hallyu", meaning: "한류", category: "문화/미디어", definition: "The global increase in popularity of South Korean culture, music, TV dramas, and cinema.", definitionKo: "한국의 음악, 드라마, 영화 등 대중문화가 전 세계적으로 인기를 얻는 현상.", example: "Hallyu has spread Korean fashion and cuisine across continents.", exampleKo: "한류는 여러 대륙에 한국 패션과 음식을 널리 알렸다." },
+            { id: 204, term: "Hangul", meaning: "한글", category: "문화/미디어", definition: "The scientific alphabetic writing system created for the Korean language in 1443.", definitionKo: "1443년 세종대왕에 의해 창제된 과학적이고 독창적인 한국 고유 문자 체계.", example: "Hangul is celebrated for its logical design on Hangul Day.", exampleKo: "한글은 한글날에 그 논리적인 디자인으로 높이 칭송받는다." },
+            { id: 205, term: "K-pop", meaning: "케이팝", category: "문화/미디어", definition: "Popular music originating in South Korea, characterized by catchy melodies and synchronized dance.", definitionKo: "강렬한 비트, 캐치한 멜로디, 군무로 대표되는 한국의 현대 대중음악.", example: "K-pop artists command huge global fanbases and sell out stadiums.", exampleKo: "케이팝 아티스트들은 세계적인 팬덤을 보유하며 스타디움 공연을 매진시킨다." },
+            { id: 206, term: "manhwa", meaning: "만화", category: "문화/미디어", definition: "A Korean style of comic books and graphic novels.", definitionKo: "한국에서 제작되는 출판 만화나 고유 화풍의 만화 작품.", example: "Modern webtoons have evolved from traditional manhwa.", exampleKo: "현대의 웹툰은 전통적인 한국 만화에서 발전했다." },
+            { id: 207, term: "pansori", meaning: "판소리", category: "문화/미디어", definition: "A traditional Korean genre of musical storytelling performed by a vocalist and a drummer.", definitionKo: "소리꾼 한 명과 북 치는 고수가 함께 이야기를 노래와 사설로 이끄는 전통 공연.", example: "Pansori is designated as an intangible cultural heritage.", exampleKo: "판소리는 무형문화유산으로 지정되어 있다." },
+            { id: 208, term: "sijo", meaning: "시조", category: "문화/미디어", definition: "A classic Korean poetic form consisting of three lines with a structured syllable rhythmic pattern.", definitionKo: "3장의 일정한 정형적 율조를 갖춘 한국 전통 시가 양식.", example: "Sijo conveys deep emotional reflections in three concise lines.", exampleKo: "시조는 세 줄의 정교한 시구에 깊은 감정적 성찰을 담아낸다." },
+            { id: 209, term: "webtoon", meaning: "웹툰", category: "문화/미디어", definition: "A digital comic formatted for reading on smartphones and web platforms.", definitionKo: "스마트폰이나 인터넷 화면에서 세로 스크롤로 읽기 쉽게 만든 디지털 만화.", example: "Many successful K-dramas are based on popular webtoons.", exampleKo: "많은 성공적인 케이드라마들이 인기 웹툰을 원작으로 제작된다." },
+            { id: 210, term: "yangban", meaning: "양반", category: "문화/미디어", definition: "The traditional ruling noble class during the Joseon Dynasty in Korea.", definitionKo: "조선 시대 관직을 차지했던 지배 문무 귀족 계층.", example: "Yangban scholars focused on Confucian philosophy and literature.", exampleKo: "양반 학자들은 유교 철학과 문학 연구에 집중했다." },
+            { id: 211, term: "trot", meaning: "트로트", category: "문화/미디어", definition: "A genre of Korean pop music known for its distinctive repetitive rhythm and vocal trills.", definitionKo: "특유의 꺾기 창법과 독특한 박자감으로 장년층과 전 세대에게 사랑받는 대중가요.", example: "Trot music has enjoyed a massive resurgence in recent years.", exampleKo: "트로트 음악은 최근 몇 년간 엄청난 부흥기를 맞이했다." },
+            { id: 212, term: "haenyeo", meaning: "해녀", category: "문화/미디어", definition: "Female divers, especially on Jeju Island, who harvest sea life without breathing gear.", definitionKo: "제주도 등에서 호흡 장비 없이 바다에 들어가 해산물을 채취하는 여성 잠수부.", example: "Jeju's haenyeo culture is praised for eco-friendly fishing practices.", exampleKo: "제주 해녀 문화는 친환경적 채취 방식으로 높은 평가를 받는다." },
+
+            // 생활/무술 (Life/Style)
+            { id: 301, term: "hapkido", meaning: "합기도", category: "생활/무술", definition: "A traditional Korean martial art focusing on joint locks, kicks, and defense techniques.", definitionKo: "관절 꺾기, 발차기, 호신술 등을 중심으로 하는 한국의 전통 무술.", example: "Hapkido uses an opponent's energy against them in self-defense.", exampleKo: "합기도는 호신 시 상대방의 힘을 역이용하는 무술이다." },
+            { id: 302, term: "jjimjilbang", meaning: "찜질방", category: "생활/무술", definition: "A large 24-hour public bathhouse and relaxation facility featuring various heated saunas.", definitionKo: "다양한 온도의 황토방, 사우나, 휴식 공간을 갖춘 대형 목욕 시설.", example: "Families go to a jjimjilbang to relax together on weekends.", exampleKo: "가족들은 주말에 휴식을 취하기 위해 찜질방을 찾는다." },
+            { id: 303, term: "ondol", meaning: "온돌", category: "생활/무술", definition: "The traditional Korean underfloor heating system that uses direct heat transfer from smoke or warm water.", definitionKo: "방바닥 밑으로 온기를 전달하여 구들장을 데우는 한국 전통 난방 방식.", example: "Ondol keeps rooms comfortably warm during harsh winter months.", exampleKo: "온돌은 혹독한 겨울철에도 방 안을 따뜻하게 유지해 준다." },
+            { id: 304, term: "taekwondo", meaning: "태권도", category: "생활/무술", definition: "An Olympic Korean martial art famous for fast high kicks and spinning kicking techniques.", definitionKo: "화려하고 강력한 발차기 기술 중심의 한국 세계적 대표 스포츠 무도.", example: "Children learn discipline and respect at taekwondo academies.", exampleKo: "아이들은 태권도 도장에서 예의와 절제를 배운다." },
+            { id: 305, term: "won", meaning: "원", category: "생활/무술", definition: "The official currency unit used in South Korea.", definitionKo: "대한민국에서 사용하는 법정 화폐 및 통화 단위.", example: "The exchange rate of the Korean won fluctuated today.", exampleKo: "오늘 한국 원화의 환율이 변동했다." },
+            { id: 306, term: "noraebang", meaning: "노래방", category: "생활/무술", definition: "A private singing room with a karaoke machine where friends gather to sing.", definitionKo: "친구들이나 동료들이 모여 반주에 맞춰 노래를 부르는 공간.", example: "Going to a noraebang is a popular entertainment activity after dinner.", exampleKo: "저녁 식사 후 노래방에 가는 것은 인기 있는 유흥 문화이다." },
+
+            // 호칭/대화 (Expressions)
+            { id: 401, term: "agassi", meaning: "아가씨", category: "호칭/대화", definition: "A polite Korean term used to address or refer to a young unmarried woman.", definitionKo: "젊은 미혼 여성을 부르거나 가리키는 정중한 표현.", example: "The merchant politely greeted the agassi at the store.", exampleKo: "상인은 가게에서 아가씨에게 정중하게 인사했다." },
+            { id: 402, term: "ajumma", meaning: "아줌마", category: "호칭/대화", definition: "A common term used to address a middle-aged or married woman in Korea.", definitionKo: "중년의 여성이나 기혼 여성을 친근하게 부르는 한국어 호칭.", example: "The friendly ajumma gave us extra side dishes.", exampleKo: "친절한 아줌마가 우리에게 반찬을 더 내어주셨다." },
+            { id: 403, term: "daebak", meaning: "대박", category: "호칭/대화", definition: "An exclamation meaning 'awesome', 'great success', or 'jackpot!'.", definitionKo: "놀랍거나 대단한 일, 큰 성공을 접했을 때 쓰는 감탄사.", example: "When the team won the trophy, everyone shouted 'Daebak!'.", exampleKo: "팀이 우승을 차지했을 때 모두가 '대박!'이라고 외쳤다." },
+            { id: 404, term: "fighting", meaning: "파이팅", category: "호칭/대화", definition: "A Korean cheer used to encourage someone and say 'Go for it!' or 'Do your best!'.", definitionKo: "상대방에게 힘을 내라며 응원과 격려를 보낼 때 쓰는 한국식 표호.", example: "Friends shouted 'Fighting!' before the final exam started.", exampleKo: "친구들은 기말고사가 시작되기 전 '파이팅!'을 외쳤다." },
+            { id: 405, term: "Konglish", meaning: "콩글리시", category: "호칭/대화", definition: "English words adapted into Korean with modified meanings or pronunciations.", definitionKo: "한국식 독자적 의미나 발음으로 정착되어 사용하는 영어식 표현.", example: "'Skin-ship' is a famous example of Konglish meaning physical affection.", exampleKo: "'스킨십'은 신체적 스킨십을 뜻하는 대표적인 콩글리시 예시이다." },
+            { id: 406, term: "noona", meaning: "누나", category: "호칭/대화", definition: "A word used by a younger male to address an older sister or close older female.", definitionKo: "남성이 자신보다 나이가 많은 친누나나 친한 여성을 부르는 말.", example: "He asked his noona for advice on selecting a university major.", exampleKo: "그는 대학 전공을 선택하는 데 있어 누나에게 조언을 구했다." },
+            { id: 407, term: "oppa", meaning: "오빠", category: "호칭/대화", definition: "A word used by a younger female to address an older brother or close older male.", definitionKo: "여성이 자신보다 나이가 많은 친오빠나 친한 남성을 부르는 말.", example: "Fans affectionately shout 'Oppa!' during concerts.", exampleKo: "팬들은 콘서트에서 애정을 담아 '오빠!'라고 환호한다." },
+            { id: 408, term: "sunbae", meaning: "선배", category: "호칭/대화", definition: "A senior colleague or student with more experience in a school or workplace.", definitionKo: "학교, 직장 등에서 나트나 경험이 앞서는 상급자나 후배 지도자.", example: "The sunbae guided the newcomer through company orientation.", exampleKo: "선배는 신입사원에게 회사 오리엔테이션을 안내해 주었다." },
+            { id: 409, term: "aegyo", meaning: "애교", category: "호칭/대화", definition: "A cute display of affection often expressed through voice, facial expressions, or gestures.", definitionKo: "사랑스럽고 귀엽게 말하거나 행동하여 호감을 얻는 태도.", example: "She showed some aegyo to persuade her brother.", exampleKo: "그녀는 남동생을 설득하기 위해 약간의 애교를 부렸다." },
+            { id: 410, term: "hyung", meaning: "형", category: "호칭/대화", definition: "A term used by a male to address an older brother or an older male friend.", definitionKo: "남성이 자신보다 나이가 많은 형제나 남성 형을 부르는 호칭.", example: "He walked home together with his hyung after school.", exampleKo: "그는 방과 후 형과 함께 집으로 걸어갔다." },
+            { id: 411, term: "maknae", meaning: "막내", category: "호칭/대화", definition: "The youngest member in a family, group, or team.", definitionKo: "집안, 조직, 아이돌 그룹 등에서 나이가 가장 어린 사람.", example: "The maknae of the K-pop group is loved by all senior members.", exampleKo: "케이팝 그룹의 막내는 모든 선배 멤버들의 사랑을 받는다." }
+        ];
+
+        function App() {
+            const [activeTab, setActiveTab] = React.useState('flashcard');
+            
+            // Flashcard State
+            const [cardIndex, setCardIndex] = React.useState(0);
+            const [isFlipped, setIsFlipped] = React.useState(false);
+            const [showKoDefinition, setShowKoDefinition] = React.useState(false);
+            const [selectedCategory, setSelectedCategory] = React.useState('전체');
+
+            // Learned tracking with localStorage
+            const [learnedIds, setLearnedIds] = React.useState(() => {
+                try {
+                    const saved = localStorage.getItem('oed_learned_words');
+                    return saved ? JSON.parse(saved) : [];
+                } catch(e) { return []; }
+            });
+
+            React.useEffect(() => {
+                try {
+                    localStorage.setItem('oed_learned_words', JSON.stringify(learnedIds));
+                } catch(e) {}
+            }, [learnedIds]);
+
+            // Quiz State
+            const [quizIndex, setQuizIndex] = React.useState(0);
+            const [score, setScore] = React.useState(0);
+            const [selectedOption, setSelectedOption] = React.useState(null);
+            const [quizFinished, setQuizFinished] = React.useState(false);
+            const [quizOptions, setQuizOptions] = React.useState([]);
+
+            // List Search State
+            const [searchTerm, setSearchTerm] = React.useState('');
+            const [filterStatus, setFilterStatus] = React.useState('all');
+
+            const speakText = (text, lang = 'en-US') => {
+                if ('speechSynthesis' in window) {
+                    window.speechSynthesis.cancel();
+                    const utterance = new SpeechSynthesisUtterance(text);
+                    utterance.lang = lang;
+                    utterance.rate = 0.9;
+                    window.speechSynthesis.speak(utterance);
+                }
+            };
+
+            const currentCategoryVocab = React.useMemo(() => {
+                if (selectedCategory === '전체') return vocabularyData;
+                return vocabularyData.filter(item => item.category === selectedCategory);
+            }, [selectedCategory]);
+
+            const safeCardIdx = cardIndex % Math.max(1, currentCategoryVocab.length);
+            const currentFlashcard = currentCategoryVocab[safeCardIdx] || currentCategoryVocab[0];
+
+            const toggleLearned = (id, e) => {
+                if (e) e.stopPropagation();
+                if (learnedIds.includes(id)) {
+                    setLearnedIds(learnedIds.filter(item => item !== id));
+                } else {
+                    setLearnedIds([...learnedIds, id]);
+                }
+            };
+
+            const setupQuizQuestion = (index, dataSet = vocabularyData) => {
+                if (index >= dataSet.length || dataSet.length === 0) {
+                    setQuizFinished(true);
+                    return;
+                }
+
+                const current = dataSet[index];
+                const otherItems = dataSet.filter(item => item.id !== current.id);
+                const shuffledOthers = [...otherItems].sort(() => 0.5 - Math.random()).slice(0, 3);
+                const options = [...shuffledOthers, current].sort(() => 0.5 - Math.random());
+                setQuizOptions(options);
+                setSelectedOption(null);
+            };
+
+            const startQuiz = () => {
+                setQuizIndex(0);
+                setScore(0);
+                setQuizFinished(false);
+                setupQuizQuestion(0);
+            };
+
+            const handleAnswer = (option) => {
+                if (selectedOption !== null) return;
+                setSelectedOption(option);
+                const currentQuestion = vocabularyData[quizIndex];
+                if (option.id === currentQuestion.id) {
+                    setScore(prev => prev + 1);
+                }
+            };
+
+            const nextQuiz = () => {
+                const nextIdx = quizIndex + 1;
+                if (nextIdx < vocabularyData.length) {
+                    setQuizIndex(nextIdx);
+                    setupQuizQuestion(nextIdx);
+                } else {
+                    setQuizFinished(true);
+                }
+            };
+
+            const filteredListVocab = vocabularyData.filter(item => {
+                const matchesSearch = item.term.toLowerCase().includes(searchTerm.toLowerCase()) || 
+                                     item.meaning.includes(searchTerm) ||
+                                     item.definition.toLowerCase().includes(searchTerm.toLowerCase());
+                
+                const matchesCategory = selectedCategory === '전체' || item.category === selectedCategory;
+                const isLearned = learnedIds.includes(item.id);
+
+                if (filterStatus === 'learned') return matchesSearch && matchesCategory && isLearned;
+                if (filterStatus === 'unlearned') return matchesSearch && matchesCategory && !isLearned;
+                return matchesSearch && matchesCategory;
+            });
+
+            return (
+                <div className="max-w-4xl mx-auto p-4 md:p-6">
+                    {}
+                    <header className="mb-6 text-center bg-gradient-to-r from-indigo-900 via-slate-900 to-indigo-950 text-white rounded-3xl p-6 shadow-xl border border-indigo-700/30">
+                        <div className="flex justify-center items-center gap-2 mb-2">
+                            <span className="inline-block px-3 py-1 bg-amber-500/20 border border-amber-400/40 text-amber-300 text-xs font-bold rounded-full tracking-wider uppercase">
+                                Oxford English Dictionary
+                            </span>
+                            <span className="inline-block px-3 py-1 bg-indigo-500/20 border border-indigo-400/40 text-indigo-200 text-xs font-bold rounded-full">
+                                총 {vocabularyData.length}개 어휘
+                            </span>
+                        </div>
+                        <h1 className="text-2xl md:text-3xl font-black mb-2 text-white tracking-tight flex items-center justify-center gap-2">
+                            <i className="fa-solid fa-book-open-reader text-amber-400"></i>
+                            OED 등재 우리말 핵심 어휘 학습 앱
+                        </h1>
+                        <p className="text-indigo-200 text-xs md:text-sm max-w-lg mx-auto font-medium leading-relaxed">
+                            옥스퍼드 영어사전에 등재된 한국 고유 어휘의 영영 정의, 한국어 뜻, 예문 및 발음을 스마트하게 익혀보세요!
+                        </p>
+
+                        <div className="mt-4 pt-4 border-t border-indigo-800/60 flex items-center justify-center gap-6 text-xs text-indigo-200">
+                            <div>
+                                <span className="opacity-75">암기 완료: </span>
+                                <strong className="text-emerald-400 text-sm">{learnedIds.length}</strong> / {vocabularyData.length}개
+                            </div>
+                            <div className="w-24 bg-indigo-950 rounded-full h-2 overflow-hidden border border-indigo-700/50">
+                                <div 
+                                    className="bg-emerald-400 h-2 transition-all duration-500"
+                                    style={{ width: `${(learnedIds.length / vocabularyData.length) * 100}%` }}
+                                ></div>
+                            </div>
+                            <div>
+                                <span className="opacity-75">달성률: </span>
+                                <strong className="text-amber-300 text-sm">{Math.round((learnedIds.length / vocabularyData.length) * 100)}%</strong>
+                            </div>
+                        </div>
+                    </header>
+
+                    {/* Navigation Tabs (3 Tabs without Game) */}
+                    <nav className="grid grid-cols-3 gap-1.5 border border-slate-200/80 mb-6 bg-white rounded-2xl shadow-sm p-1.5 max-w-xl mx-auto">
+                        <button 
+                            onClick={() => { setActiveTab('flashcard'); setIsFlipped(false); setShowKoDefinition(false); }}
+                            className={`py-2.5 px-2 rounded-xl font-bold text-xs md:text-sm transition-all flex items-center justify-center gap-1.5 ${
+                                activeTab === 'flashcard' 
+                                ? 'bg-indigo-600 text-white shadow-md' 
+                                : 'text-slate-600 hover:bg-slate-50'
+                            }`}
+                        >
+                            <i className="fa-solid fa-clone"></i>
+                            <span className="hidden sm:inline">플래시카드</span>
+                        </button>
+                        <button 
+                            onClick={() => { setActiveTab('quiz'); startQuiz(); }}
+                            className={`py-2.5 px-2 rounded-xl font-bold text-xs md:text-sm transition-all flex items-center justify-center gap-1.5 ${
+                                activeTab === 'quiz' 
+                                ? 'bg-indigo-600 text-white shadow-md' 
+                                : 'text-slate-600 hover:bg-slate-50'
+                            }`}
+                        >
+                            <i className="fa-solid fa-circle-check"></i>
+                            <span className="hidden sm:inline">영영 퀴즈</span>
+                        </button>
+                        <button 
+                            onClick={() => setActiveTab('list')}
+                            className={`py-2.5 px-2 rounded-xl font-bold text-xs md:text-sm transition-all flex items-center justify-center gap-1.5 ${
+                                activeTab === 'list' 
+                                ? 'bg-indigo-600 text-white shadow-md' 
+                                : 'text-slate-600 hover:bg-slate-50'
+                            }`}
+                        >
+                            <i className="fa-solid fa-list-ul"></i>
+                            <span className="hidden sm:inline">전체 단어장</span>
+                        </button>
+                    </nav>
+
+                    {/* Category Filter Pills */}
+                    {(activeTab === 'flashcard' || activeTab === 'list') && (
+                        <div className="flex items-center justify-center gap-1.5 mb-5 flex-wrap">
+                            {['전체', '음식', '문화/미디어', '생활/무술', '호칭/대화'].map((cat) => (
+                                <button
+                                    key={cat}
+                                    onClick={() => { setSelectedCategory(cat); setCardIndex(0); setIsFlipped(false); }}
+                                    className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all ${
+                                        selectedCategory === cat
+                                        ? 'bg-slate-800 text-white shadow-sm ring-2 ring-slate-300'
+                                        : 'bg-white text-slate-600 border border-slate-200 hover:bg-slate-50'
+                                    }`}
+                                >
+                                    {cat}
+                                </button>
+                            ))}
+                        </div>
+                    )}
+
+                    {}
+                    {activeTab === 'flashcard' && (
+                        <div className="flex flex-col items-center">
+                            {/* Flip Card */}
+                            <div 
+                                onClick={() => setIsFlipped(!isFlipped)}
+                                className="w-full max-w-lg h-[370px] perspective-1000 cursor-pointer mb-5"
+                            >
+                                <div className={`relative w-full h-full duration-500 transform-style-3d ${isFlipped ? 'rotate-y-180' : ''}`}>
+                                    {/* Front Side: English Definition */}
+                                    <div className="absolute w-full h-full backface-hidden bg-white border-2 border-indigo-100 rounded-3xl shadow-lg p-6 flex flex-col justify-between items-center text-center">
+                                        <div className="w-full flex justify-between items-center text-xs text-slate-400 font-medium">
+                                            <span className="bg-indigo-50 text-indigo-700 px-3 py-1 rounded-full font-bold border border-indigo-100">
+                                                [{currentFlashcard.category}] #{currentFlashcard.id}
+                                            </span>
+                                            <span className="flex items-center gap-1 text-slate-400">
+                                                <i className="fa-solid fa-hand-pointer text-indigo-400"></i> 카드를 클릭해 단어 확인
+                                            </span>
+                                        </div>
+
+                                        <div className="my-auto px-2 w-full">
+                                            <div className="flex justify-center items-center gap-2 mb-2">
+                                                <i className="fa-solid fa-quote-left text-indigo-200 text-2xl"></i>
+                                                <button 
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        speakText(currentFlashcard.definition);
+                                                    }}
+                                                    className="p-2 text-indigo-600 hover:text-indigo-800 hover:bg-indigo-50 rounded-full transition-all"
+                                                    title="발음 듣기"
+                                                >
+                                                    <i className="fa-solid fa-volume-high text-lg"></i>
+                                                </button>
+                                            </div>
+                                            <p className="text-base md:text-lg font-bold text-slate-800 leading-relaxed mb-4 px-2">
+                                                "{currentFlashcard.definition}"
+                                            </p>
+
+                                            <div 
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    setShowKoDefinition(!showKoDefinition);
+                                                }}
+                                                className="bg-slate-50 border border-slate-200 hover:border-indigo-300 rounded-xl p-3 cursor-pointer transition-all inline-block max-w-full shadow-xs"
+                                            >
+                                                {showKoDefinition ? (
+                                                    <p className="text-xs md:text-sm font-semibold text-indigo-700 flex items-center justify-center gap-1.5">
+                                                        <i className="fa-solid fa-language text-indigo-500"></i>
+                                                        <span><strong>우리말 뜻:</strong> {currentFlashcard.definitionKo}</span>
+                                                    </p>
+                                                ) : (
+                                                    <span className="text-xs font-semibold text-indigo-600 hover:text-indigo-800 flex items-center justify-center gap-1.5">
+                                                        <i className="fa-solid fa-eye text-indigo-500"></i>
+                                                        클릭하여 우리말 상세 설명 보기
+                                                    </span>
+                                                )}
+                                            </div>
+                                        </div>
+
+                                        <p className="text-xs text-slate-400">
+                                            <i className="fa-solid fa-rotate mr-1 text-indigo-400"></i> 카드를 누르면 단어와 예문이 나타납니다
+                                        </p>
+                                    </div>
+
+                                    {/* Back Side: OED Word & Example */}
+                                    <div className="absolute w-full h-full backface-hidden rotate-y-180 bg-gradient-to-b from-indigo-900 via-indigo-950 to-slate-900 text-white border-2 border-indigo-700/80 rounded-3xl shadow-lg p-6 flex flex-col justify-between text-left">
+                                        <div className="flex justify-between items-center text-xs text-indigo-300">
+                                            <span className="font-semibold">OED 어휘 및 예문</span>
+                                            <span className="bg-amber-400/20 text-amber-300 px-2.5 py-0.5 rounded-full font-bold border border-amber-400/30">
+                                                {currentFlashcard.category}
+                                            </span>
+                                        </div>
+
+                                        <div className="my-auto space-y-3">
+                                            <div className="flex items-center justify-between">
+                                                <h3 className="text-2xl md:text-3xl font-black text-amber-400 tracking-wide flex items-center gap-2">
+                                                    {currentFlashcard.term} 
+                                                    <span className="text-lg font-bold text-white">({currentFlashcard.meaning})</span>
+                                                </h3>
+                                                <button 
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        speakText(currentFlashcard.term);
+                                                    }}
+                                                    className="p-2 text-indigo-200 hover:text-amber-300 hover:bg-indigo-800/60 rounded-full transition-all"
+                                                    title="단어 발음 듣기"
+                                                >
+                                                    <i className="fa-solid fa-volume-high text-xl"></i>
+                                                </button>
+                                            </div>
+
+                                            <div className="bg-indigo-900/80 p-4 rounded-2xl border border-indigo-700/60 text-xs text-indigo-100 space-y-2">
+                                                <div className="flex items-center justify-between">
+                                                    <h4 className="font-bold text-amber-300 text-xs flex items-center gap-1">
+                                                        <i className="fa-solid fa-pen-nib"></i> OED 예문
+                                                    </h4>
+                                                    <button 
+                                                        onClick={(e) => {
+                                                            e.stopPropagation();
+                                                            speakText(currentFlashcard.example);
+                                                        }}
+                                                        className="text-indigo-300 hover:text-white transition-all text-xs flex items-center gap-1"
+                                                    >
+                                                        <i className="fa-solid fa-volume-low"></i> 전체 예문 듣기
+                                                    </button>
+                                                </div>
+                                                <p className="italic text-indigo-100 text-sm font-medium leading-relaxed">
+                                                    "{currentFlashcard.example}"
+                                                </p>
+                                                {currentFlashcard.exampleKo && (
+                                                    <p className="text-indigo-300 text-xs border-t border-indigo-800/80 pt-2 mt-1">
+                                                        ({currentFlashcard.exampleKo})
+                                                    </p>
+                                                )}
+                                            </div>
+                                        </div>
+
+                                        <p className="text-[11px] text-indigo-300 text-center">
+                                            <i className="fa-solid fa-rotate mr-1"></i> 카드를 누르면 영영 정의로 돌아갑니다
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Flashcard Nav Controls */}
+                            <div className="flex items-center justify-between w-full max-w-lg mb-6 bg-white px-4 py-3 rounded-2xl border border-slate-200/80 shadow-sm">
+                                <button 
+                                    onClick={() => { setIsFlipped(false); setShowKoDefinition(false); setCardIndex((prev) => (prev - 1 + currentCategoryVocab.length) % currentCategoryVocab.length); }}
+                                    className="px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs flex items-center gap-1.5 transition-all"
+                                >
+                                    <i className="fa-solid fa-arrow-left"></i> 이전
+                                </button>
+
+                                <div className="flex items-center gap-2.5">
+                                    <span className="text-xs md:text-sm font-extrabold text-slate-700 bg-slate-100 px-2.5 py-1 rounded-lg">
+                                        {safeCardIdx + 1} / {currentCategoryVocab.length}
+                                    </span>
+                                    <button
+                                        onClick={(e) => toggleLearned(currentFlashcard.id, e)}
+                                        className={`text-xs px-3 py-1.5 rounded-lg font-bold transition-all flex items-center gap-1 ${
+                                            learnedIds.includes(currentFlashcard.id)
+                                            ? 'bg-emerald-500 text-white shadow-sm'
+                                            : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                                        }`}
+                                    >
+                                        <i className="fa-solid fa-check"></i>
+                                        {learnedIds.includes(currentFlashcard.id) ? '암기완료' : '암기체크'}
+                                    </button>
+                                </div>
+
+                                <button 
+                                    onClick={() => { setIsFlipped(false); setShowKoDefinition(false); setCardIndex((prev) => (prev + 1) % currentCategoryVocab.length); }}
+                                    className="px-3.5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs flex items-center gap-1.5 transition-all shadow-sm"
+                                >
+                                    다음 <i className="fa-solid fa-arrow-right"></i>
+                                </button>
+                            </div>
+
+                            {/* Quick Grid Selector */}
+                            <div className="w-full bg-white rounded-3xl p-5 border border-slate-200/80 shadow-sm">
+                                <div className="flex items-center justify-between mb-4 border-b border-slate-100 pb-3">
+                                    <h3 className="text-sm font-bold text-slate-800 flex items-center gap-2">
+                                        <i className="fa-solid fa-grid-2 text-indigo-600"></i>
+                                        {selectedCategory} 어휘 바로가기
+                                    </h3>
+                                    <span className="text-xs font-semibold text-slate-500">
+                                        카테고리 어휘: {currentCategoryVocab.length}개
+                                    </span>
+                                </div>
+                                <div className="grid grid-cols-3 sm:grid-cols-5 md:grid-cols-6 gap-2">
+                                    {currentCategoryVocab.map((item, index) => {
+                                        const isCurrent = index === safeCardIdx;
+                                        const isLearned = learnedIds.includes(item.id);
+                                        return (
+                                            <button
+                                                key={item.id}
+                                                onClick={() => {
+                                                    setCardIndex(index);
+                                                    setIsFlipped(false);
+                                                    setShowKoDefinition(false);
+                                                }}
+                                                className={`p-2 rounded-xl text-xs font-bold border transition-all text-center flex flex-col items-center justify-center gap-0.5 ${
+                                                    isCurrent 
+                                                    ? 'bg-indigo-600 text-white border-indigo-600 shadow-md ring-2 ring-indigo-200' 
+                                                    : isLearned 
+                                                    ? 'bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100' 
+                                                    : 'bg-slate-50 text-slate-700 border-slate-200 hover:bg-indigo-50 hover:text-indigo-600 hover:border-indigo-200'
+                                                }`}
+                                            >
+                                                <span className="truncate w-full font-bold">{item.term}</span>
+                                                <span className="text-[10px] opacity-80 truncate">{item.meaning}</span>
+                                            </button>
+                                        );
+                                    })}
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+                    {}
+                    {activeTab === 'quiz' && (
+                        <div className="max-w-2xl mx-auto">
+                            {!quizFinished ? (
+                                <div className="bg-white rounded-3xl p-6 border border-slate-200/80 shadow-md">
+                                    <div className="flex justify-between items-center mb-4">
+                                        <span className="text-xs font-bold text-indigo-600 bg-indigo-50 px-3 py-1 rounded-full border border-indigo-100">
+                                            퀴즈 {quizIndex + 1} / {vocabularyData.length}
+                                        </span>
+                                        <span className="text-xs font-bold text-slate-500">
+                                            현재 점수: <strong className="text-indigo-600">{score}</strong>점
+                                        </span>
+                                    </div>
+
+                                    <div className="w-full bg-slate-100 rounded-full h-2.5 mb-6 overflow-hidden">
+                                        <div 
+                                            className="bg-indigo-600 h-2.5 rounded-full transition-all duration-300"
+                                            style={{ width: `${((quizIndex + 1) / vocabularyData.length) * 100}%` }}
+                                        ></div>
+                                    </div>
+
+                                    <div className="mb-6 p-5 bg-gradient-to-r from-slate-900 to-indigo-950 text-white rounded-2xl shadow-inner relative">
+                                        <div className="flex justify-between items-start mb-2">
+                                            <span className="text-[11px] text-amber-300 font-bold tracking-wider uppercase flex items-center gap-1">
+                                                <i className="fa-solid fa-circle-question"></i> OED Definition
+                                            </span>
+                                            <button 
+                                                onClick={() => speakText(vocabularyData[quizIndex].definition)}
+                                                className="text-indigo-300 hover:text-white transition-all text-xs"
+                                                title="정의 듣기"
+                                            >
+                                                <i className="fa-solid fa-volume-high text-sm"></i>
+                                            </button>
+                                        </div>
+                                        <p className="text-base md:text-lg font-bold leading-relaxed">
+                                            "{vocabularyData[quizIndex].definition}"
+                                        </p>
+                                    </div>
+
+                                    <div className="space-y-3 mb-6">
+                                        {quizOptions.map((option, idx) => {
+                                            const currentQuestion = vocabularyData[quizIndex];
+                                            let optionStyle = "bg-slate-50 border-slate-200 hover:border-indigo-300 text-slate-800";
+                                            
+                                            if (selectedOption) {
+                                                if (option.id === currentQuestion.id) {
+                                                    optionStyle = "bg-emerald-50 border-emerald-500 text-emerald-800 font-extrabold ring-2 ring-emerald-200";
+                                                } else if (selectedOption.id === option.id) {
+                                                    optionStyle = "bg-rose-50 border-rose-400 text-rose-800 font-bold";
+                                                } else {
+                                                    optionStyle = "bg-slate-50 border-slate-200 opacity-50";
+                                                }
+                                            }
+
+                                            return (
+                                                <button
+                                                    key={idx}
+                                                    onClick={() => handleAnswer(option)}
+                                                    disabled={selectedOption !== null}
+                                                    className={`w-full p-4 rounded-2xl border-2 text-left transition-all duration-200 flex items-center justify-between ${optionStyle}`}
+                                                >
+                                                    <div className="flex items-center gap-3">
+                                                        <span className="w-7 h-7 rounded-xl bg-slate-200/80 flex items-center justify-center font-bold text-xs text-slate-600 shrink-0">
+                                                            {idx + 1}
+                                                        </span>
+                                                        <span className="text-sm md:text-base font-bold">
+                                                            {option.term} <span className="text-xs font-normal text-slate-500">({option.meaning})</span>
+                                                        </span>
+                                                    </div>
+                                                    {selectedOption && option.id === currentQuestion.id && (
+                                                        <i className="fa-solid fa-circle-check text-emerald-600 text-lg"></i>
+                                                    )}
+                                                    {selectedOption && selectedOption.id === option.id && option.id !== currentQuestion.id && (
+                                                        <i className="fa-solid fa-circle-xmark text-rose-500 text-lg"></i>
+                                                    )}
+                                                </button>
+                                            );
+                                        })}
+                                    </div>
+
+                                    {selectedOption && (
+                                        <div className="pt-4 border-t border-slate-100 flex flex-col md:flex-row items-center justify-between gap-4">
+                                            <div className="text-xs">
+                                                {selectedOption.id === vocabularyData[quizIndex].id ? (
+                                                    <p className="text-emerald-600 font-extrabold flex items-center gap-1.5">
+                                                        <i className="fa-solid fa-circle-check text-base"></i> 정답입니다! 아주 잘하셨어요.
+                                                    </p>
+                                                ) : (
+                                                    <p className="text-rose-600 font-extrabold flex items-center gap-1.5">
+                                                        <i className="fa-solid fa-circle-exclamation text-base"></i> 오답입니다. 정답은 <strong>{vocabularyData[quizIndex].term} ({vocabularyData[quizIndex].meaning})</strong> 입니다.
+                                                    </p>
+                                                )}
+                                            </div>
+                                            <button
+                                                onClick={nextQuiz}
+                                                className="w-full md:w-auto px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs rounded-xl shadow-md transition-all flex items-center justify-center gap-2"
+                                            >
+                                                {quizIndex + 1 < vocabularyData.length ? '다음 문제' : '결과 보기'} <i className="fa-solid fa-arrow-right"></i>
+                                            </button>
+                                        </div>
+                                    )}
+                                </div>
+                            ) : (
+                                <div className="bg-white rounded-3xl p-8 border border-slate-200/80 shadow-lg text-center">
+                                    <div className="w-16 h-16 bg-amber-100 rounded-full flex items-center justify-center mx-auto mb-4 text-amber-600 text-2xl shadow-inner">
+                                        <i className="fa-solid fa-trophy text-amber-500"></i>
+                                    </div>
+                                    <h2 className="text-2xl font-black text-slate-800 mb-2">퀴즈 완료!</h2>
+                                    <p className="text-slate-500 text-xs md:text-sm mb-6">
+                                        OED 등재 우리말 어휘 테스트를 모두 마쳤습니다.
+                                    </p>
+
+                                    <div className="bg-slate-50 rounded-2xl p-6 mb-6 max-w-sm mx-auto border border-slate-200/80">
+                                        <div className="text-4xl font-black text-indigo-600 mb-1">
+                                            {score} / {vocabularyData.length}
+                                        </div>
+                                        <p className="text-xs font-bold text-slate-600">
+                                            정답률: {Math.round((score / vocabularyData.length) * 100)}%
+                                        </p>
+                                    </div>
+
+                                    <div className="flex justify-center gap-3">
+                                        <button 
+                                            onClick={startQuiz}
+                                            className="px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs rounded-xl shadow-md transition-all flex items-center gap-2"
+                                        >
+                                            <i className="fa-solid fa-rotate-right"></i> 다시 도전하기
+                                        </button>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+                    )}
+
+                    {}
+                    {activeTab === 'list' && (
+                        <div className="bg-white rounded-3xl p-6 border border-slate-200/80 shadow-sm">
+                            <div className="flex flex-col md:flex-row gap-3 mb-6 justify-between items-center">
+                                <div className="relative w-full md:w-80">
+                                    <i className="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                                    <input 
+                                        type="text"
+                                        placeholder="어휘 또는 한글 뜻 검색..."
+                                        value={searchTerm}
+                                        onChange={(e) => setSearchTerm(e.target.value)}
+                                        className="w-full pl-9 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium focus:outline-none focus:border-indigo-500 transition-all"
+                                    />
+                                </div>
+
+                                <div className="flex items-center gap-1.5 w-full md:w-auto overflow-x-auto">
+                                    <button 
+                                        onClick={() => setFilterStatus('all')}
+                                        className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
+                                            filterStatus === 'all' 
+                                            ? 'bg-slate-800 text-white shadow-xs' 
+                                            : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                                        }`}
+                                    >
+                                        전체 ({vocabularyData.length})
+                                    </button>
+                                    <button 
+                                        onClick={() => setFilterStatus('learned')}
+                                        className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
+                                            filterStatus === 'learned' 
+                                            ? 'bg-emerald-600 text-white shadow-xs' 
+                                            : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                                        }`}
+                                    >
+                                        암기완료 ({learnedIds.length})
+                                    </button>
+                                    <button 
+                                        onClick={() => setFilterStatus('unlearned')}
+                                        className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
+                                            filterStatus === 'unlearned' 
+                                            ? 'bg-indigo-600 text-white shadow-xs' 
+                                            : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                                        }`}
+                                    >
+                                        미암기 ({vocabularyData.length - learnedIds.length})
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                {filteredListVocab.map((item) => {
+                                    const isLearned = learnedIds.includes(item.id);
+                                    return (
+                                        <div 
+                                            key={item.id} 
+                                            className={`p-4 rounded-2xl border transition-all flex flex-col justify-between ${
+                                                isLearned 
+                                                ? 'bg-emerald-50/40 border-emerald-200/80' 
+                                                : 'bg-slate-50/50 border-slate-200/80 hover:border-indigo-200'
+                                            }`}
+                                        >
+                                            <div>
+                                                <div className="flex justify-between items-start mb-2">
+                                                    <div className="flex items-center gap-2">
+                                                        <span className="text-[10px] font-bold px-2 py-0.5 bg-indigo-50 text-indigo-700 border border-indigo-100 rounded-md">
+                                                            {item.category}
+                                                        </span>
+                                                        <h4 className="text-base font-extrabold text-slate-800">
+                                                            {item.term} <span className="text-xs font-semibold text-indigo-600">({item.meaning})</span>
+                                                        </h4>
+                                                        <button 
+                                                            onClick={() => speakText(item.term)}
+                                                            className="text-slate-400 hover:text-indigo-600 transition-all text-xs"
+                                                            title="듣기"
+                                                        >
+                                                            <i className="fa-solid fa-volume-high"></i>
+                                                        </button>
+                                                    </div>
+                                                    <button
+                                                        onClick={(e) => toggleLearned(item.id, e)}
+                                                        className={`text-[11px] px-2.5 py-1 rounded-lg font-bold transition-all ${
+                                                            isLearned 
+                                                            ? 'bg-emerald-500 text-white' 
+                                                            : 'bg-slate-200 text-slate-600 hover:bg-slate-300'
+                                                        }`}
+                                                    >
+                                                        {isLearned ? '암기완료' : '암기체크'}
+                                                    </button>
+                                                </div>
+
+                                                <p className="text-xs text-slate-700 font-medium mb-1 leading-relaxed">
+                                                    <strong className="text-indigo-700">[OED]</strong> {item.definition}
+                                                </p>
+                                                <p className="text-[11px] text-slate-500 mb-3">
+                                                    <strong>[뜻]</strong> {item.definitionKo}
+                                                </p>
+                                            </div>
+
+                                            <div className="pt-2 border-t border-slate-200/60 text-[11px] text-slate-600 italic">
+                                                "{item.example}"
+                                            </div>
+                                        </div>
+                                    );
+                                })}
+                            </div>
+
+                            {filteredListVocab.length === 0 && (
+                                <div className="text-center py-12 text-slate-400 text-xs">
+                                    <i className="fa-solid fa-circle-info text-2xl mb-2 block"></i>
+                                    검색 결과 조건에 맞는 어휘가 없습니다.
+                                </div>
+                            )}
+                        </div>
+                    )}
+                </div>
+            );
+        }
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
