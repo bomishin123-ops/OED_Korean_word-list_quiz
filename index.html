@@ -276,28 +276,14 @@
             color: #991b1b;
         }
 
-        .toggle-expl-btn {
-            width: 100%;
-            background: #f3f4f6;
-            border: 1px dashed #9ca3af;
-            border-radius: 10px;
-            padding: 12px;
-            margin-top: 14px;
-            font-size: 0.9rem;
-            font-weight: bold;
-            color: var(--text);
-            cursor: pointer;
-            display: none;
-        }
-
         .quiz-explanation {
-            margin-top: 8px;
+            margin-top: 14px;
             padding: 14px;
-            border-radius: 10px;
-            font-size: 0.9rem;
+            border-radius: 12px;
+            font-size: 0.95rem;
             background: #eef2ff;
             border: 1px solid #c7d2fe;
-            line-height: 1.4;
+            line-height: 1.5;
             display: none;
             color: #374151;
         }
@@ -405,7 +391,7 @@
 
             <div class="options" id="quiz-options"></div>
 
-            <button class="toggle-expl-btn" id="expl-toggle-btn" onclick="toggleExplanation()">💡 해설 및 우리말 뜻 보기</button>
+            <!-- 정답 클릭 시 바로 표시되는 해설 영역 -->
             <div class="quiz-explanation" id="quiz-expl"></div>
 
             <button class="primary-btn quiz-nav-btn" id="quiz-next-btn" style="display: none;" onclick="nextQuiz()">다음 문제</button>
@@ -438,8 +424,8 @@
 </div>
 
 <script>
-// 작성해주신 텍스트 원문 그대로 반영 (고노, 리, 언문, 주체, 당수도 5개 제외 -> 총 50개 어휘)
-const data = [
+// 데이터 원문 (고노, 리, 언문, 주체, 당수도 제외 총 50개)
+const rawData = [
     { word: "Korean", kor: "한국어", desc: "The language spoken by the people of Korea and written mainly in Hangul." },
     { word: "gisaeng", kor: "기생", desc: "A female entertainer in traditional Korea who was trained in music, dance, and poetry." },
     { word: "Hangul", kor: "한글", desc: "The writing system used to write the Korean language, created during the Joseon Dynasty." },
@@ -500,6 +486,7 @@ const data = [
     { word: "Korean barbecue", kor: "코리안 바비큐", desc: "A style of Korean meal in which meat is grilled at the table and eaten with side dishes." }
 ];
 
+let quizData = [];
 let studentId = "";
 let studentName = "";
 let currentCardIdx = 0;
@@ -507,6 +494,11 @@ let currentQuizIdx = 0;
 let quizScore = 0;
 let selectedOption = null;
 let startTime = null;
+
+// 배열 셔플 함수
+function shuffle(array) {
+    return [...array].sort(() => Math.random() - 0.5);
+}
 
 function startApp() {
     studentId = document.getElementById('student-id').value.trim();
@@ -519,6 +511,9 @@ function startApp() {
 
     document.getElementById('start-screen').style.display = 'none';
     document.getElementById('main-app').style.display = 'block';
+
+    // 퀴즈 문제 순서 랜덤하게 섞기
+    quizData = shuffle(rawData);
 
     startTime = Date.now();
     updateCard();
@@ -538,7 +533,7 @@ function setTab(type) {
     }
 }
 
-/* 어휘 학습 카드 제어 */
+/* 어휘 학습 카드 제어 (원문 순서 유지) */
 function flipCard() {
     document.getElementById('card-inner').classList.toggle('flipped');
 }
@@ -548,16 +543,16 @@ function updateCard() {
     cardInner.classList.remove('flipped');
 
     setTimeout(() => {
-        const item = data[currentCardIdx];
+        const item = rawData[currentCardIdx];
         document.getElementById('card-eng-desc').innerText = item.desc;
         document.getElementById('card-word').innerText = item.word;
         document.getElementById('card-meaning').innerText = item.kor;
-        document.getElementById('card-num').innerText = `${currentCardIdx + 1} / ${data.length}`;
+        document.getElementById('card-num').innerText = `${currentCardIdx + 1} / ${rawData.length}`;
     }, 150);
 }
 
 function nextCard() {
-    if (currentCardIdx < data.length - 1) {
+    if (currentCardIdx < rawData.length - 1) {
         currentCardIdx++;
         updateCard();
     }
@@ -570,23 +565,19 @@ function prevCard() {
     }
 }
 
-/* 어휘 퀴즈 제어 */
-function shuffle(array) {
-    return array.sort(() => Math.random() - 0.5);
-}
-
+/* 어휘 퀴즈 제어 (랜덤 순서 적용) */
 function loadQuiz() {
-    const item = data[currentQuizIdx];
+    const item = quizData[currentQuizIdx];
     selectedOption = null;
 
-    document.getElementById('quiz-num').innerText = `문제 ${currentQuizIdx + 1} / ${data.length}`;
+    document.getElementById('quiz-num').innerText = `문제 ${currentQuizIdx + 1} / ${quizData.length}`;
     document.getElementById('quiz-score').innerText = `점수: ${quizScore}`;
     document.getElementById('quiz-q-text').innerText = item.desc;
 
-    // 보기 생성 (4지선다)
+    // 보기 생성 (4지선다 오답 구성)
     let choices = [{ word: item.word, kor: item.kor }];
     while (choices.length < 4) {
-        let randItem = data[Math.floor(Math.random() * data.length)];
+        let randItem = rawData[Math.floor(Math.random() * rawData.length)];
         if (!choices.some(c => c.word === randItem.word)) {
             choices.push({ word: randItem.word, kor: randItem.kor });
         }
@@ -603,7 +594,6 @@ function loadQuiz() {
         optionsDiv.appendChild(btn);
     });
 
-    document.getElementById('expl-toggle-btn').style.display = 'none';
     document.getElementById('quiz-expl').style.display = 'none';
     document.getElementById('quiz-next-btn').style.display = 'none';
 }
@@ -611,7 +601,7 @@ function loadQuiz() {
 function selectQuizOption(choiceWord, btnElem) {
     if (selectedOption !== null) return;
 
-    const item = data[currentQuizIdx];
+    const item = quizData[currentQuizIdx];
     selectedOption = choiceWord;
 
     const allBtns = document.querySelectorAll('#quiz-options .option-btn');
@@ -630,21 +620,17 @@ function selectQuizOption(choiceWord, btnElem) {
         });
     }
 
+    // 정답 클릭 즉시 우리말 뜻과 정답 해설을 바로 표시
     const explBox = document.getElementById('quiz-expl');
-    explBox.innerHTML = `<strong>정답: ${item.word}</strong><br><span>우리말 뜻: ${item.kor}</span>`;
+    explBox.innerHTML = `💡 <strong>정답: ${item.word}</strong><br>📌 우리말 뜻: <strong>${item.kor}</strong>`;
+    explBox.style.display = 'block';
 
-    document.getElementById('expl-toggle-btn').style.display = 'block';
     document.getElementById('quiz-next-btn').style.display = 'block';
-}
-
-function toggleExplanation() {
-    const explBox = document.getElementById('quiz-expl');
-    explBox.style.display = (explBox.style.display === 'block') ? 'none' : 'block';
 }
 
 function nextQuiz() {
     currentQuizIdx++;
-    if (currentQuizIdx < data.length) {
+    if (currentQuizIdx < quizData.length) {
         loadQuiz();
     } else {
         showResult();
@@ -663,7 +649,7 @@ function showResult() {
     document.getElementById('res-id').innerText = studentId;
     document.getElementById('res-name').innerText = studentName;
     document.getElementById('res-time').innerText = `${min}분 ${sec}초`;
-    document.getElementById('res-score').innerText = `${quizScore} / ${data.length} 점`;
+    document.getElementById('res-score').innerText = `${quizScore} / ${quizData.length} 점`;
 }
 
 function restartApp() {
