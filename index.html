@@ -127,7 +127,7 @@
         /* 어휘 학습 플래시카드 */
         .flashcard-container {
             perspective: 1000px;
-            height: 310px;
+            height: 360px;
             margin-bottom: 16px;
             cursor: pointer;
         }
@@ -155,18 +155,20 @@
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            padding: 24px;
+            padding: 20px;
             border: 2px solid #e0e7ff;
             background: #ffffff;
             text-align: center;
             box-shadow: 0 8px 16px rgba(0,0,0,0.04);
             box-sizing: border-box;
+            overflow-y: auto;
         }
 
         .card-back {
             transform: rotateY(180deg);
             background: #f8fafc;
             border-color: #c7d2fe;
+            justify-content: flex-start;
         }
 
         .card-english-desc {
@@ -178,30 +180,47 @@
         }
 
         .card-word {
-            font-size: 1.8rem;
+            font-size: 1.7rem;
             font-weight: 800;
             color: var(--primary);
-            margin-bottom: 4px;
+            margin-bottom: 2px;
+            margin-top: 4px;
         }
 
         .card-meaning {
-            font-size: 1.15rem;
+            font-size: 1.1rem;
             font-weight: 700;
             color: var(--accent);
-            margin-bottom: 12px;
+            margin-bottom: 10px;
             word-break: keep-all;
         }
 
         .card-trans {
-            font-size: 0.95rem;
-            color: #4b5563;
-            line-height: 1.45;
+            font-size: 0.9rem;
+            color: #374151;
+            line-height: 1.4;
             word-break: keep-all;
             background: #eef2ff;
-            padding: 10px 14px;
-            border-radius: 12px;
+            padding: 10px 12px;
+            border-radius: 10px;
             border: 1px solid #c7d2fe;
             width: 100%;
+            text-align: left;
+            margin-bottom: 8px;
+        }
+
+        .card-eng-full {
+            font-size: 0.88rem;
+            color: #4b5563;
+            line-height: 1.4;
+            word-break: keep-all;
+            background: #ffffff;
+            padding: 10px 12px;
+            border-radius: 10px;
+            border: 1px solid #e2e8f0;
+            width: 100%;
+            text-align: left;
+            font-style: italic;
         }
 
         .card-hint {
@@ -381,13 +400,14 @@
                     <!-- 앞면: 영영 풀이 -->
                     <div class="card-face">
                         <div class="card-english-desc" id="card-eng-desc">English Description</div>
-                        <div class="card-hint">👆 터치하면 단어와 우리말 해석이 나와요</div>
+                        <div class="card-hint">👆 터치하면 단어와 풀이가 나와요</div>
                     </div>
-                    <!-- 뒷면: 어휘(영어) + 우리말 뜻 + 영영풀이 해석 -->
+                    <!-- 뒷면: 단어 + 우리말 뜻 + 우리말 번역 + 영영 풀이 -->
                     <div class="card-face card-back">
                         <div class="card-word" id="card-word">Korean</div>
                         <div class="card-meaning" id="card-meaning">한국어</div>
-                        <div class="card-trans" id="card-trans">한국어 번역</div>
+                        <div class="card-trans" id="card-trans">💡 한국어 번역</div>
+                        <div class="card-eng-full" id="card-eng-full">📖 English Description</div>
                     </div>
                 </div>
             </div>
@@ -564,6 +584,7 @@ function updateCard() {
         document.getElementById('card-word').innerText = item.word;
         document.getElementById('card-meaning').innerText = item.kor;
         document.getElementById('card-trans').innerText = `💡 ${item.trans}`;
+        document.getElementById('card-eng-full').innerText = `📖 ${item.desc}`;
         document.getElementById('card-num').innerText = `${currentCardIdx + 1} / ${rawData.length}`;
     }, 150);
 }
@@ -684,3 +705,4 @@ function restartApp() {
 
 </body>
 </html>
+```eof
