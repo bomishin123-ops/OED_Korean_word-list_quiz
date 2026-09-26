@@ -3,511 +3,299 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OED 한국어 유래 어휘 학습 앱</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <title>영어 어휘 및 영영풀이 평가</title>
     <style>
-        .perspective { perspective: 1000px; }
-        .transform-style-3d { transform-style: preserve-3d; }
-        .backface-hidden { backface-visibility: hidden; }
-        .rotate-y-180 { transform: rotateY(180deg); }
+        body {
+            font-family: '맑은 고딕', malgun gothic, sans-serif;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f4f6f9;
+            color: #333;
+            line-height: 1.6;
+        }
+        .paper-container {
+            background-color: #ffffff;
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #1a365d;
+            border-bottom: 2px solid #1a365d;
+            padding-bottom: 15px;
+        }
+        .student-info {
+            display: flex;
+            gap: 20px;
+            background: #edf2f7;
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 30px;
+        }
+        .student-info label {
+            font-weight: bold;
+        }
+        .student-info input {
+            padding: 6px 10px;
+            border: 1px solid #cbd5e0;
+            border-radius: 4px;
+        }
+        .vocab-box {
+            background-color: #f8fafc;
+            border: 1px solid #e2e8f0;
+            padding: 20px;
+            border-radius: 6px;
+            margin-bottom: 30px;
+        }
+        .vocab-box h2 {
+            margin-top: 0;
+            font-size: 1.2rem;
+            color: #2b6cb0;
+        }
+        .vocab-item {
+            margin-bottom: 12px;
+        }
+        .vocab-item strong {
+            color: #2d3748;
+        }
+        .vocab-en {
+            margin-left: 10px;
+            color: #4a5568;
+        }
+        .vocab-ko {
+            margin-left: 10px;
+            color: #718096;
+            font-size: 0.95rem;
+        }
+        .question-card {
+            border: 1px solid #e2e8f0;
+            padding: 15px 20px;
+            margin-bottom: 20px;
+            border-radius: 6px;
+            background-color: #fff;
+        }
+        .question-title {
+            font-weight: bold;
+            font-size: 1.05rem;
+            margin-bottom: 8px;
+        }
+        .def-en {
+            font-style: italic;
+            color: #2d3748;
+            margin-bottom: 4px;
+        }
+        .def-ko {
+            color: #4a5568;
+            margin-bottom: 10px;
+        }
+        .answer-input {
+            width: 200px;
+            padding: 6px 10px;
+            border: 1px solid #cbd5e0;
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+        .submit-btn {
+            display: block;
+            width: 100%;
+            padding: 15px;
+            background-color: #3182ce;
+            color: white;
+            font-size: 1.2rem;
+            font-weight: bold;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            margin-top: 30px;
+        }
+        .submit-btn:hover {
+            background-color: #2b6cb0;
+        }
+        /* 결과 캡처용 영역 */
+        #result-section {
+            display: none;
+            margin-top: 30px;
+            padding: 30px;
+            border: 3px solid #3182ce;
+            border-radius: 8px;
+            background-color: #ebf8ff;
+            text-align: center;
+        }
+        #result-section h2 {
+            color: #2b6cb0;
+            margin-top: 0;
+        }
+        .score-display {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #2c5282;
+            margin: 15px 0;
+        }
+        .capture-notice {
+            color: #e53e3e;
+            font-weight: bold;
+            margin-top: 15px;
+        }
     </style>
 </head>
-<body class="bg-slate-100 text-slate-800 min-h-screen flex flex-col font-sans select-none">
+<body>
 
-    <!-- 상단 헤더 -->
-    <header class="bg-indigo-600 text-white shadow-md sticky top-0 z-50">
-        <div class="max-w-md mx-auto px-4 py-3.5 flex items-center justify-between">
-            <h1 class="text-lg sm:text-xl font-bold flex items-center gap-2">
-                <i class="fa-solid fa-book-bookmark text-indigo-200"></i> OED 우리말 어휘장 🇰🇷
-            </h1>
-            <span id="header-count" class="text-xs bg-indigo-800 text-indigo-100 px-2.5 py-1 rounded-full font-semibold">44 단어</span>
+<div class="paper-container">
+    <h1>어휘 및 영영풀이 정기 평가 (총 44문항)</h1>
+
+    <!-- 학번 및 이름 입력란 -->
+    <div class="student-info">
+        <div>
+            <label for="student-id">학번:</label>
+            <input type="text" id="student-id" placeholder="예: 10101">
         </div>
-    </header>
+        <div>
+            <label for="student-name">이름:</label>
+            <input type="text" id="student-name" placeholder="예: 홍길동">
+        </div>
+    </div>
 
-    <!-- 메인 컨텐츠 영역 -->
-    <main class="flex-1 max-w-md w-full mx-auto p-4 flex flex-col justify-between">
-        
-        <!-- 네비게이션 탭 -->
-        <nav class="grid grid-cols-3 gap-1 bg-slate-200 p-1.5 rounded-2xl mb-4 text-center shadow-inner">
-            <button id="tab-flashcard" onclick="switchTab('flashcard')" 
-                class="tab-btn py-2.5 px-1 rounded-xl text-xs sm:text-sm font-bold transition-all duration-200 bg-white text-indigo-600 shadow-sm flex items-center justify-center gap-1.5 min-w-0">
-                <i class="fa-solid fa-clone text-xs sm:text-sm flex-shrink-0"></i>
-                <span class="truncate">플래시카드</span>
-            </button>
-            <button id="tab-quiz" onclick="switchTab('quiz')" 
-                class="tab-btn py-2.5 px-1 rounded-xl text-xs sm:text-sm font-bold transition-all duration-200 text-slate-600 hover:text-slate-900 flex items-center justify-center gap-1.5 min-w-0">
-                <i class="fa-solid fa-circle-question text-xs sm:text-sm flex-shrink-0"></i>
-                <span class="truncate">영영 퀴즈</span>
-            </button>
-            <button id="tab-list" onclick="switchTab('list')" 
-                class="tab-btn py-2.5 px-1 rounded-xl text-xs sm:text-sm font-bold transition-all duration-200 text-slate-600 hover:text-slate-900 flex items-center justify-center gap-1.5 min-w-0">
-                <i class="fa-solid fa-list-check text-xs sm:text-sm flex-shrink-0"></i>
-                <span class="truncate">전체 단어장</span>
-            </button>
-        </nav>
+    <!-- 어휘 영영풀이 및 상세 우리말 참고 목록 -->
+    <div class="vocab-box">
+        <h2>[어휘 목록 및 영영풀이 참조 (Detailed Vocabulary List)]</h2>
+        <div id="vocab-list-container"></div>
+    </div>
 
-        <!-- 1. 플래시카드 섹션 -->
-        <section id="sec-flashcard" class="flex-1 flex flex-col justify-between my-2">
-            <div class="flex justify-between items-center mb-3 px-1">
-                <span id="card-progress" class="text-xs font-extrabold text-slate-400">1 / 44</span>
-                <span id="card-category" class="text-xs font-bold text-indigo-600 bg-indigo-50 border border-indigo-100 px-2.5 py-1 rounded-full">🍚 음식</span>
+    <h2>[평가 문항 (1번 ~ 44번)]</h2>
+    <form id="quiz-form">
+        <div id="questions-container"></div>
+        <button type="button" class="submit-btn" onclick="calculateScore()">시험 제출 및 결과 확인</button>
+    </form>
+
+    <!-- 맨 마지막 성적 확인 및 캡처 영역 -->
+    <div id="result-section">
+        <h2>평가 결과 성적표</h2>
+        <p><strong>학번:</strong> <span id="res-id"></span> | <strong>이름:</strong> <span id="res-name"></span></p>
+        <div class="score-display">
+            맞힌 개수: <span id="res-count">0</span> / 44 개<br>
+            최종 점수: <span id="res-score">0</span> / 100 점
+        </div>
+        <p class="capture-notice">※ 본 화면을 캡처하여 제출해 주세요. (100점 만점 환산 기준)</p>
+    </div>
+</div>
+
+<script>
+// 44개 단어 데이터베이스 (단어, 영영풀이, 상세 우리말 뜻)
+const vocabData = [
+    { word: "adapt", en: "To change your behavior or ideas in order to deal successfully with a new situation.", ko: "새로운 상황이나 환경에 성공적으로 적응하기 위해 행동이나 생각을 바꾸다." },
+    { word: "analyze", en: "To examine something in detail in order to understand it or discover more about it.", ko: "어떤 것을 제대로 이해하거나 더 자세히 알아내기 위해 상세히 조사하고 분석하다." },
+    { word: "benefit", en: "An advantage or helpful effect that something has on a person or a situation.", ko: "어떤 것이 사람이나 특정 상황에 가져다주는 이점, 유용한 효과, 혜택." },
+    { word: "challenge", en: "A new or difficult task that tests somebody's ability and skill.", ko: "누군가의 능력과 기술을 시험하는 새롭고 어려운 과제, 도전." },
+    { word: "diversity", en: "A range of many different things, people, or ideas being included in something.", ko: "다양한 사물, 사람, 아이디어 등이 포함되어 있는 다양성." },
+    { word: "environment", en: "The conditions that you live or work in, or the natural world around us.", ko: "사람이 살아가는 환경이나 우리를 둘러싼 자연 환경." },
+    { word: "feature", en: "A typical quality or an important part of something.", ko: "어떤 대상의 전형적인 특징, 특색 또는 중요한 부분." },
+    { word: "global", en: "Covering or affecting the whole world; international.", ko: "전 세계에 걸치거나 영향을 미치는, 세계적인, 지구 전체의." },
+    { word: "impact", en: "The powerful effect that something has on a situation or person.", ko: "어떤 상황이나 사람에게 미치는 강력한 영향, 충격." },
+    { word: "journey", en: "An act of traveling from one place to another, especially over a long distance.", ko: " 한 곳에서 다른 곳으로 이동하는 여행, 특히 먼 거리의 여정." },
+    { word: "knowledge", en: "Information, understanding, or skills that you get through experience or education.", ko: "경험이나 교육을 통해 얻게 되는 정보, 이해 및 지식." },
+    { word: "limit", en: "A point or line beyond which somebody or something cannot or is not allowed to go.", ko: "누군가나 어떤 것이 넘어갈 수 없거나 허용되지 않는 한계, 제한." },
+    { word: "method", en: "A particular way of doing something in a structured manner.", ko: "무언가를 체계적으로 수행하는 특정한 방법, 방식." },
+    { word: "notice", en: "To see, hear, or feel something and become aware of it.", ko: "무언가를 보거나 듣거나 느껴서 알아차리다, 인지하다." },
+    { word: "opportunity", en: "A time or situation that makes it possible to do something you want to do.", ko: "원하는 것을 할 수 있게 해주는 좋은 기회, 시기." },
+    { word: "perform", en: "To do a piece of work, task, or activity, or entertain people by acting or singing.", ko: "일이나 과제를 수행하다, 또는 연기나 노래 등으로 공연하다." },
+    { word: "quality", en: "How good or bad something is, or a high standard of excellence.", ko: "어떤 것의 품질, 질, 또는 우수성의 수준." },
+    { word: "reduce", en: "To make something less or smaller in size, quantity, or price.", ko: "크기, 수량, 가격 등을 더 적게 만들거나 줄이다." },
+    { word: "solution", en: "A way of solving a problem or dealing with a difficult situation.", ko: "문제나 어려운 상황을 해결하기 위한 해결책, 정답." },
+    { word: "tradition", en: "A custom or belief that has existed for a long time among a group of people.", ko: "집단 내에서 오랫동안 전해 내려오는 습속, 전통, 관습." },
+    { word: "attitude", en: "The way that you think and feel about somebody or something.", ko: "누군가나 어떤 것에 대해 생각하고 느끼는 마음가짐, 태도." },
+    { word: "community", en: "All the people who live in a particular area or share common interests.", ko: "특정 지역에 살거나 공통의 관심을 공유하는 공동체, 지역사회." },
+    { word: "effort", en: "The physical or mental energy that you need to do something.", ko: "무언가를 하기 위해 들이는 육체적, 정신적 노력, 수고." },
+    { word: "focus", en: "To give all your attention to something specific.", ko: "특정한 대상에 모든 주의를 집중하다, 초점을 맞추다." },
+    { word: "goal", en: "Something that you hope to achieve in the future.", ko: "앞으로 이루고자 목적하는 바, 목표." },
+    { word: "improve", en: "To become better than before, or to make something better.", ko: "이전보다 더 좋게 되다, 혹은 개선하다." },
+    { word: "judge", en: "To form an opinion about somebody or something after thinking carefully.", ko: "신중히 생각한 후 누군가나 어떤 것에 대해 판단을 내리다." },
+    { word: "lead", en: "To show the way to a group or to be in charge of an organization.", ko: "무리를 이끌다, 안내하다, 조직을 지도하다." },
+    { word: "manage", en: "To succeed in doing something difficult, or to control a business or system.", ko: "어려운 일을 해내다, 또는 사업이나 시스템을 관리하고 경영하다." },
+    { word: "necessary", en: "Needed in order to achieve a particular result or for a purpose.", ko: "특정한 목적이나 결과를 얻기 위해 반드시 필요한." },
+    { word: "opinion", en: "Your feelings or thoughts about somebody or something, not based on fact.", ko: "사실에만 기반한 것이 아닌, 누군가나 어떤 것에 대한 개인의 의견, 견해." },
+    { word: "patient", en: "Able to wait calmly for a long time without getting angry.", ko: "화내지 않고 오랜 시간 동안 조용히 기다릴 수 있는, 인내심 있는." },
+    { word: "reason", en: "A cause or explanation for why something happens or why someone does something.", ko: "어떤 일이 일어나거나 누군가가 행동하는 이유, 까닭." },
+    { word: "support", en: "To help somebody or agree with an idea, giving encouragement.", ko: "누군가를 돕거나 아이디어에 동의하여 지지하다, 후원하다." },
+    { word: "value", en: "How useful or important something is to someone.", ko: "어떤 것이 누군가에게 얼마나 유용하고 중요한지를 나타내는 가치." },
+    { word: "allow", en: "To let somebody do something or let something happen.", ko: "누군가가 무언가를 하도록 허락하다, 가능하게 하다." },
+    { word: "create", en: "To make something happen or exist that did not exist before.", ko: "이전에 없던 새로운 것을 만들어내다, 창조하다." },
+    { word: "discover", en: "To find information, a place, or an object for the first time.", ko: "정보, 장소, 물건 등을 처음으로 찾아내다, 발견하다." },
+    { word: "express", en: "To show a feeling, opinion, or fact by words or actions.", ko: "말이나 행동으로 감정, 의견, 사실을 표현하다." },
+    { word: "include", en: "To contain something as a part of a whole.", ko: "전체의 일부분으로 어떤 것을 포함하다." },
+    { word: "protect", en: "To keep someone or something safe from harm, damage, or illness.", ko: "해로움, 손상, 질병 등으로부터 누군가나 어떤 것을 안전하게 보호하다." },
+    { word: "respect", en: "A feeling of admiration for somebody because of their qualities or achievements.", ko: "누군가의 자질이나 업적에 대해 가지는 존경, 경의, 존중." },
+    { word: "suggest", en: "To mention an idea or plan for other people to consider.", ko: "다른 사람들이 고려해볼 수 있도록 아이디어나 계획을 제안하다." },
+    { word: "unique", en: "Being the only one of its kind, or very special and unusual.", ko: "유일무이한, 독특한, 매우 특별한." }
+];
+
+// 페이지 로드 시 44개 문제 및 어휘목록 생성
+window.onload = function() {
+    const vocabContainer = document.getElementById('vocab-list-container');
+    const questionsContainer = document.getElementById('questions-container');
+
+    vocabData.forEach((item, index) => {
+        const num = index + 1;
+
+        // 1. 어휘 참조 목록 생성
+        const vDiv = document.createElement('div');
+        vDiv.className = 'vocab-item';
+        vDiv.innerHTML = `<strong>${num}. ${item.word}</strong> <span class="vocab-en">- ${item.en}</span><br><span class="vocab-ko">└ 우리말: ${item.ko}</span>`;
+        vocabContainer.appendChild(vDiv);
+
+        // 2. 44개 영영풀이 시험 문제 생성 (번호 부여)
+        const qDiv = document.createElement('div');
+        qDiv.className = 'question-card';
+        qDiv.innerHTML = `
+            <div class="question-title">문제 ${num}. 다음 영영풀이와 우리말 뜻에 해당하는 단어를 쓰시오.</div>
+            <div class="def-en"><strong>English Definition:</strong> ${item.en}</div>
+            <div class="def-ko"><strong>우리말 뜻:</strong> ${item.ko}</div>
+            <div>
+                <label for="q${num}"><strong>정답 작성:</strong> </label>
+                <input type="text" id="q${num}" class="answer-input" placeholder="영단어 입력" autocomplete="off">
             </div>
+        `;
+        questionsContainer.appendChild(qDiv);
+    });
+};
 
-            <!-- 카드 컨테이너 -->
-            <div class="perspective h-[26rem] w-full cursor-pointer my-auto" onclick="flipCard()">
-                <div id="card-inner" class="relative w-full h-full duration-500 transform-style-3d shadow-xl rounded-3xl border border-slate-200/80 bg-white">
-                    <!-- 앞면 -->
-                    <div class="absolute inset-0 w-full h-full backface-hidden rounded-3xl p-6 flex flex-col justify-between items-center text-center">
-                        <button onclick="event.stopPropagation(); speakCurrentWord();" class="self-end text-slate-400 hover:text-indigo-600 active:scale-95 p-2.5 rounded-full hover:bg-slate-100 transition">
-                            <i class="fa-solid fa-volume-high text-xl"></i>
-                        </button>
-                        <div class="my-auto">
-                            <div id="card-emoji" class="text-5xl mb-3">🍲</div>
-                            <h2 id="card-word" class="text-3xl sm:text-4xl font-extrabold text-indigo-950 mb-2 tracking-tight">bibimbap</h2>
-                            <p id="card-pos" class="text-xs font-semibold text-slate-400 uppercase tracking-widest">noun</p>
-                        </div>
-                        <p class="text-xs font-medium text-slate-400 flex items-center gap-1"><i class="fa-solid fa-rotate text-indigo-500"></i> 터치해서 영영 설명 & 상세 우리말 해석 확인</p>
-                    </div>
-                    <!-- 뒷면 -->
-                    <div class="absolute inset-0 w-full h-full backface-hidden rotate-y-180 rounded-3xl p-5 flex flex-col justify-between items-center text-center bg-gradient-to-b from-indigo-50/70 to-white overflow-y-auto">
-                        <div class="w-full text-right">
-                            <span class="text-[10px] text-indigo-500 font-extrabold uppercase bg-indigo-100/70 px-2 py-0.5 rounded">OED Definition & Translation</span>
-                        </div>
-                        <div class="my-auto space-y-3 w-full">
-                            <h3 id="card-meaning" class="text-2xl font-extrabold text-slate-900">비빔밥</h3>
-                            <p id="card-def" class="text-xs sm:text-sm text-indigo-950 font-medium italic bg-white/90 p-3 rounded-2xl border border-indigo-100 shadow-sm leading-relaxed text-left">
-                                "A Korean dish consisting of rice topped with vegetables, meat, an egg, and chilli pepper paste."
-                            </p>
-                            <div class="bg-indigo-50/80 p-3 rounded-2xl border border-indigo-100 text-left">
-                                <span class="text-[10px] font-bold text-indigo-600 block mb-1">우리말 상세 해석</span>
-                                <p id="card-note" class="text-xs text-slate-700 font-medium leading-relaxed"></p>
-                            </div>
-                        </div>
-                        <p class="text-xs font-medium text-slate-400 pt-1">카드를 다시 터치하면 앞면으로</p>
-                    </div>
-                </div>
-            </div>
+// 점수 계산 및 최종 캡처 영역 출력 함수 (100점 만점 환산)
+function calculateScore() {
+    const studentId = document.getElementById('student-id').value.trim();
+    const studentName = document.getElementById('student-name').value.trim();
 
-            <!-- 컨트롤 버튼 -->
-            <div class="flex items-center gap-3 mt-6">
-                <button onclick="prevCard()" class="flex-1 py-3.5 bg-white border border-slate-200 rounded-2xl shadow-sm text-slate-700 font-bold hover:bg-slate-50 active:scale-95 transition flex items-center justify-center gap-1">
-                    <i class="fa-solid fa-chevron-left text-xs"></i> 이전
-                </button>
-                <button onclick="toggleBookmarkCurrent()" id="btn-bookmark" class="p-3.5 bg-white border border-slate-200 rounded-2xl shadow-sm text-slate-400 hover:text-amber-500 active:scale-95 transition">
-                    <i class="fa-solid fa-star text-lg"></i>
-                </button>
-                <button onclick="nextCard()" class="flex-1 py-3.5 bg-indigo-600 rounded-2xl shadow-md text-white font-bold hover:bg-indigo-700 active:scale-95 transition flex items-center justify-center gap-1">
-                    다음 <i class="fa-solid fa-chevron-right text-xs"></i>
-                </button>
-            </div>
-        </section>
+    if (!studentId || !studentName) {
+        alert("학번과 이름을 입력해 주세요.");
+        return;
+    }
 
-        <!-- 2. 영영 퀴즈 섹션 (개선됨) -->
-        <section id="sec-quiz" class="hidden flex-1 flex-col justify-between my-2">
-            <div class="bg-white p-5 rounded-3xl shadow-sm border border-slate-200 mb-3">
-                <div class="flex justify-between items-center mb-3">
-                    <span class="text-xs font-bold text-indigo-600 bg-indigo-50 border border-indigo-100 px-2.5 py-1 rounded-full">OED 영영 정의</span>
-                    <span id="quiz-score" class="text-xs font-extrabold text-slate-600 bg-slate-100 px-2.5 py-1 rounded-full">점수: 0</span>
-                </div>
-                <p id="quiz-definition" class="text-sm text-slate-800 font-medium italic leading-relaxed min-h-[4rem] flex items-center">
-                    "A Korean dish consisting of rice topped with vegetables, meat, an egg, and chilli pepper paste."
-                </p>
-            </div>
+    let correctCount = 0;
+    const totalQuestions = vocabData.length; // 44개
 
-            <!-- 정답 피드백 및 상세 해석 박스 -->
-            <div id="quiz-feedback" class="hidden p-4 rounded-2xl mb-3 text-xs leading-relaxed transition-all">
-                <div class="flex items-center gap-2 font-bold text-sm mb-1" id="quiz-status-title"></div>
-                <p id="quiz-translation-text" class="text-slate-700 font-medium"></p>
-            </div>
-
-            <!-- 보기 4개 (1, 2, 3, 4 번호 포함) -->
-            <div id="quiz-options" class="grid grid-cols-1 gap-2.5 mb-3">
-                <!-- 동적 생성 -->
-            </div>
-
-            <button onclick="generateQuiz()" class="w-full py-3.5 bg-indigo-600 text-white font-bold rounded-2xl shadow-md hover:bg-indigo-700 active:scale-95 transition flex items-center justify-center gap-2">
-                다음 문제 풀어보기 <i class="fa-solid fa-arrow-right text-xs"></i>
-            </button>
-        </section>
-
-        <!-- 3. 전체 단어장 섹션 -->
-        <section id="sec-list" class="hidden flex-1 flex-col my-2">
-            <div class="space-y-2.5 mb-3">
-                <div class="relative">
-                    <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-3.5 text-slate-400 text-sm"></i>
-                    <input type="text" id="search-input" oninput="renderList()" placeholder="영단어 또는 한글 뜻 검색..." 
-                        class="w-full pl-10 pr-4 py-2.5 bg-white border border-slate-200 rounded-2xl text-sm focus:outline-none focus:border-indigo-500 shadow-sm">
-                </div>
-                <div class="flex gap-1.5 overflow-x-auto pb-1 text-xs no-scrollbar">
-                    <button onclick="filterCategory('ALL')" class="cat-filter-btn px-3 py-1.5 rounded-xl bg-indigo-600 text-white font-bold whitespace-nowrap shadow-sm">전체</button>
-                    <button onclick="filterCategory('음식')" class="cat-filter-btn px-3 py-1.5 rounded-xl bg-white border border-slate-200 text-slate-600 font-bold whitespace-nowrap">🍚 음식</button>
-                    <button onclick="filterCategory('문화/미디어')" class="cat-filter-btn px-3 py-1.5 rounded-xl bg-white border border-slate-200 text-slate-600 font-bold whitespace-nowrap">🎬 문화/미디어</button>
-                    <button onclick="filterCategory('생활/무술')" class="cat-filter-btn px-3 py-1.5 rounded-xl bg-white border border-slate-200 text-slate-600 font-bold whitespace-nowrap">🥋 생활/무술</button>
-                    <button onclick="filterCategory('호칭/대화')" class="cat-filter-btn px-3 py-1.5 rounded-xl bg-white border border-slate-200 text-slate-600 font-bold whitespace-nowrap">💬 호칭/대화</button>
-                </div>
-            </div>
-
-            <!-- 단어 목록 -->
-            <div id="word-list" class="flex-1 overflow-y-auto space-y-2 pr-1 max-h-[calc(100vh-270px)]">
-                <!-- 동적 생성 -->
-            </div>
-        </section>
-
-    </main>
-
-    <script>
-        // OED 등재 어휘 44개 데이터
-        const wordsData = [
-            // 1. 음식 (16개)
-            { id: 101, word: "banchan", meaning: "반찬", category: "음식", emoji: "🥗", 
-              def: "Small side dishes served along with cooked rice in Korean cuisine.", 
-              note: "한국 요리에서 조리된 밥과 함께 제공되는 작은 반찬 요리들." },
-            { id: 102, word: "bibimbap", meaning: "비빔밥", category: "음식", emoji: "🍲", 
-              def: "A Korean dish consisting of rice topped with vegetables, meat, an egg, and chilli pepper paste.", 
-              note: "밥 위에 채소, 고기, 계란, 고추장을 얹어 구성한 한국 요리." },
-            { id: 103, word: "bingsu", meaning: "빙수", category: "음식", emoji: "🍧", 
-              def: "A Korean shaved ice dessert with sweet toppings such as chopped fruit, condensed milk, fruit syrup, and red beans.", 
-              note: "잘게 판 과일, 연유, 과일 시럽, 팥 등의 달콤한 고명을 얹은 한국의 갈은 얼음 디저트." },
-            { id: 104, word: "bulgogi", meaning: "불고기", category: "음식", emoji: "🥩", 
-              def: "A Korean dish of thin slices of beef or pork marinated and grilled or stir-fried.", 
-              note: "양념에 재운 뒤 석쇠에 굽거나 볶아낸 얇게 썬 소고기 또는 돼지고기 한국 요리." },
-            { id: 105, word: "chimaek", meaning: "치맥", category: "음식", emoji: "🍗🍺", 
-              def: "Fried chicken served with beer, considered a popular evening snack in South Korea.", 
-              note: "맥주와 함께 제공되는 프라이드치킨으로, 대한민국에서 인기 있는 야식이자 간식." },
-            { id: 106, word: "galbi", meaning: "갈비", category: "음식", emoji: "🍖", 
-              def: "A Korean dish of ribs, usually beef or pork, marinated in soy sauce and cooked on a grill.", 
-              note: "주로 소나 돼지의 갈비를 간장 양념에 재워 석쇠나 불판에 구워 먹는 한국 요리." },
-            { id: 107, word: "gochujang", meaning: "고추장", category: "음식", emoji: "🌶️", 
-              def: "A savoury, sweet, and spicy fermented condiment made from red chilli powder, glutinous rice, and fermented soybeans.", 
-              note: "붉은 고춧가루, 찹쌀, 발효된 메주(메주콩)로 만든 풍미 있고 달콤하며 매콤한 발효 조미료." },
-            { id: 108, word: "japchae", meaning: "잡채", category: "음식", emoji: "🍜", 
-              def: "A Korean dish of glass noodles stir-fried with vegetables and savory seasonings.", 
-              note: "당면을 각종 채소 및 감칠맛 나는 양념과 함께 볶아낸 한국 요리." },
-            { id: 109, word: "kimbap", meaning: "김밥", category: "음식", emoji: "🍙", 
-              def: "A Korean dish made from cooked rice and other ingredients rolled in dried sheets of laver seaweed.", 
-              note: "조리된 밥과 기타 재료들을 말린 김 한 장에 얹어 말아 만든 한국 요리." },
-            { id: 110, word: "kimchi", meaning: "김치", category: "음식", emoji: "🥬", 
-              def: "A traditional Korean side dish of salted and fermented vegetables, such as napa cabbage and Korean radish.", 
-              note: "배추, 무와 같은 채소를 절이고 발효시켜 만든 전통적인 한국의 반찬 요리." },
-            { id: 111, word: "makgeolli", meaning: "막걸리", category: "음식", emoji: "🥛", 
-              def: "A traditional Korean alcoholic beverage made from rice and fermented with a starter culture.", 
-              note: "쌀을 주재료로 하여 발효 제제(누룩)와 함께 발효시켜 만든 한국의 전통 알코올 음료." },
-            { id: 112, word: "mukbang", meaning: "먹방", category: "음식", emoji: "📺", 
-              def: "A video, especially a livestream, that features a person eating large quantities of food while talking to the audience.", 
-              note: "시청자와 대화하면서 많은 양의 음식을 먹는 모습을 담은 영상(특히 실시간 라이브 방송)." },
-            { id: 113, word: "samgyeopsal", meaning: "삼겹살", category: "음식", emoji: "🥓", 
-              def: "A popular Korean dish that consists of thick, fatty slices of pork belly meat grilled at the table.", 
-              note: "식탁에서 직접 구워 먹는 두툼하고 지방이 있는 돼지 삼겹살 부위로 구성된 인기 한국 요리." },
-            { id: 114, word: "soju", meaning: "소주", category: "음식", emoji: "🍶", 
-              def: "A clear, distilled alcoholic beverage of Korean origin.", 
-              note: "한국에서 유래한 투명한 무색의 증류 알코올 음료(증류주)." },
-            { id: 115, word: "tteokbokki", meaning: "떡볶이", category: "음식", emoji: "🍢", 
-              def: "A popular Korean food made from small-sized rice cakes simmered in spicy gochujang sauce.", 
-              note: "매콤한 고추장 소스에 작은 크기의 떡을 넣고 조려 만든 인기 한국 음식." },
-            { id: 116, word: "galbitang", meaning: "갈비탕", category: "음식", emoji: "🍲", 
-              def: "A variety of guk, or Korean soup, made primarily from beef short ribs along with stew meat.", 
-              note: "소갈비와 양지머리 고기를 주재료로 하여 끓여낸 한국의 국(탕) 요리의 한 종류." },
-
-            // 2. 문화 / 미디어 / 역사 (13개)
-            { id: 201, word: "chaebol", meaning: "재벌", category: "문화/미디어", emoji: "🏢", 
-              def: "A large family-owned business conglomerate in South Korea.", 
-              note: "대한민국에서 가족이나 총수 일가가 소유하고 경영하는 대규모 기업 집단(대기업)." },
-            { id: 202, word: "gisaeng", meaning: "기생", category: "문화/미디어", emoji: "🪕", 
-              def: "A female entertainer in traditional Korea trained in music, poetry, and conversation.", 
-              note: "음악, 시, 교양 있는 대화술 등을 교육받았던 전통 한국의 여성 예능인." },
-            { id: 203, word: "hallyu", meaning: "한류", category: "문화/미디어", emoji: "🌊", 
-              def: "The increase in global popularity of South Korean culture, especially music, television, and cinema.", 
-              note: "특히 음악, 텔레비전, 영화를 중심으로 한 한국 대중문화의 세계적인 인기도 상승 현상." },
-            { id: 204, word: "hanbok", meaning: "한복", category: "문화/미디어", emoji: "👘", 
-              def: "A traditional Korean costume consisting of a long-sleeved jacket and a long full skirt or trousers.", 
-              note: "긴 소매가 달린 저고리와 풍성한 긴 치마 또는 바지로 구성된 한국의 전통 의상." },
-            { id: 205, word: "Hangul", meaning: "한글", category: "문화/미디어", emoji: "📜", 
-              def: "The Korean alphabetic script created in 1443 under King Sejong the Great.", 
-              note: "1443년 세종대왕의 주도로 창제된 한국의 자음/모음 문자 체계." },
-            { id: 206, word: "K-wave", meaning: "K-웨이브", category: "문화/미디어", emoji: "✨", 
-              def: "Another term for Hallyu; the international popularity of South Korean culture and pop industry.", 
-              note: "'한류'의 다른 표현. 한국의 문화 및 대중산업이 국제적으로 누리는 세계적 유행 현상." },
-            { id: 207, word: "K-pop", meaning: "케이팝", category: "문화/미디어", emoji: "🎤", 
-              def: "Korean popular music originating from South Korea.", 
-              note: "대한민국에서 유래하고 발전한 한국의 대중음악." },
-            { id: 208, word: "K-drama", meaning: "케이 드라마", category: "문화/미디어", emoji: "🎬", 
-              def: "A television drama series in the Korean language, produced in South Korea.", 
-              note: "대한민국에서 제작되고 한국어로 방송되는 텔레비전 드라마 시리즈." },
-            { id: 209, word: "manhwa", meaning: "만화", category: "문화/미디어", emoji: "📚", 
-              def: "A genre of Korean comic books and print cartoons.", 
-              note: "한국에서 제작된 인쇄 형태의 만화책 및 단행본 장르." },
-            { id: 210, word: "pansori", meaning: "판소리", category: "문화/미디어", emoji: "🥁", 
-              def: "A Korean genre of musical storytelling performed by a singer and a drummer.", 
-              note: "소리꾼(소리하는 사람) 한 명과 고수(북 치는 사람) 한 명이 펼치는 한국의 전통 판소리 서사 음악." },
-            { id: 211, word: "sijo", meaning: "시조", category: "문화/미디어", emoji: "🖋️", 
-              def: "A traditional Korean poetic form consisting of three lines.", 
-              note: "3행(3장)의 형식으로 이루어진 전통적인 한국 시가(詩歌) 형태." },
-            { id: 212, word: "webtoon", meaning: "웹툰", category: "문화/미디어", emoji: "📱", 
-              def: "A type of digital comic designed to be read on computers and smartphones.", 
-              note: "컴퓨터나 스마트폰 화면에서 읽을 수 있도록 제작된 디지털 만화 형식." },
-            { id: 213, word: "yangban", meaning: "양반", category: "문화/미디어", emoji: "👑", 
-              def: "The traditional ruling class or gentry of dynastic Korea during the Joseon dynasty.", 
-              note: "조선 시대 왕조 한국의 전통적인 지배 계급이자 사대부 사족 집단." },
-
-            // 3. 생활 / 공간 / 무술 (7개)
-            { id: 301, word: "hap kido", meaning: "합기도", category: "생활/무술", emoji: "🥋", 
-              def: "A modern Korean martial art characterized by joint locks, throws, and kicks.", 
-              note: "관절 꺾기, 꺾고 던지기, 발차기 기술을 특징으로 하는 현대 한국 무술." },
-            { id: 302, word: "jjimjilbang", meaning: "찜질방", category: "생활/무술", emoji: "♨️", 
-              def: "A large, gender-segregated public bathhouse in Korea equipped with saunas and hot tubs.", 
-              note: "사우나, 온탕, 휴식 공간 등을 갖춘 한국의 대형 남녀 분리 공중목욕/찜질 시설." },
-            { id: 303, word: "ondol", meaning: "온돌", category: "생활/무술", emoji: "🔥", 
-              def: "Underfloor heating in traditional Korean architecture that uses direct heat transfer from wood smoke.", 
-              note: "장작 연기의 열을 직접 전달하여 바닥을 따뜻하게 하는 한국 전통 건축의 바닥 난방 방식." },
-            { id: 304, word: "pc bang", meaning: "PC방", category: "생활/무술", emoji: "💻", 
-              def: "A type of LAN gaming center in South Korea where patrons can play multiplayer computer games.", 
-              note: "이용자들이 다자간 네트워크 컴퓨터 게임을 즐길 수 있는 한국의 랜(LAN) 기반 게임 공간." },
-            { id: 305, word: "taekwondo", meaning: "태권도", category: "생활/무술", emoji: "🥋", 
-              def: "A Korean martial art involving head-height kicks, jumping spinning kicks, and fast kicking techniques.", 
-              note: "머리 높이의 발차기, 점프 회전 차기, 신속한 발차기 기술을 위주로 하는 한국의 무도 스포츠." },
-            { id: 306, word: "won", meaning: "원", category: "생활/무술", emoji: "₩", 
-              def: "The official monetary unit of South Korea.", 
-              note: "대한민국의 공식 화폐 단위." },
-            { id: 307, word: "ssireum", meaning: "씨름", category: "생활/무술", emoji: "🤼", 
-              def: "A traditional Korean style of wrestling in which opponents try to force each other to the ground.", 
-              note: "상대방의 삿바를 잡고 겨루어 상대를 모래판에 넘러뜨리는 한국 전통 형태의 격투 레슬링." },
-
-            // 4. 호칭 / 대화 / 감탄사 (8개)
-            { id: 401, word: "agassi", meaning: "아가씨", category: "호칭/대화", emoji: "👩", 
-              def: "A young, unmarried woman or young lady in Korean.", 
-              note: "한국어로 젊은 미혼 여성 또는 젊은 숙녀를 부르거나 칭하는 말." },
-            { id: 402, word: "ajumma", meaning: "아줌마", category: "호칭/대화", emoji: "👵", 
-              def: "A polite or respectful term for a middle-aged or older married woman.", 
-              note: "중년 또는 나이가 든 기혼 여성을 칭하거나 부르는 친근하고 친숙한 표현." },
-            { id: 403, word: "daebak", meaning: "대박", category: "호칭/대화", emoji: "👍", 
-              def: "An exclamation expressing awe, excitement, or enthusiasm; awesome or amazing.", 
-              note: "경외감, 감격, 열광적인 기쁨을 나타내는 감탄사. '대단하다', '끝내준다'라는 의미." },
-            { id: 404, word: "fighting", meaning: "파이팅", category: "호칭/대화", emoji: "✊", 
-              def: "An exclamation of encouragement, support, or cheer; 'Go for it!' or 'You can do it!'", 
-              note: "격려, 응원, 사기 진작을 위해 외치는 감탄사. '힘내라!', '잘해라!'라는 의미의 추임새." },
-            { id: 405, word: "Konglish", meaning: "콩글리시", category: "호칭/대화", emoji: "🗣️", 
-              def: "A style of English used by Korean speakers, incorporating Korean grammatical or vocabulary elements.", 
-              note: "한국어 어휘나 문법적 요소가 섞여 한국인에 의해 사용되는 한국식 영어 표현 방식." },
-            { id: 406, word: "noona", meaning: "누나", category: "호칭/대화", emoji: "🙋‍♀️", 
-              def: "A male's older sister or a respectful address for an older female friend used by males.", 
-              note: "남성이 자신의 친누나나 자신보다 나이가 많은 친한 여성 친구를 친근하게 부르는 호칭." },
-            { id: 407, word: "oppa", meaning: "오빠", category: "호칭/대화", emoji: "🙋‍♂️", 
-              def: "A female's older brother, or an affectionate address for an older male friend/boyfriend used by females.", 
-              note: "여성이 자신의 친오빠나 나이가 많은 남성 친구, 혹은 남자친구를 다정하게 부르는 호칭." },
-            { id: 408, word: "sunbae", meaning: "선배", category: "호칭/대화", emoji: "🎓", 
-              def: "A senior colleague or mentor at school, university, or work.", 
-              note: "학교, 대학, 직장 등에서 자신보다 상급자이거나 경험이 많은 연상자/선배." }
-        ];
-
-        let currentIndex = 0;
-        let isFlipped = false;
-        let bookmarks = JSON.parse(localStorage.getItem('oed_bookmarks') || '[]');
-        let quizScore = 0;
-        let currentCategory = 'ALL';
-
-        function speakCurrentWord() {
-            const word = wordsData[currentIndex].word;
-            const utterance = new SpeechSynthesisUtterance(word);
-            utterance.lang = 'en-US';
-            window.speechSynthesis.speak(utterance);
+    vocabData.forEach((item, index) => {
+        const userAns = document.getElementById(`q${index + 1}`).value.trim().toLowerCase();
+        if (userAns === item.word.toLowerCase()) {
+            correctCount++;
         }
+    });
 
-        function flipCard() {
-            isFlipped = !isFlipped;
-            const cardInner = document.getElementById('card-inner');
-            if (isFlipped) {
-                cardInner.classList.add('rotate-y-180');
-            } else {
-                cardInner.classList.remove('rotate-y-180');
-            }
-        }
+    // 100점 만점 환산 계산 (소수점 첫째자리 반올림)
+    const calculatedScore = ((correctCount / totalQuestions) * 100).toFixed(1);
 
-        function updateCard() {
-            const data = wordsData[currentIndex];
-            if (isFlipped) flipCard();
+    // 결과 표시
+    document.getElementById('res-id').innerText = studentId;
+    document.getElementById('res-name').innerText = studentName;
+    document.getElementById('res-count').innerText = correctCount;
+    document.getElementById('res-score').innerText = calculatedScore;
 
-            setTimeout(() => {
-                document.getElementById('card-word').innerText = data.word;
-                document.getElementById('card-meaning').innerText = data.meaning;
-                document.getElementById('card-def').innerText = `"${data.def}"`;
-                document.getElementById('card-note').innerText = data.note;
-                document.getElementById('card-emoji').innerText = data.emoji;
-                document.getElementById('card-category').innerText = `${data.emoji} ${data.category}`;
-                document.getElementById('card-progress').innerText = `${currentIndex + 1} / ${wordsData.length}`;
-                
-                const btnBookmark = document.getElementById('btn-bookmark');
-                if (bookmarks.includes(data.id)) {
-                    btnBookmark.className = "p-3.5 bg-white border border-slate-200 rounded-2xl shadow-sm text-amber-500 active:scale-95 transition";
-                } else {
-                    btnBookmark.className = "p-3.5 bg-white border border-slate-200 rounded-2xl shadow-sm text-slate-400 hover:text-amber-500 active:scale-95 transition";
-                }
-            }, isFlipped ? 180 : 0);
-        }
+    const resultSection = document.getElementById('result-section');
+    resultSection.style.display = 'block';
+    
+    // 화면을 성적표 위치로 스크롤 이동
+    resultSection.scrollIntoView({ behavior: 'smooth' });
+}
+</script>
 
-        function nextCard() {
-            currentIndex = (currentIndex + 1) % wordsData.length;
-            updateCard();
-        }
-
-        function prevCard() {
-            currentIndex = (currentIndex - 1 + wordsData.length) % wordsData.length;
-            updateCard();
-        }
-
-        function toggleBookmarkCurrent() {
-            const id = wordsData[currentIndex].id;
-            if (bookmarks.includes(id)) {
-                bookmarks = bookmarks.filter(b => b !== id);
-            } else {
-                bookmarks.push(id);
-            }
-            localStorage.setItem('oed_bookmarks', JSON.stringify(bookmarks));
-            updateCard();
-            renderList();
-        }
-
-        function switchTab(tabName) {
-            document.querySelectorAll('.tab-btn').forEach(btn => {
-                btn.className = "tab-btn py-2.5 px-1 rounded-xl text-xs sm:text-sm font-bold transition-all duration-200 text-slate-600 hover:text-slate-900 flex items-center justify-center gap-1.5 min-w-0";
-            });
-            document.getElementById(`tab-${tabName}`).className = "tab-btn py-2.5 px-1 rounded-xl text-xs sm:text-sm font-bold transition-all duration-200 bg-white text-indigo-600 shadow-sm flex items-center justify-center gap-1.5 min-w-0";
-
-            document.getElementById('sec-flashcard').classList.add('hidden');
-            document.getElementById('sec-quiz').classList.add('hidden');
-            document.getElementById('sec-list').classList.add('hidden');
-
-            document.getElementById(`sec-${tabName}`).classList.remove('hidden');
-            if (tabName === 'quiz') generateQuiz();
-            if (tabName === 'list') renderList();
-        }
-
-        let currentQuizCorrect = null;
-        function generateQuiz() {
-            const feedbackBox = document.getElementById('quiz-feedback');
-            feedbackBox.classList.add('hidden');
-
-            const correctIndex = Math.floor(Math.random() * wordsData.length);
-            currentQuizCorrect = wordsData[correctIndex];
-
-            document.getElementById('quiz-definition').innerText = `"${currentQuizCorrect.def}"`;
-
-            let options = [currentQuizCorrect];
-            while (options.length < 4) {
-                const randWord = wordsData[Math.floor(Math.random() * wordsData.length)];
-                if (!options.find(o => o.id === randWord.id)) {
-                    options.push(randWord);
-                }
-            }
-            options.sort(() => Math.random() - 0.5);
-
-            const numberIcons = ["①", "②", "③", "④"];
-            const optionsContainer = document.getElementById('quiz-options');
-            optionsContainer.innerHTML = '';
-            
-            options.forEach((opt, idx) => {
-                const btn = document.createElement('button');
-                btn.className = "w-full py-3 px-4 bg-white border border-slate-200 rounded-2xl text-left font-bold text-slate-700 hover:bg-indigo-50 hover:border-indigo-300 active:scale-95 transition flex justify-between items-center shadow-sm";
-                btn.innerHTML = `
-                    <div class="flex items-center gap-2.5">
-                        <span class="text-indigo-600 font-extrabold text-base">${numberIcons[idx]}</span>
-                        <span class="text-slate-900">${opt.emoji} ${opt.word}</span>
-                    </div>
-                    <span class="text-xs text-slate-400 font-normal">${opt.meaning}</span>
-                `;
-                btn.onclick = () => checkQuizAnswer(opt, btn);
-                optionsContainer.appendChild(btn);
-            });
-        }
-
-        function checkQuizAnswer(selected, element) {
-            const optionsBtns = document.getElementById('quiz-options').children;
-            for (let btn of optionsBtns) {
-                btn.disabled = true;
-            }
-
-            const feedbackBox = document.getElementById('quiz-feedback');
-            const statusTitle = document.getElementById('quiz-status-title');
-            const translationText = document.getElementById('quiz-translation-text');
-            feedbackBox.classList.remove('hidden');
-
-            if (selected.id === currentQuizCorrect.id) {
-                element.className = "w-full py-3 px-4 bg-emerald-500 text-white font-bold rounded-2xl text-left transition flex justify-between items-center shadow-md";
-                feedbackBox.className = "p-4 rounded-2xl mb-3 text-xs leading-relaxed transition-all bg-emerald-50 border border-emerald-200 text-emerald-900";
-                statusTitle.innerHTML = `<i class="fa-solid fa-circle-check text-emerald-600 text-lg"></i> 정답입니다! (+10점)`;
-                quizScore += 10;
-            } else {
-                element.className = "w-full py-3 px-4 bg-rose-500 text-white font-bold rounded-2xl text-left transition flex justify-between items-center shadow-md";
-                feedbackBox.className = "p-4 rounded-2xl mb-3 text-xs leading-relaxed transition-all bg-rose-50 border border-rose-200 text-rose-900";
-                statusTitle.innerHTML = `<i class="fa-solid fa-circle-xmark text-rose-600 text-lg"></i> 오답입니다! 정답: ${currentQuizCorrect.word} (${currentQuizCorrect.meaning})`;
-                
-                // 정답 버튼 초록색으로 표시
-                for (let btn of optionsBtns) {
-                    if (btn.innerText.includes(currentQuizCorrect.word)) {
-                        btn.className = "w-full py-3 px-4 bg-emerald-100 border-2 border-emerald-500 text-emerald-900 font-bold rounded-2xl text-left transition flex justify-between items-center shadow-sm";
-                    }
-                }
-            }
-
-            translationText.innerHTML = `<strong>💡 영영 정의 우리말 풀이:</strong><br>${currentQuizCorrect.note}`;
-            document.getElementById('quiz-score').innerText = `점수: ${quizScore}`;
-        }
-
-        function filterCategory(cat) {
-            currentCategory = cat;
-            document.querySelectorAll('.cat-filter-btn').forEach(btn => {
-                if (btn.innerText.includes(cat === 'ALL' ? '전체' : cat)) {
-                    btn.className = "cat-filter-btn px-3 py-1.5 rounded-xl bg-indigo-600 text-white font-bold whitespace-nowrap shadow-sm";
-                } else {
-                    btn.className = "cat-filter-btn px-3 py-1.5 rounded-xl bg-white border border-slate-200 text-slate-600 font-bold whitespace-nowrap";
-                }
-            });
-            renderList();
-        }
-
-        function renderList() {
-            const query = document.getElementById('search-input').value.toLowerCase();
-            const listContainer = document.getElementById('word-list');
-            listContainer.innerHTML = '';
-
-            const filtered = wordsData.filter(w => {
-                const matchCat = currentCategory === 'ALL' || w.category === currentCategory;
-                const matchQuery = w.word.toLowerCase().includes(query) || w.meaning.includes(query) || w.note.includes(query);
-                return matchCat && matchQuery;
-            });
-
-            filtered.forEach(w => {
-                const isBookmarked = bookmarks.includes(w.id);
-                const item = document.createElement('div');
-                item.className = "bg-white p-3.5 rounded-2xl border border-slate-200/80 flex items-center justify-between shadow-sm hover:border-indigo-200 transition";
-                item.innerHTML = `
-                    <div class="pr-2">
-                        <div class="flex items-center gap-2">
-                            <span class="font-bold text-slate-800 text-base">${w.emoji} ${w.word}</span>
-                            <span class="text-[10px] font-extrabold text-indigo-600 bg-indigo-50 border border-indigo-100 px-1.5 py-0.5 rounded-md">${w.category}</span>
-                        </div>
-                        <p class="text-xs text-slate-600 mt-1 font-medium leading-normal">${w.note}</p>
-                    </div>
-                    <button onclick="toggleBookmark(${w.id})" class="text-lg p-2 ${isBookmarked ? 'text-amber-500' : 'text-slate-300'} hover:text-amber-500 transition flex-shrink-0">
-                        <i class="fa-solid fa-star"></i>
-                    </button>
-                `;
-                listContainer.appendChild(item);
-            });
-        }
-
-        function toggleBookmark(id) {
-            if (bookmarks.includes(id)) {
-                bookmarks = bookmarks.filter(b => b !== id);
-            } else {
-                bookmarks.push(id);
-            }
-            localStorage.setItem('oed_bookmarks', JSON.stringify(bookmarks));
-            renderList();
-            updateCard();
-        }
-
-        updateCard();
-    </script>
 </body>
 </html>
