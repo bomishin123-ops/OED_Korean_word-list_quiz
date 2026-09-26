@@ -3,187 +3,322 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OED 우리말 퀴즈 앱</title>
+    <title>OED 우리말 영단어 학습 앱</title>
     <style>
         :root {
-            --primary: #1e3a8a;
-            --primary-light: #3b82f6;
-            --bg: #f8fafc;
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --bg: #f3f4f6;
             --card-bg: #ffffff;
-            --text: #0f172a;
-            --subtext: #64748b;
-            --correct: #16a34a;
-            --wrong: #dc2626;
+            --text: #1f2937;
+            --subtext: #6b7280;
+            --correct: #10b981;
+            --wrong: #ef4444;
+            --accent: #8b5cf6;
         }
 
+        * { box-sizing: border-box; }
+
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            background-color: var(--bg);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background: linear-gradient(135deg, #e0e7ff 0%, #f3f4f6 100%);
             color: var(--text);
             margin: 0;
-            padding: 20px;
+            padding: 16px;
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
-            box-sizing: border-box;
         }
 
-        .container {
+        .app-container {
             width: 100%;
-            max-width: 600px;
+            max-width: 520px;
             background: var(--card-bg);
-            border-radius: 16px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+            border-radius: 24px;
+            box-shadow: 0 20px 30px rgba(0, 0, 0, 0.08);
             padding: 24px;
-            box-sizing: border-box;
-        }
-
-        header {
-            text-align: center;
-            margin-bottom: 20px;
-            border-bottom: 2px solid #f1f5f9;
-            padding-bottom: 16px;
+            position: relative;
+            overflow: hidden;
         }
 
         h1 {
-            font-size: 1.4rem;
-            color: var(--primary);
-            margin: 0 0 8px 0;
+            text-align: center;
+            color: var(--primary-dark);
+            font-size: 1.35rem;
+            margin: 0 0 16px 0;
             font-weight: 800;
         }
 
-        /* 1. 시작 화면 (학번/이름 입력) */
+        /* 0. 시작 화면 */
         .start-screen {
             text-align: center;
-            padding: 10px 0;
+            padding: 20px 0;
         }
 
         .input-group {
             display: flex;
             flex-direction: column;
             gap: 12px;
-            margin: 24px 0;
+            margin: 20px 0;
         }
 
         .input-field {
             padding: 14px 16px;
-            border: 2px solid #e2e8f0;
-            border-radius: 10px;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
             font-size: 1rem;
             outline: none;
             transition: border-color 0.2s;
         }
 
         .input-field:focus {
-            border-color: var(--primary-light);
+            border-color: var(--primary);
         }
 
-        .start-btn {
+        .primary-btn {
             width: 100%;
-            background: var(--primary);
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
             color: white;
             border: none;
-            border-radius: 10px;
+            border-radius: 12px;
             padding: 16px;
-            font-size: 1.1rem;
+            font-size: 1.05rem;
             font-weight: bold;
             cursor: pointer;
-            transition: background 0.2s;
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+            transition: transform 0.1s;
         }
 
-        .start-btn:hover {
-            background: #1e40af;
+        .primary-btn:active {
+            transform: scale(0.98);
         }
 
-        /* 2. 퀴즈 진행 화면 */
-        .progress-bar {
+        /* 탭 상단 메뉴 */
+        .tabs {
+            display: flex;
+            background: #eef2ff;
+            padding: 4px;
+            border-radius: 14px;
+            margin-bottom: 20px;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            background: none;
+            border-radius: 10px;
+            font-size: 0.95rem;
+            font-weight: bold;
+            color: var(--subtext);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .tab-btn.active {
+            background: var(--card-bg);
+            color: var(--primary-dark);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+
+        /* 1. 플래시 카드 */
+        .flashcard-container {
+            perspective: 1000px;
+            height: 280px;
+            margin-bottom: 16px;
+            cursor: pointer;
+        }
+
+        .flashcard {
             width: 100%;
-            height: 8px;
-            background: #e2e8f0;
-            border-radius: 4px;
-            overflow: hidden;
-            margin-top: 12px;
-        }
-
-        .progress {
             height: 100%;
-            background: var(--primary-light);
-            width: 0%;
-            transition: width 0.3s ease;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.6s cubic-bezier(0.4, 0.2, 0.2, 1);
+            border-radius: 20px;
         }
 
-        .status {
+        .flashcard.flipped {
+            transform: rotateY(180deg);
+        }
+
+        .card-face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            border-radius: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 24px;
+            border: 2px solid #e0e7ff;
+            background: #ffffff;
+            text-align: center;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.04);
+        }
+
+        .card-back {
+            transform: rotateY(180deg);
+            background: #f8fafc;
+            border-color: #c7d2fe;
+        }
+
+        .card-english-desc {
+            font-size: 1.05rem;
+            color: #374151;
+            line-height: 1.5;
+            font-weight: 500;
+        }
+
+        .card-word {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--primary-dark);
+            margin-bottom: 4px;
+        }
+
+        .card-meaning {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--accent);
+            margin-bottom: 12px;
+        }
+
+        .card-kor-desc {
+            font-size: 0.95rem;
+            color: #4b5563;
+            line-height: 1.4;
+            word-break: keep-all;
+        }
+
+        .card-hint {
+            font-size: 0.8rem;
+            color: var(--subtext);
+            margin-top: 16px;
+            background: #f3f4f6;
+            padding: 4px 12px;
+            border-radius: 20px;
+        }
+
+        .card-controls {
             display: flex;
             justify-content: space-between;
+            align-items: center;
+        }
+
+        .ctrl-btn {
+            background: #e0e7ff;
+            color: var(--primary-dark);
+            border: none;
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .card-indicator {
             font-size: 0.9rem;
+            font-weight: bold;
             color: var(--subtext);
-            margin-top: 8px;
         }
 
-        .question-card {
-            margin-top: 20px;
+        /* 2. 퀴즈 영역 */
+        .quiz-card-img {
+            width: 100%;
+            height: 160px;
+            object-fit: cover;
+            border-radius: 12px;
+            margin-bottom: 12px;
+            border: 1px solid #e5e7eb;
         }
 
-        .question-text {
-            font-size: 1.1rem;
+        .quiz-header {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.85rem;
+            font-weight: bold;
+            color: var(--primary-dark);
+            margin-bottom: 8px;
+        }
+
+        .quiz-question {
+            font-size: 1rem;
             font-weight: 600;
-            line-height: 1.5;
-            margin-bottom: 20px;
-            word-break: keep-all;
+            line-height: 1.4;
+            margin-bottom: 16px;
         }
 
         .options {
             display: flex;
             flex-direction: column;
-            gap: 10px;
+            gap: 8px;
         }
 
         .option-btn {
-            background: #f1f5f9;
-            border: 2px solid transparent;
+            background: #f9fafb;
+            border: 2px solid #e5e7eb;
             border-radius: 10px;
-            padding: 14px 16px;
-            font-size: 1rem;
+            padding: 12px;
             text-align: left;
+            font-size: 0.95rem;
             cursor: pointer;
-            transition: all 0.2s ease;
             font-weight: 500;
-            color: var(--text);
+            transition: all 0.2s;
         }
 
-        .option-btn:hover:not(:disabled) {
-            background: #e2e8f0;
+        .option-btn.selected {
+            border-color: var(--primary);
+            background: #eef2ff;
+            color: var(--primary-dark);
+            font-weight: bold;
         }
 
         .option-btn.correct {
-            background-color: #dcfce7;
+            background: #d1fae5;
             border-color: var(--correct);
-            color: #14532d;
+            color: #065f46;
         }
 
         .option-btn.wrong {
-            background-color: #fee2e2;
+            background: #fee2e2;
             border-color: var(--wrong);
-            color: #7f1d1d;
+            color: #991b1b;
         }
 
-        .next-btn {
+        .toggle-expl-btn {
             width: 100%;
-            background: var(--primary);
-            color: white;
-            border: none;
-            border-radius: 10px;
-            padding: 14px;
-            font-size: 1rem;
-            font-weight: 600;
-            margin-top: 20px;
+            background: #f3f4f6;
+            border: 1px dashed #9ca3af;
+            border-radius: 8px;
+            padding: 10px;
+            margin-top: 12px;
+            font-size: 0.85rem;
+            font-weight: bold;
+            color: var(--text);
             cursor: pointer;
             display: none;
         }
 
-        .next-btn:hover {
-            background: #1e40af;
+        .quiz-explanation {
+            margin-top: 8px;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 0.88rem;
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            line-height: 1.4;
+            display: none;
+        }
+
+        .quiz-nav-btn {
+            width: 100%;
+            margin-top: 16px;
         }
 
         /* 3. 캡처용 결과 화면 */
@@ -194,176 +329,187 @@
 
         .result-card {
             background: #f8fafc;
-            border: 2px dashed #cbd5e1;
-            border-radius: 14px;
+            border: 2px dashed #a5b4fc;
+            border-radius: 16px;
             padding: 20px;
-            margin: 20px 0;
+            margin: 16px 0;
             text-align: left;
         }
 
         .result-item {
-            font-size: 1.05rem;
-            margin: 10px 0;
+            font-size: 1rem;
+            margin: 8px 0;
             display: flex;
             justify-content: space-between;
             border-bottom: 1px solid #e2e8f0;
-            padding-bottom: 8px;
+            padding-bottom: 6px;
         }
 
-        .result-item:last-child {
-            border-bottom: none;
-            padding-bottom: 0;
-        }
-
-        .result-label {
-            color: var(--subtext);
-            font-weight: 500;
-        }
-
-        .result-value {
-            font-weight: bold;
-            color: var(--text);
-        }
+        .result-item:last-child { border-bottom: none; }
 
         .result-score-highlight {
             font-size: 2.2rem;
             font-weight: 800;
-            color: var(--primary-light);
+            color: var(--primary-dark);
             text-align: center;
-            margin: 15px 0;
+            margin: 12px 0;
         }
 
         .capture-notice {
-            font-size: 0.9rem;
-            color: #ef4444;
+            font-size: 0.85rem;
+            color: var(--wrong);
             font-weight: bold;
-            margin-bottom: 15px;
-        }
-
-        .restart-btn {
-            background: var(--primary-light);
-            color: white;
-            border: none;
-            border-radius: 10px;
-            padding: 12px 24px;
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
         }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <header>
-        <h1>옥스포드 영어 사전(OED) 등재 우리말 퀴즈</h1>
-    </header>
+<div class="app-container">
+    <h1>옥스포드 사전(OED) 우리말 영단어</h1>
 
-    <!-- 1단계: 학번/이름 입력 화면 -->
+    <!-- 0. 시작 화면 (학번/이름 입력) -->
     <div id="start-screen" class="start-screen">
-        <p>퀴즈를 시작하기 전에 학번과 이름을 입력해주세요.</p>
+        <p style="color: var(--subtext); font-size: 0.95rem;">학습 및 퀴즈 제출을 위해 학번과 이름을 입력해주세요.</p>
         <div class="input-group">
             <input type="text" id="student-id" class="input-field" placeholder="학번 (예: 20301)" autocomplete="off">
             <input type="text" id="student-name" class="input-field" placeholder="이름 (예: 홍길동)" autocomplete="off">
         </div>
-        <button class="start-btn" onclick="startQuiz()">퀴즈 시작하기</button>
+        <button class="primary-btn" onclick="startApp()">학습 시작하기</button>
     </div>
 
-    <!-- 2단계: 퀴즈 진행 화면 -->
-    <main id="quiz-screen" style="display: none;">
-        <div class="progress-bar"><div class="progress" id="progress"></div></div>
-        <div class="status">
-            <span id="question-count">문제 1 / 44</span>
-            <span id="score-count">점수: 0</span>
+    <!-- 메인 앱 콘텐츠 -->
+    <div id="main-app" style="display: none;">
+        <!-- 탭 메뉴 -->
+        <div class="tabs">
+            <button class="tab-btn active" onclick="setTab('card')">🃏 1단계: 어휘 학습</button>
+            <button class="tab-btn" onclick="setTab('quiz')">📝 2단계: 영영 퀴즈</button>
         </div>
 
-        <div class="question-card">
-            <div class="question-text" id="question">문제를 불러오는 중...</div>
-            <div class="options" id="options"></div>
-        </div>
-        <button class="next-btn" id="next-btn" onclick="nextQuestion()">다음 문제</button>
-    </main>
-
-    <!-- 3단계: 결과 및 캡처 화면 -->
-    <div class="result-screen" id="result-screen">
-        <h2>🎉 퀴즈 완료!</h2>
-        <div class="capture-notice">📸 아래 화면을 캡처하여 제출하세요!</div>
-
-        <div class="result-card" id="capture-area">
-            <div class="result-item">
-                <span class="result-label">학번</span>
-                <span class="result-value" id="res-id">-</span>
+        <!-- 1. 플래시 카드 영역 -->
+        <div id="tab-card" class="tab-content active">
+            <div class="flashcard-container" onclick="flipCard()">
+                <div class="flashcard" id="card-inner">
+                    <!-- 앞면: 영영 풀이 -->
+                    <div class="card-face">
+                        <div class="card-english-desc" id="card-eng-desc">English Description</div>
+                        <div class="card-hint">👆 터치하면 단어와 우리말 뜻이 나와요</div>
+                    </div>
+                    <!-- 뒷면: 어휘(영어) + 우리말 + 우리말 풀이 -->
+                    <div class="card-face card-back">
+                        <div class="card-word" id="card-word">Kimchi</div>
+                        <div class="card-meaning" id="card-meaning">김치</div>
+                        <div class="card-kor-desc" id="card-kor-desc">한국의 대표적인 발효 채소 음식입니다.</div>
+                    </div>
+                </div>
             </div>
-            <div class="result-item">
-                <span class="result-label">이름</span>
-                <span class="result-value" id="res-name">-</span>
+            <div class="card-controls">
+                <button class="ctrl-btn" onclick="prevCard()">이전</button>
+                <span class="card-indicator" id="card-num">1 / 44</span>
+                <button class="ctrl-btn" onclick="nextCard()">다음</button>
             </div>
-            <div class="result-item">
-                <span class="result-label">소요 시간</span>
-                <span class="result-value" id="res-time">0분 0초</span>
-            </div>
-            <div class="result-score-highlight" id="res-score">0 / 44</div>
         </div>
 
-        <button class="restart-btn" onclick="restartQuiz()">다시 풀기</button>
+        <!-- 2. 영영 퀴즈 영역 -->
+        <div id="tab-quiz" class="tab-content">
+            <div class="quiz-header">
+                <span id="quiz-num">문제 1 / 44</span>
+                <span id="quiz-score">점수: 0</span>
+            </div>
+            
+            <img id="quiz-img" class="quiz-card-img" src="" alt="Quiz Image">
+            <div class="quiz-question" id="quiz-q-text">English Description</div>
+
+            <div class="options" id="quiz-options"></div>
+
+            <button class="toggle-expl-btn" id="expl-toggle-btn" onclick="toggleExplanation()">💡 풀이 및 해설 보기</button>
+            <div class="quiz-explanation" id="quiz-expl"></div>
+
+            <button class="primary-btn quiz-nav-btn" id="quiz-next-btn" style="display: none;" onclick="nextQuiz()">다음 문제</button>
+        </div>
+
+        <!-- 3. 결과/캡처 화면 -->
+        <div class="result-screen" id="result-screen">
+            <h2>🎉 모든 학습 완료!</h2>
+            <p class="capture-notice">📸 아래 결과를 캡처하여 제출하세요.</p>
+
+            <div class="result-card">
+                <div class="result-item">
+                    <span style="color:var(--subtext)">학번</span>
+                    <span id="res-id" style="font-weight:bold">-</span>
+                </div>
+                <div class="result-item">
+                    <span style="color:var(--subtext)">이름</span>
+                    <span id="res-name" style="font-weight:bold">-</span>
+                </div>
+                <div class="result-item">
+                    <span style="color:var(--subtext)">소요 시간</span>
+                    <span id="res-time" style="font-weight:bold">0분 0초</span>
+                </div>
+                <div class="result-score-highlight" id="res-score">0 / 44</div>
+            </div>
+
+            <button class="primary-btn" onclick="restartApp()">다시 학습하기</button>
+        </div>
     </div>
 </div>
 
 <script>
-const quizData = [
-    { q: "한국의 대표적인 발효 채소 음식으로 배추, 무 등에 고춧가루와 양념을 더해 만드는 요리는?", options: ["Kimchi", "Bulgogi", "K-barbecue", "Banchan"], answer: 0 },
-    { q: "한국의 대중문화(음악, 드라마, 영화 등)가 전 세계적으로 인기를 얻는 현상을 뜻하는 단어는?", options: ["Hanbok", "Hallyu", "Mukbang", "Daebak"], answer: 1 },
-    { q: "한국의 고유 무술로, 손과 발을 사용해 공격과 방어를 하며 올림픽 정식 종목인 스포츠는?", options: ["Taekwondo", "Tangsoodo", "K-pop", "Aegyo"], answer: 0 },
-    { q: "한국 식사 때 밥과 함께 제공되는 작은 접시의 여러 가지 밑반찬을 뜻하는 단어는?", options: ["Galbi", "Banchan", "Japchae", "Gimbap"], answer: 1 },
-    { q: "양념한 쇠고기를 불에 구워 먹는 대표적인 한국 전통 고기 요리는?", options: ["Samgyeopsal", "Bulgogi", "Galbi", "Chimaek"], answer: 1 },
-    { q: "소나 돼지의 갈비 부위에 양념을 하거나 생으로 구워 먹는 요리는?", options: ["Galbi", "Buldak", "Tangsuyuk", "Trot"], answer: 0 },
-    { q: "밥 위에 여러 나물과 고기, 고추장 등을 넣고 비벼 먹는 요리는?", options: ["Gimbap", "Bibimbap", "Tteokbokki", "Japchae"], answer: 1 },
-    { q: "당면과 여러 채소, 고기를 함께 볶아 만드는 한국 전통 면 요리는?", options: ["K-noodle", "Ramyeon", "Japchae", "Naengmyeon"], answer: 2 },
-    { q: "김 위에 밥과 여러 재료를 올리고 말아서 썰어 먹는 음식은?", options: ["Gimbap", "Rice cake", "Mandu", "Ssambu"], answer: 0 },
-    { q: "떡과 어묵 등을 매콤달콤한 양념에 볶아서 만드는 길거리 인기 간식은?", options: ["Tteokbokki", "Sundae", "Odeng", "Hotteok"], answer: 0 },
-    { q: "한국 전통 상의(저고리)와 하의(치마/바지)로 구성된 옷은?", options: ["Hanbok", "Hanok", "K-style", "Cheongsam"], answer: 0 },
-    { q: "한국 전통 건축 양식으로 지어진 기와집이나 초가집 등의 집을 뜻하는 단어는?", options: ["Hanok", "Ondol", "Hanbok", "Maru"], answer: 0 },
-    { q: "음식을 먹는 방송이나 영상을 뜻하는 단어로, 사전에도 그대로 등재된 표현은?", options: ["Cookbang", "Mukbang", "Meokja", "Foodcam"], answer: 1 },
-    { q: "치킨과 맥주를 함께 즐기는 한국 특유의 식문화를 일컫는 단어는?", options: ["Chimaek", "Somaek", "Chicken-beer", "Anju"], answer: 0 },
-    { q: "여성이나 남성이 상대방에게 보이는 귀여운 행동이나 표정을 뜻하는 단어는?", options: ["Aegyo", "Oppa", "Unni", "K-cute"], answer: 0 },
-    { q: "여성이 자신보다 나이가 많은 남성(친오빠나 남선배)을 부르는 호칭은?", options: ["Oppa", "Hyung", "Unni", "Noona"], answer: 0 },
-    { q: "여성이 자신보다 나이가 많은 여성(친언니나 여선배)을 부르는 호칭은?", options: ["Unni", "Noona", "Oppa", "Hyung"], answer: 0 },
-    { q: "남성이 자신보다 나이가 많은 남성(친형이나 남선배)을 부르는 호칭은?", options: ["Hyung", "Oppa", "Sunbae", "Noona"], answer: 0 },
-    { q: "남성이 자신보다 나이가 많은 여성(친누나나 여선배)을 부르는 호칭은?", options: ["Noona", "Unni", "Oppa", "Imo"], answer: 0 },
-    { q: "대단하다!, 성공했다! 등의 감탄을 나타낼 때 쓰는 한국어 표현은?", options: ["Daebak", "Fighting", "Jjang", "Hul"], answer: 0 },
-    { q: "한국에서 응원하거나 힘을 낼 때 자주 쓰는 외침(파이팅)은?", options: ["Fighting", "Aja", "Bravo", "Cheer"], answer: 0 },
-    { q: "한국의 대중음악 장르로, 전 세계적인 팬덤을 가지고 있는 음악은?", options: ["K-pop", "Trot", "Gugak", "K-rock"], answer: 0 },
-    { q: "한국의 전통 대중가요 장르 중 하나로, 독특한 꺾기 가창법이 특징인 음악은?", options: ["Trot", "Arirang", "Pansori", "K-ballad"], answer: 0 },
-    { q: "한국 전통 소리꾼이 고수의 북 장단에 맞춰 이야기와 노래를 풀어내는 전통 공연 예술은?", options: ["Pansori", "Samulnori", "Minyo", "Talchum"], answer: 0 },
-    { q: "꽹과리, 장구, 북, 징의 네 가지 악기로 연주하는 한국 전통 풍물놀이는?", options: ["Samulnori", "Nongak", "Namsadang", "Pansori"], answer: 0 },
-    { q: "얇게 썬 돼지 삼겹살 부위를 불판에 구워 먹는 한국인들이 좋아하는 구이 요리는?", options: ["Samgyeopsal", "Bossam", "Jokbal", "Daktagalbi"], answer: 0 },
-    { q: "한국식 수제 만두 피에 고기, 채소 등을 넣어 찌거나 튀겨 먹는 음식은?", options: ["Mandu", "Dimsum", "Gyoza", "Buns"], answer: 0 },
-    { q: "국물에 인삼, 대추, 찹쌀 등을 넣고 영계 한 마리를 통째로 삶아 내는 보양식은?", options: ["Samgyetang", "Galbitang", "Seolleongtang", "Dakbokkeumtang"], answer: 0 },
-    { q: "매우 매운 양념으로 조리된 닭고기 요리로, 매운 맛으로 잘 알려진 요리는?", options: ["Buldak", "Dakgalbi", "Chimaek", "Fried Chicken"], answer: 0 },
-    { q: "테이블에서 손님이 직접 고기나 채소를 구워 먹는 한국 특유의 바비큐 문화를 뜻하는 말은?", options: ["K-barbecue", "K-food", "Roast Pork", "Table Grill"], answer: 0 },
-    { q: "한국의 드라마 작품들을 통틀어 부르는 단어는?", options: ["K-drama", "K-movie", "Soap opera", "Han-drama"], answer: 0 },
-    { q: "한국 신문, 방송, 포털 사이트 등에서 전하는 대중적인 소식이나 언론 매체를 뜻하는 단어는?", options: ["K-news", "Han-news", "Press", "Media"], answer: 0 },
-    { q: "한국의 뷰티 상품, 화장품, 피부 관리 기술 등을 종합적으로 이르는 단어는?", options: ["K-beauty", "K-style", "Skin-care", "Han-beauty"], answer: 0 },
-    { q: "한국에서 제작되거나 한국 고유의 양식으로 만들어진 만화/웹툰을 이르는 단어는?", options: ["Manhwa", "Manga", "Comic", "Webtoon"], answer: 0 },
-    { q: "한국의 온돌 방바닥이나 거실 마루 등 바닥에 직접 앉는 생활 방식을 뜻하는 단어는?", options: ["Ondol", "Sedentary", "Maru", "Floor life"], answer: 0 },
-    { q: "한국의 장류 중 하나로, 콩을 발효시켜 만드는 전통 구수한 양념장은?", options: ["Doenjang", "Gochujang", "Ganjang", "Ssamjang"], answer: 0 },
-    { q: "붉은 고추와 찹쌀, 메주 등을 넣어 만드는 매콤한 한국 전통 장류는?", options: ["Gochujang", "Doenjang", "Ssamjang", "Chogochujang"], answer: 0 },
-    { q: "고기나 밥을 상추, 깻잎 등에 싸서 먹을 때 함께 넣어 먹는 양념 쌈장은?", options: ["Ssamjang", "Gochujang", "Doenjang", "Ganjang"], answer: 0 },
-    { q: "한국의 전통 현악기로, 12개의 줄을 손가락으로 뜯거나 튕겨 소리를 내는 악기는?", options: ["Gayageum", "Geomunggo", "Haegeum", "Ajaeng"], answer: 0 },
-    { q: "6개의 줄을 거문고 채로 두드리거나 뜯어 소리를 내는 한국 전통 현악기는?", options: ["Geomunggo", "Gayageum", "Piri", "Bipa"], answer: 0 },
-    { q: "활로 줄을 문질러 소리를 내며, 2개의 줄을 가진 한국 전통 찰현악기는?", options: ["Haegeum", "Gayageum", "Danso", "Daegeum"], answer: 0 },
-    { q: "한국의 전통 술 중 하나로, 쌀 등을 발효시켜 만든 탁하고 흰 빛깔의 전통주는?", options: ["Makgeolli", "Soju", "Cheongju", "Yakju"], answer: 0 },
-    { q: "한국에서 가장 흔하게 마시는 증류식 또는 희석식 투명한 알코올 음료는?", options: ["Soju", "Makgeolli", "Poktanju", "Maehwashu"], answer: 0 },
-    { q: "술을 마실 때 함께 곁들여 먹는 안주를 뜻하는 단어는?", options: ["Anju", "Banchan", "Side-dish", "Snack"], answer: 0 }
+const data = [
+    { no: 1, word: "Kimchi", kor: "김치", desc: "Traditional Korean dish of fermented vegetables, usually napa cabbage or radish.", korDesc: "배추나 무 등에 고춧가루와 양념을 더해 만드는 한국의 대표 발효 음식", img: "https://images.unsplash.com/photo-1583224964978-2257b960c3d3?w=500&q=80" },
+    { no: 2, word: "Hallyu", kor: "한류", desc: "The increase in international popularity of South Korean culture (music, drama, movies).", korDesc: "전 세계적으로 인기를 얻는 한국의 대중문화 현상", img: "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=500&q=80" },
+    { no: 3, word: "Taekwondo", kor: "태권도", desc: "Traditional Korean martial art using hands and feet for attack and defense.", korDesc: "손과 발을 사용하는 한국 고유의 대표 무술 및 스포츠", img: "https://images.unsplash.com/photo-1555597673-b21d5c935865?w=500&q=80" },
+    { no: 4, word: "Banchan", kor: "반찬", desc: "Small side dishes served along with cooked rice in Korean cuisine.", korDesc: "밥과 함께 제공되는 작은 접시의 여러 가짓수 음식", img: "https://images.unsplash.com/photo-1498654896293-37aacf113fd9?w=500&q=80" },
+    { no: 5, word: "Bulgogi", kor: "불고기", desc: "Thin slices of beef or pork marinated and grilled on a barbecue.", korDesc: "양념한 쇠고기나 돼지고기를 불에 구워 먹는 음식", img: "https://images.unsplash.com/photo-1544025162-d76694265947?w=500&q=80" },
+    { no: 6, word: "Galbi", kor: "갈비", desc: "Dish of beef or pork ribs marinated and grilled.", korDesc: "소나 돼지의 갈비 부위에 양념을 하여 구운 요리", img: "https://images.unsplash.com/photo-1529193591184-b1d58069ecdd?w=500&q=80" },
+    { no: 7, word: "Bibimbap", kor: "비빔밥", desc: "Dish of rice topped with vegetables, meat, and red chili paste, stirred together.", korDesc: "밥 위에 나물, 고기, 고추장 등을 얹어 비벼 먹는 요리", img: "https://images.unsplash.com/photo-1553163147-622ab57be1c7?w=500&q=80" },
+    { no: 8, word: "Japchae", kor: "잡채", desc: "Dish of stir-fried glass noodles with vegetables and meat.", korDesc: "당면과 채소, 고기를 함께 볶아 만든 면 요리", img: "https://images.unsplash.com/photo-1617196034796-73dfa7b1fd56?w=500&q=80" },
+    { no: 9, word: "Gimbap", kor: "김밥", desc: "Korean dish consisting of cooked rice and ingredients rolled in dried sheets of laver.", korDesc: "김 위에 밥과 재료를 올려 말아 썰어 먹는 음식", img: "https://images.unsplash.com/photo-1563245372-f21724e3856d?w=500&q=80" },
+    { no: 10, word: "Tteokbokki", kor: "떡볶이", desc: "Popular street food made of simmered rice cakes with sweet and spicy sauce.", korDesc: "떡을 매콤달콤한 양념에 볶아 만든 길거리 간식", img: "https://images.unsplash.com/photo-1626777552726-4a6b54c97e46?w=500&q=80" },
+    { no: 11, word: "Hanbok", kor: "한복", desc: "Traditional Korean clothing consisting of a top (jeogori) and skirt/pants.", korDesc: "저고리와 치마/바지로 구성된 한국의 전통 의복", img: "https://images.unsplash.com/photo-1617802690992-15d93263d3a9?w=500&q=80" },
+    { no: 12, word: "Hanok", kor: "한옥", desc: "Traditional Korean house built with natural materials and unique architecture.", korDesc: "자연 재료로 지어진 한국의 전통 건축 양식 집", img: "https://images.unsplash.com/photo-1584467541268-b040f83be3fd?w=500&q=80" },
+    { no: 13, word: "Mukbang", kor: "먹방", desc: "Live-streamed show in which a host eats large quantities of food while interacting with viewers.", korDesc: "음식을 먹는 모습을 보여주는 방송 또는 영상", img: "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=500&q=80" },
+    { no: 14, word: "Chimaek", kor: "치맥", desc: "Combination of fried chicken and beer enjoyed as a casual meal/snack.", korDesc: "치킨과 맥주를 함께 즐기는 한국 식문화", img: "https://images.unsplash.com/photo-1626082927389-6cd097cdc6ec?w=500&q=80" },
+    { no: 15, word: "Aegyo", kor: "애교", desc: "Cute and charming behavior or facial expressions used to show affection.", korDesc: "귀여운 행동이나 표정으로 호감을 주는 태도", img: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=500&q=80" },
+    { no: 16, word: "Oppa", kor: "오빠", desc: "Term used by females to address an older brother or older male friend/partner.", korDesc: "여성이 나이가 더 많은 남성을 부르는 호칭", img: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=500&q=80" },
+    { no: 17, word: "Unni", kor: "언니", desc: "Term used by females to address an older sister or older female friend.", korDesc: "여성이 나이가 더 많은 여성을 부르는 호칭", img: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=500&q=80" },
+    { no: 18, word: "Hyung", kor: "형", desc: "Term used by males to address an older brother or older male friend.", korDesc: "남성이 나이가 더 많은 남성을 부르는 호칭", img: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=500&q=80" },
+    { no: 19, word: "Noona", kor: "누나", desc: "Term used by males to address an older sister or older female friend.", korDesc: "남성이 나이가 더 많은 여성을 부르는 호칭", img: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=500&q=80" },
+    { no: 20, word: "Daebak", kor: "대박", desc: "An exclamation expressing great enthusiasm, excitement, or shock (meaning 'great success').", korDesc: "대단하거나 감격스러운 상황에 쓰는 감탄사", img: "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=500&q=80" },
+    { no: 21, word: "Fighting", kor: "파이팅", desc: "An expression of encouragement and support used to wish someone good luck.", korDesc: "응원이나 격려를 할 때 사용하는 외침", img: "https://images.unsplash.com/photo-1526676037777-05a232554f77?w=500&q=80" },
+    { no: 22, word: "K-pop", kor: "케이팝", desc: "Korean popular music incorporating various pop music styles.", korDesc: "전 세계적으로 사랑받는 한국 대중음악", img: "https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?w=500&q=80" },
+    { no: 23, word: "Trot", kor: "트롯", desc: "Traditional genre of Korean popular music known for its distinctive repetitive rhythm and vocal trills.", korDesc: "독특한 꺾기 가창법이 특징인 한국 대중가요 장르", img: "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=500&q=80" },
+    { no: 24, word: "Pansori", kor: "판소리", desc: "Genre of musical storytelling performed by a singer and a drummer.", korDesc: "소리꾼과 고수가 함께 이야기를 풀어가는 한국 전통 공연", img: "https://images.unsplash.com/photo-1465847899084-d164df4dedc6?w=500&q=80" },
+    { no: 25, word: "Samulnori", kor: "사물놀이", desc: "Genre of traditional percussion music played on four instruments.", korDesc: "꽹과리, 장구, 북, 징의 네 가지 악기로 연주하는 음악", img: "https://images.unsplash.com/photo-1519892300165-cb5542fb47c7?w=500&q=80" },
+    { no: 26, word: "Samgyeopsal", kor: "삼겹살", desc: "Dish of pork belly grilled at the table.", korDesc: "돼지의 삼겹살 부위를 구워 먹는 인기 요리", img: "https://images.unsplash.com/photo-1544025162-d76694265947?w=500&q=80" },
+    { no: 27, word: "Mandu", kor: "만두", desc: "Korean dumplings filled with minced meat, tofu, and vegetables.", korDesc: "피 안에 고기와 채소 등을 넣어 찌거나 튀긴 음식", img: "https://images.unsplash.com/photo-1496116218417-1a781b1c416c?w=500&q=80" },
+    { no: 28, word: "Samgyetang", kor: "삼계탕", desc: "Traditional soup made with a whole young chicken stuffed with ginseng, garlic, and rice.", korDesc: "닭에 인삼과 찹쌀 등을 넣고 삶아낸 보양식", img: "https://images.unsplash.com/photo-1547592166-23ac45744acd?w=500&q=80" },
+    { no: 29, word: "Buldak", kor: "불닭", desc: "Dish of chicken cooked with an extremely spicy sauce.", korDesc: "매우 매운 양념으로 조리한 닭고기 요리", img: "https://images.unsplash.com/photo-1562967914-608f82629710?w=500&q=80" },
+    { no: 30, word: "K-barbecue", kor: "K-바비큐", desc: "Style of cooking and dining where meat is grilled at the table.", korDesc: "테이블에서 직접 고기를 구워 먹는 한국식 바비큐 문화", img: "https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=500&q=80" },
+    { no: 31, word: "K-drama", kor: "K-드라마", desc: "Television drama series produced in South Korea.", korDesc: "한국에서 제작된 텔레비전 드라마 작품들", img: "https://images.unsplash.com/photo-1574375927938-d5a98e8ffe85?w=500&q=80" },
+    { no: 32, word: "K-news", kor: "K-뉴스", desc: "News media and journalism originating from South Korea.", korDesc: "한국에서 발신되는 언론 및 소식 매체", img: "https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=500&q=80" },
+    { no: 33, word: "K-beauty", kor: "K-뷰티", desc: "Korean skincare and cosmetics products and beauty techniques.", korDesc: "한국의 화장품 및 피부 관리 기술/스타일", img: "https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=500&q=80" },
+    { no: 34, word: "Manhwa", kor: "만화", desc: "Korean cartoons, comic books, or webtoons.", korDesc: "한국 고유의 양식으로 제작된 만화 및 웹툰", img: "https://images.unsplash.com/photo-1534447677768-be436bb09401?w=500&q=80" },
+    { no: 35, word: "Ondol", kor: "온돌", desc: "Traditional Korean underfloor heating system.", korDesc: "방바닥을 따뜻하게 하는 한국 전통 바닥 난방 방식", img: "https://images.unsplash.com/photo-1513694203232-719a280e022f?w=500&q=80" },
+    { no: 36, word: "Doenjang", kor: "된장", desc: "Traditional Korean fermented soybean paste.", korDesc: "콩을 발효시켜 만드는 전통 구수한 양념장", img: "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=500&q=80" },
+    { no: 37, word: "Gochujang", kor: "고추장", desc: "Traditional Korean fermented red chili paste.", korDesc: "붉은 고추와 메주 등을 넣어 만드는 매콤한 전통 장", img: "https://images.unsplash.com/photo-1584270354949-c26b0d5b4a0c?w=500&q=80" },
+    { no: 38, word: "Ssamjang", kor: "쌈장", desc: "Thick, spicy paste used as a dipping sauce for wraps in Korean barbecue.", korDesc: "쌈을 싸 먹을 때 곁들여 먹는 양념 장류", img: "https://images.unsplash.com/photo-1541544741938-0af808871cc0?w=500&q=80" },
+    { no: 39, word: "Gayageum", kor: "가야금", desc: "Traditional Korean 12-string plucked zither.", korDesc: "12개의 줄을 손가락으로 튕겨 소리를 내는 현악기", img: "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=500&q=80" },
+    { no: 40, word: "Geomunggo", kor: "거문고", desc: "Traditional Korean 6-string plucked zither.", korDesc: "6개의 줄을 술대로 두드리거나 뜯는 대표 현악기", img: "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=500&q=80" },
+    { no: 41, word: "Haegeum", kor: "해금", desc: "Traditional Korean two-stringed vertical bowed fiddle.", korDesc: "두 개의 줄을 활로 문질러 소리를 내는 찰현악기", img: "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=500&q=80" },
+    { no: 42, word: "Makgeolli", kor: "막걸리", desc: "Traditional Korean milky, sweet, and lightly sparkling rice wine.", korDesc: "쌀 등을 발효시켜 만든 탁하고 단맛이 나는 전통주", img: "https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?w=500&q=80" },
+    { no: 43, word: "Soju", kor: "소주", desc: "Clear, distilled alcoholic beverage popular in South Korea.", korDesc: "한국에서 가장 대중적으로 마시는 투명한 증류식 술", img: "https://images.unsplash.com/photo-1563227812-0ea4c22e6cc8?w=500&q=80" },
+    { no: 44, word: "Anju", kor: "안주", desc: "Food or snacks served and consumed with alcoholic drinks.", korDesc: "술을 마실 때 함께 곁들여 먹는 음식", img: "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=500&q=80" }
 ];
 
-let currentIdx = 0;
-let score = 0;
 let studentId = "";
 let studentName = "";
+let currentCardIdx = 0;
+let currentQuizIdx = 0;
+let quizScore = 0;
+let selectedOption = null;
 let startTime = null;
 
-function startQuiz() {
+function startApp() {
     studentId = document.getElementById('student-id').value.trim();
     studentName = document.getElementById('student-name').value.trim();
 
@@ -373,83 +519,167 @@ function startQuiz() {
     }
 
     document.getElementById('start-screen').style.display = 'none';
-    document.getElementById('quiz-screen').style.display = 'block';
+    document.getElementById('main-app').style.display = 'block';
 
     startTime = Date.now();
-    loadQuestion();
+    updateCard();
+    loadQuiz();
 }
 
-function loadQuestion() {
-    const data = quizData[currentIdx];
-    document.getElementById('question').innerText = `${currentIdx + 1}. ${data.q}`;
-    document.getElementById('question-count').innerText = `문제 ${currentIdx + 1} / ${quizData.length}`;
-    document.getElementById('progress').style.width = `${((currentIdx + 1) / quizData.length) * 100}%`;
-    
-    const optionsDiv = document.getElementById('options');
+function setTab(type) {
+    document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+    document.querySelectorAll('.tab-content').forEach(cont => cont.classList.remove('active'));
+
+    if (type === 'card') {
+        document.querySelectorAll('.tab-btn')[0].classList.add('active');
+        document.getElementById('tab-card').classList.add('active');
+    } else {
+        document.querySelectorAll('.tab-btn')[1].classList.add('active');
+        document.getElementById('tab-quiz').classList.add('active');
+    }
+}
+
+/* 1. 플래시카드 제어 */
+function flipCard() {
+    document.getElementById('card-inner').classList.toggle('flipped');
+}
+
+function updateCard() {
+    const cardInner = document.getElementById('card-inner');
+    cardInner.classList.remove('flipped');
+
+    setTimeout(() => {
+        const item = data[currentCardIdx];
+        document.getElementById('card-eng-desc').innerText = item.desc;
+        document.getElementById('card-word').innerText = item.word;
+        document.getElementById('card-meaning').innerText = item.kor;
+        document.getElementById('card-kor-desc').innerText = item.korDesc;
+        document.getElementById('card-num').innerText = `${currentCardIdx + 1} / ${data.length}`;
+    }, 150);
+}
+
+function nextCard() {
+    if (currentCardIdx < data.length - 1) {
+        currentCardIdx++;
+        updateCard();
+    }
+}
+
+function prevCard() {
+    if (currentCardIdx > 0) {
+        currentCardIdx--;
+        updateCard();
+    }
+}
+
+/* 2. 퀴즈 제어 */
+function shuffle(array) {
+    return array.sort(() => Math.random() - 0.5);
+}
+
+function loadQuiz() {
+    const item = data[currentQuizIdx];
+    selectedOption = null;
+
+    document.getElementById('quiz-num').innerText = `문제 ${currentQuizIdx + 1} / ${data.length}`;
+    document.getElementById('quiz-score').innerText = `점수: ${quizScore}`;
+    document.getElementById('quiz-img').src = item.img;
+    document.getElementById('quiz-q-text').innerText = item.desc;
+
+    // 보기 생성 (4지선다)
+    let choices = [item.word];
+    while (choices.length < 4) {
+        let rand = data[Math.floor(Math.random() * data.length)].word;
+        if (!choices.includes(rand)) choices.push(rand);
+    }
+    choices = shuffle(choices);
+
+    const optionsDiv = document.getElementById('quiz-options');
     optionsDiv.innerHTML = '';
-    
-    data.options.forEach((opt, idx) => {
+    choices.forEach(choice => {
         const btn = document.createElement('button');
         btn.className = 'option-btn';
-        btn.innerText = `${idx + 1}) ${opt}`;
-        btn.onclick = () => checkAnswer(idx);
+        btn.innerText = choice;
+        btn.onclick = () => selectQuizOption(choice, btn);
         optionsDiv.appendChild(btn);
     });
 
-    document.getElementById('next-btn').style.display = 'none';
+    // 해설 초기화
+    document.getElementById('expl-toggle-btn').style.display = 'none';
+    document.getElementById('quiz-expl').style.display = 'none';
+    document.getElementById('quiz-next-btn').style.display = 'none';
 }
 
-function checkAnswer(selectedIdx) {
-    const data = quizData[currentIdx];
-    const buttons = document.querySelectorAll('.option-btn');
-    
-    buttons.forEach((btn, idx) => {
-        btn.disabled = true;
-        if (idx === data.answer) {
-            btn.classList.add('correct');
-        }
-        if (idx === selectedIdx && selectedIdx !== data.answer) {
-            btn.classList.add('wrong');
-        }
-    });
+function selectQuizOption(choice, btnElem) {
+    if (selectedOption !== null) return; // 이미 선택했으면 변경 불가
 
-    if (selectedIdx === data.answer) {
-        score++;
-        document.getElementById('score-count').innerText = `점수: ${score}`;
+    const item = data[currentQuizIdx];
+    selectedOption = choice;
+
+    const allBtns = document.querySelectorAll('#quiz-options .option-btn');
+    allBtns.forEach(b => b.disabled = true);
+
+    if (choice === item.word) {
+        btnElem.classList.add('correct');
+        quizScore++;
+        document.getElementById('quiz-score').innerText = `점수: ${quizScore}`;
+    } else {
+        btnElem.classList.add('wrong');
+        allBtns.forEach(b => {
+            if (b.innerText === item.word) b.classList.add('correct');
+        });
     }
 
-    document.getElementById('next-btn').style.display = 'block';
+    // 풀이 텍스트 채우기
+    const explBox = document.getElementById('quiz-expl');
+    explBox.innerHTML = `<strong>정답: ${item.word} (${item.kor})</strong><br><span style="color:#4b5563">${item.korDesc}</span>`;
+
+    document.getElementById('expl-toggle-btn').style.display = 'block';
+    document.getElementById('quiz-next-btn').style.display = 'block';
 }
 
-function nextQuestion() {
-    currentIdx++;
-    if (currentIdx < quizData.length) {
-        loadQuestion();
+function toggleExplanation() {
+    const explBox = document.getElementById('quiz-expl');
+    if (explBox.style.display === 'block') {
+        explBox.style.display = 'none';
+    } else {
+        explBox.style.display = 'block';
+    }
+}
+
+function nextQuiz() {
+    currentQuizIdx++;
+    if (currentQuizIdx < data.length) {
+        loadQuiz();
     } else {
         showResult();
     }
 }
 
+/* 3. 최종 결과 */
 function showResult() {
-    document.getElementById('quiz-screen').style.display = 'none';
+    document.querySelectorAll('.tabs, .tab-content').forEach(e => e.style.display = 'none');
     document.getElementById('result-screen').style.display = 'block';
 
-    const totalSeconds = Math.floor((Date.now() - startTime) / 1000);
-    const minutes = Math.floor(totalSeconds / 60);
-    const seconds = totalSeconds % 60;
+    const totalSec = Math.floor((Date.now() - startTime) / 1000);
+    const min = Math.floor(totalSec / 60);
+    const sec = totalSec % 60;
 
     document.getElementById('res-id').innerText = studentId;
     document.getElementById('res-name').innerText = studentName;
-    document.getElementById('res-time').innerText = `${minutes}분 ${seconds}초`;
-    document.getElementById('res-score').innerText = `${score} / ${quizData.length} 점`;
+    document.getElementById('res-time').innerText = `${min}분 ${sec}초`;
+    document.getElementById('res-score').innerText = `${quizScore} / ${data.length} 점`;
 }
 
-function restartQuiz() {
-    currentIdx = 0;
-    score = 0;
-    document.getElementById('score-count').innerText = `점수: 0`;
+function restartApp() {
+    currentCardIdx = 0;
+    currentQuizIdx = 0;
+    quizScore = 0;
+    
     document.getElementById('result-screen').style.display = 'none';
-    document.getElementById('start-screen').style.display = 'block';
+    document.querySelectorAll('.tabs').forEach(e => e.style.display = 'flex');
+    setTab('card');
+    startApp();
 }
 </script>
 
