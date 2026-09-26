@@ -55,9 +55,9 @@
             </div>
 
             <!-- 카드 컨테이너 -->
-            <div class="perspective h-96 w-full cursor-pointer my-auto" onclick="flipCard()">
+            <div class="perspective h-[26rem] w-full cursor-pointer my-auto" onclick="flipCard()">
                 <div id="card-inner" class="relative w-full h-full duration-500 transform-style-3d shadow-xl rounded-3xl border border-slate-200/80 bg-white">
-                    <!-- 앞면 (영단어 & 이모지) -->
+                    <!-- 앞면 -->
                     <div class="absolute inset-0 w-full h-full backface-hidden rounded-3xl p-6 flex flex-col justify-between items-center text-center">
                         <button onclick="event.stopPropagation(); speakCurrentWord();" class="self-end text-slate-400 hover:text-indigo-600 active:scale-95 p-2.5 rounded-full hover:bg-slate-100 transition">
                             <i class="fa-solid fa-volume-high text-xl"></i>
@@ -67,21 +67,24 @@
                             <h2 id="card-word" class="text-3xl sm:text-4xl font-extrabold text-indigo-950 mb-2 tracking-tight">bibimbap</h2>
                             <p id="card-pos" class="text-xs font-semibold text-slate-400 uppercase tracking-widest">noun</p>
                         </div>
-                        <p class="text-xs font-medium text-slate-400 flex items-center gap-1"><i class="fa-solid fa-rotate text-indigo-500"></i> 터치해서 영영 설명 & 한글 뜻 확인</p>
+                        <p class="text-xs font-medium text-slate-400 flex items-center gap-1"><i class="fa-solid fa-rotate text-indigo-500"></i> 터치해서 영영 설명 & 상세 우리말 해석 확인</p>
                     </div>
-                    <!-- 뒷면 (영영 설명 & 한글 뜻/설명) -->
+                    <!-- 뒷면 -->
                     <div class="absolute inset-0 w-full h-full backface-hidden rotate-y-180 rounded-3xl p-5 flex flex-col justify-between items-center text-center bg-gradient-to-b from-indigo-50/70 to-white overflow-y-auto">
                         <div class="w-full text-right">
-                            <span class="text-[10px] text-indigo-500 font-extrabold uppercase bg-indigo-100/70 px-2 py-0.5 rounded">OED Definition</span>
+                            <span class="text-[10px] text-indigo-500 font-extrabold uppercase bg-indigo-100/70 px-2 py-0.5 rounded">OED Definition & Translation</span>
                         </div>
-                        <div class="my-auto space-y-3">
+                        <div class="my-auto space-y-3 w-full">
                             <h3 id="card-meaning" class="text-2xl font-extrabold text-slate-900">비빔밥</h3>
-                            <p id="card-def" class="text-xs sm:text-sm text-indigo-900 font-medium italic bg-white/80 p-3 rounded-2xl border border-indigo-100 shadow-sm leading-relaxed">
+                            <p id="card-def" class="text-xs sm:text-sm text-indigo-950 font-medium italic bg-white/90 p-3 rounded-2xl border border-indigo-100 shadow-sm leading-relaxed text-left">
                                 "A Korean dish consisting of rice topped with vegetables, meat, an egg, and chilli pepper paste."
                             </p>
-                            <p id="card-note" class="text-xs text-slate-600 px-2 font-medium">대표적인 한국 혼합 밥 요리</p>
+                            <div class="bg-indigo-50/80 p-3 rounded-2xl border border-indigo-100 text-left">
+                                <span class="text-[10px] font-bold text-indigo-600 block mb-1">우리말 상세 해석</span>
+                                <p id="card-note" class="text-xs text-slate-700 font-medium leading-relaxed"></p>
+                            </div>
                         </div>
-                        <p class="text-xs font-medium text-slate-400">카드를 다시 터치하면 앞면으로</p>
+                        <p class="text-xs font-medium text-slate-400 pt-1">카드를 다시 터치하면 앞면으로</p>
                     </div>
                 </div>
             </div>
@@ -100,31 +103,36 @@
             </div>
         </section>
 
-        <!-- 2. 영영 퀴즈 섹션 -->
+        <!-- 2. 영영 퀴즈 섹션 (개선됨) -->
         <section id="sec-quiz" class="hidden flex-1 flex-col justify-between my-2">
-            <div class="bg-white p-5 rounded-3xl shadow-sm border border-slate-200 mb-4">
+            <div class="bg-white p-5 rounded-3xl shadow-sm border border-slate-200 mb-3">
                 <div class="flex justify-between items-center mb-3">
                     <span class="text-xs font-bold text-indigo-600 bg-indigo-50 border border-indigo-100 px-2.5 py-1 rounded-full">OED 영영 정의</span>
-                    <span id="quiz-score" class="text-xs font-extrabold text-slate-500 bg-slate-100 px-2.5 py-1 rounded-full">점수: 0</span>
+                    <span id="quiz-score" class="text-xs font-extrabold text-slate-600 bg-slate-100 px-2.5 py-1 rounded-full">점수: 0</span>
                 </div>
-                <p id="quiz-definition" class="text-sm text-slate-700 font-medium leading-relaxed min-h-[4.5rem] flex items-center">
-                    A Korean dish of rice topped with cooked vegetables, meat, and often a raw or fried egg...
+                <p id="quiz-definition" class="text-sm text-slate-800 font-medium italic leading-relaxed min-h-[4rem] flex items-center">
+                    "A Korean dish consisting of rice topped with vegetables, meat, an egg, and chilli pepper paste."
                 </p>
             </div>
 
-            <!-- 보기 4개 -->
-            <div id="quiz-options" class="grid grid-cols-1 gap-2.5 mb-4">
+            <!-- 정답 피드백 및 상세 해석 박스 -->
+            <div id="quiz-feedback" class="hidden p-4 rounded-2xl mb-3 text-xs leading-relaxed transition-all">
+                <div class="flex items-center gap-2 font-bold text-sm mb-1" id="quiz-status-title"></div>
+                <p id="quiz-translation-text" class="text-slate-700 font-medium"></p>
+            </div>
+
+            <!-- 보기 4개 (1, 2, 3, 4 번호 포함) -->
+            <div id="quiz-options" class="grid grid-cols-1 gap-2.5 mb-3">
                 <!-- 동적 생성 -->
             </div>
 
-            <button onclick="generateQuiz()" class="w-full py-3.5 bg-slate-900 text-white font-bold rounded-2xl shadow-md hover:bg-slate-800 active:scale-95 transition flex items-center justify-center gap-2">
-                다음 문제 <i class="fa-solid fa-arrow-right text-xs"></i>
+            <button onclick="generateQuiz()" class="w-full py-3.5 bg-indigo-600 text-white font-bold rounded-2xl shadow-md hover:bg-indigo-700 active:scale-95 transition flex items-center justify-center gap-2">
+                다음 문제 풀어보기 <i class="fa-solid fa-arrow-right text-xs"></i>
             </button>
         </section>
 
         <!-- 3. 전체 단어장 섹션 -->
         <section id="sec-list" class="hidden flex-1 flex-col my-2">
-            <!-- 검색 및 카테고리 필터 -->
             <div class="space-y-2.5 mb-3">
                 <div class="relative">
                     <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-3.5 text-slate-400 text-sm"></i>
@@ -149,59 +157,147 @@
     </main>
 
     <script>
-        // OED 등재 어휘 44개 정밀 구축 데이터 (고노, 주체, 리, 언문, 당수도 5개 제외)
+        // OED 등재 어휘 44개 데이터
         const wordsData = [
             // 1. 음식 (16개)
-            { id: 101, word: "banchan", meaning: "반찬", category: "음식", emoji: "🥗", note: "밥과 함께 먹는 소형 측면 요리", def: "Small side dishes served along with cooked rice in Korean cuisine." },
-            { id: 102, word: "bibimbap", meaning: "비빔밥", category: "음식", emoji: "🍲", note: "대표적인 한국 혼합 밥 요리", def: "A Korean dish consisting of rice topped with vegetables, meat, an egg, and chilli pepper paste." },
-            { id: 103, word: "bingsu", meaning: "빙수", category: "음식", emoji: "🍧", note: "얼음을 갈아 만든 디저트", def: "A Korean shaved ice dessert with sweet toppings such as chopped fruit, condensed milk, fruit syrup, and red beans." },
-            { id: 104, word: "bulgogi", meaning: "불고기", category: "음식", emoji: "🥩", note: "양념에 재운 고기 구이", def: "A Korean dish of thin slices of beef or pork marinated and grilled or stir-fried." },
-            { id: 105, word: "chimaek", meaning: "치맥", category: "음식", emoji: "🍗🍺", note: "치킨과 맥주의 합성어", def: "Fried chicken served with beer, considered a popular evening snack in South Korea." },
-            { id: 106, word: "galbi", meaning: "갈비", category: "음식", emoji: "🍖", note: "양념한 갈비 구이 요리", def: "A Korean dish of ribs, usually beef or pork, marinated in soy sauce and cooked on a grill." },
-            { id: 107, word: "gochujang", meaning: "고추장", category: "음식", emoji: "🌶️", note: "전통 발효 고추장", def: "A savoury, sweet, and spicy fermented condiment made from red chilli powder, glutinous rice, and fermented soybeans." },
-            { id: 108, word: "japchae", meaning: "잡채", category: "음식", emoji: "🍜", note: "당면과 채소를 볶은 요리", def: "A Korean dish of glass noodles stir-fried with vegetables and savory seasonings." },
-            { id: 109, word: "kimbap", meaning: "김밥", category: "음식", emoji: "🍙", note: "김으로 밥과 재료를 말아낸 요리", def: "A Korean dish made from cooked rice and other ingredients rolled in dried sheets of laver seaweed." },
-            { id: 110, word: "kimchi", meaning: "김치", category: "음식", emoji: "🥬", note: "한국의 대표 발효 채소 요리", def: "A traditional Korean side dish of salted and fermented vegetables, such as napa cabbage and Korean radish." },
-            { id: 111, word: "makgeolli", meaning: "막걸리", category: "음식", emoji: "🥛", note: "한국의 전통 발효 탁주", def: "A traditional Korean alcoholic beverage made from rice and fermented with a starter culture." },
-            { id: 112, word: "mukbang", meaning: "먹방", category: "음식", emoji: "📺", note: "음식을 먹는 방송/영상", def: "A video, especially a livestream, that features a person eating large quantities of food while talking to the audience." },
-            { id: 113, word: "samgyeopsal", meaning: "삼겹살", category: "음식", emoji: "🥓", note: "돼지 삼겹살 구이 요리", def: "A popular Korean dish that consists of thick, fatty slices of pork belly meat grilled at the table." },
-            { id: 114, word: "soju", meaning: "소주", category: "음식", emoji: "🍶", note: "한국의 전통 증류주", def: "A clear, distilled alcoholic beverage of Korean origin." },
-            { id: 115, word: "tteokbokki", meaning: "떡볶이", category: "음식", emoji: "🍢", note: "매콤한 떡 볶음 요리", def: "A popular Korean food made from small-sized rice cakes simmered in spicy gochujang sauce." },
-            { id: 116, word: "bulgogi (dupbab)", meaning: "갈비탕 (galbitang)", category: "음식", emoji: "🍲", note: "갈비를 넣고 고아낸 탕", def: "A variety of guk, or Korean soup, made primarily from beef short ribs along with stew meat." },
+            { id: 101, word: "banchan", meaning: "반찬", category: "음식", emoji: "🥗", 
+              def: "Small side dishes served along with cooked rice in Korean cuisine.", 
+              note: "한국 요리에서 조리된 밥과 함께 제공되는 작은 반찬 요리들." },
+            { id: 102, word: "bibimbap", meaning: "비빔밥", category: "음식", emoji: "🍲", 
+              def: "A Korean dish consisting of rice topped with vegetables, meat, an egg, and chilli pepper paste.", 
+              note: "밥 위에 채소, 고기, 계란, 고추장을 얹어 구성한 한국 요리." },
+            { id: 103, word: "bingsu", meaning: "빙수", category: "음식", emoji: "🍧", 
+              def: "A Korean shaved ice dessert with sweet toppings such as chopped fruit, condensed milk, fruit syrup, and red beans.", 
+              note: "잘게 판 과일, 연유, 과일 시럽, 팥 등의 달콤한 고명을 얹은 한국의 갈은 얼음 디저트." },
+            { id: 104, word: "bulgogi", meaning: "불고기", category: "음식", emoji: "🥩", 
+              def: "A Korean dish of thin slices of beef or pork marinated and grilled or stir-fried.", 
+              note: "양념에 재운 뒤 석쇠에 굽거나 볶아낸 얇게 썬 소고기 또는 돼지고기 한국 요리." },
+            { id: 105, word: "chimaek", meaning: "치맥", category: "음식", emoji: "🍗🍺", 
+              def: "Fried chicken served with beer, considered a popular evening snack in South Korea.", 
+              note: "맥주와 함께 제공되는 프라이드치킨으로, 대한민국에서 인기 있는 야식이자 간식." },
+            { id: 106, word: "galbi", meaning: "갈비", category: "음식", emoji: "🍖", 
+              def: "A Korean dish of ribs, usually beef or pork, marinated in soy sauce and cooked on a grill.", 
+              note: "주로 소나 돼지의 갈비를 간장 양념에 재워 석쇠나 불판에 구워 먹는 한국 요리." },
+            { id: 107, word: "gochujang", meaning: "고추장", category: "음식", emoji: "🌶️", 
+              def: "A savoury, sweet, and spicy fermented condiment made from red chilli powder, glutinous rice, and fermented soybeans.", 
+              note: "붉은 고춧가루, 찹쌀, 발효된 메주(메주콩)로 만든 풍미 있고 달콤하며 매콤한 발효 조미료." },
+            { id: 108, word: "japchae", meaning: "잡채", category: "음식", emoji: "🍜", 
+              def: "A Korean dish of glass noodles stir-fried with vegetables and savory seasonings.", 
+              note: "당면을 각종 채소 및 감칠맛 나는 양념과 함께 볶아낸 한국 요리." },
+            { id: 109, word: "kimbap", meaning: "김밥", category: "음식", emoji: "🍙", 
+              def: "A Korean dish made from cooked rice and other ingredients rolled in dried sheets of laver seaweed.", 
+              note: "조리된 밥과 기타 재료들을 말린 김 한 장에 얹어 말아 만든 한국 요리." },
+            { id: 110, word: "kimchi", meaning: "김치", category: "음식", emoji: "🥬", 
+              def: "A traditional Korean side dish of salted and fermented vegetables, such as napa cabbage and Korean radish.", 
+              note: "배추, 무와 같은 채소를 절이고 발효시켜 만든 전통적인 한국의 반찬 요리." },
+            { id: 111, word: "makgeolli", meaning: "막걸리", category: "음식", emoji: "🥛", 
+              def: "A traditional Korean alcoholic beverage made from rice and fermented with a starter culture.", 
+              note: "쌀을 주재료로 하여 발효 제제(누룩)와 함께 발효시켜 만든 한국의 전통 알코올 음료." },
+            { id: 112, word: "mukbang", meaning: "먹방", category: "음식", emoji: "📺", 
+              def: "A video, especially a livestream, that features a person eating large quantities of food while talking to the audience.", 
+              note: "시청자와 대화하면서 많은 양의 음식을 먹는 모습을 담은 영상(특히 실시간 라이브 방송)." },
+            { id: 113, word: "samgyeopsal", meaning: "삼겹살", category: "음식", emoji: "🥓", 
+              def: "A popular Korean dish that consists of thick, fatty slices of pork belly meat grilled at the table.", 
+              note: "식탁에서 직접 구워 먹는 두툼하고 지방이 있는 돼지 삼겹살 부위로 구성된 인기 한국 요리." },
+            { id: 114, word: "soju", meaning: "소주", category: "음식", emoji: "🍶", 
+              def: "A clear, distilled alcoholic beverage of Korean origin.", 
+              note: "한국에서 유래한 투명한 무색의 증류 알코올 음료(증류주)." },
+            { id: 115, word: "tteokbokki", meaning: "떡볶이", category: "음식", emoji: "🍢", 
+              def: "A popular Korean food made from small-sized rice cakes simmered in spicy gochujang sauce.", 
+              note: "매콤한 고추장 소스에 작은 크기의 떡을 넣고 조려 만든 인기 한국 음식." },
+            { id: 116, word: "galbitang", meaning: "갈비탕", category: "음식", emoji: "🍲", 
+              def: "A variety of guk, or Korean soup, made primarily from beef short ribs along with stew meat.", 
+              note: "소갈비와 양지머리 고기를 주재료로 하여 끓여낸 한국의 국(탕) 요리의 한 종류." },
 
-            // 2. 문화 / 미디어 / 역사의식 (13개)
-            { id: 201, word: "chaebol", meaning: "재벌", category: "문화/미디어", emoji: "🏢", note: "대기업 집단", def: "A large family-owned business conglomerate in South Korea." },
-            { id: 202, word: "gisaeng", meaning: "기생", category: "문화/미디어", emoji: "🪕", note: "전통 예능과 예술을 담당했던 여성 예인", def: "A female entertainer in traditional Korea trained in music, poetry, and conversation." },
-            { id: 203, word: "hallyu", meaning: "한류", category: "문화/미디어", emoji: "🌊", note: "한국 대중문화의 세계적 유행 현상", def: "The increase in global popularity of South Korean culture, especially music, television, and cinema." },
-            { id: 204, word: "hanbok", meaning: "한복", category: "문화/미디어", emoji: "👘", note: "한국의 전통 의상", def: "A traditional Korean costume consisting of a long-sleeved jacket and a long full skirt or trousers." },
-            { id: 205, word: "Hangul", meaning: "한글", category: "문화/미디어", emoji: "📜", note: "한국의 고유 문자", def: "The Korean alphabetic script created in 1443 under King Sejong the Great." },
-            { id: 206, word: "K-wave", meaning: "K-웨이브", category: "문화/미디어", emoji: "✨", note: "한국 문화 트렌드 전반", def: "Another term for Hallyu; the international popularity of South Korean culture and pop industry." },
-            { id: 207, word: "K-pop", meaning: "케이팝", category: "문화/미디어", emoji: "🎤", note: "한국 대중음악", def: "Korean popular music originating from South Korea." },
-            { id: 208, word: "K-drama", meaning: "케이 드라마", category: "문화/미디어", emoji: "🎬", note: "한국의 텔레비전 드라마", def: "A television drama series in the Korean language, produced in South Korea." },
-            { id: 209, word: "manhwa", meaning: "만화", category: "문화/미디어", emoji: "📚", note: "한국 출판 만화", def: "A genre of Korean comic books and print cartoons." },
-            { id: 210, word: "pansori", meaning: "판소리", category: "문화/미디어", emoji: "🥁", note: "전통 소리 및 서사 예술", def: "A Korean genre of musical storytelling performed by a singer and a drummer." },
-            { id: 211, word: "sijo", meaning: "시조", category: "문화/미디어", emoji: "🖋️", note: "전통 시가 양식", def: "A traditional Korean poetic form consisting of three lines." },
-            { id: 212, word: "webtoon", meaning: "웹툰", category: "문화/미디어", emoji: "📱", note: "디지털 모바일 만화", def: "A type of digital comic designed to be read on computers and smartphones." },
-            { id: 213, word: "yangban", meaning: "양반", category: "문화/미디어", emoji: "👑", note: "조선 시대 지배 계층", def: "The traditional ruling class or gentry of dynastic Korea during the Joseon dynasty." },
+            // 2. 문화 / 미디어 / 역사 (13개)
+            { id: 201, word: "chaebol", meaning: "재벌", category: "문화/미디어", emoji: "🏢", 
+              def: "A large family-owned business conglomerate in South Korea.", 
+              note: "대한민국에서 가족이나 총수 일가가 소유하고 경영하는 대규모 기업 집단(대기업)." },
+            { id: 202, word: "gisaeng", meaning: "기생", category: "문화/미디어", emoji: "🪕", 
+              def: "A female entertainer in traditional Korea trained in music, poetry, and conversation.", 
+              note: "음악, 시, 교양 있는 대화술 등을 교육받았던 전통 한국의 여성 예능인." },
+            { id: 203, word: "hallyu", meaning: "한류", category: "문화/미디어", emoji: "🌊", 
+              def: "The increase in global popularity of South Korean culture, especially music, television, and cinema.", 
+              note: "특히 음악, 텔레비전, 영화를 중심으로 한 한국 대중문화의 세계적인 인기도 상승 현상." },
+            { id: 204, word: "hanbok", meaning: "한복", category: "문화/미디어", emoji: "👘", 
+              def: "A traditional Korean costume consisting of a long-sleeved jacket and a long full skirt or trousers.", 
+              note: "긴 소매가 달린 저고리와 풍성한 긴 치마 또는 바지로 구성된 한국의 전통 의상." },
+            { id: 205, word: "Hangul", meaning: "한글", category: "문화/미디어", emoji: "📜", 
+              def: "The Korean alphabetic script created in 1443 under King Sejong the Great.", 
+              note: "1443년 세종대왕의 주도로 창제된 한국의 자음/모음 문자 체계." },
+            { id: 206, word: "K-wave", meaning: "K-웨이브", category: "문화/미디어", emoji: "✨", 
+              def: "Another term for Hallyu; the international popularity of South Korean culture and pop industry.", 
+              note: "'한류'의 다른 표현. 한국의 문화 및 대중산업이 국제적으로 누리는 세계적 유행 현상." },
+            { id: 207, word: "K-pop", meaning: "케이팝", category: "문화/미디어", emoji: "🎤", 
+              def: "Korean popular music originating from South Korea.", 
+              note: "대한민국에서 유래하고 발전한 한국의 대중음악." },
+            { id: 208, word: "K-drama", meaning: "케이 드라마", category: "문화/미디어", emoji: "🎬", 
+              def: "A television drama series in the Korean language, produced in South Korea.", 
+              note: "대한민국에서 제작되고 한국어로 방송되는 텔레비전 드라마 시리즈." },
+            { id: 209, word: "manhwa", meaning: "만화", category: "문화/미디어", emoji: "📚", 
+              def: "A genre of Korean comic books and print cartoons.", 
+              note: "한국에서 제작된 인쇄 형태의 만화책 및 단행본 장르." },
+            { id: 210, word: "pansori", meaning: "판소리", category: "문화/미디어", emoji: "🥁", 
+              def: "A Korean genre of musical storytelling performed by a singer and a drummer.", 
+              note: "소리꾼(소리하는 사람) 한 명과 고수(북 치는 사람) 한 명이 펼치는 한국의 전통 판소리 서사 음악." },
+            { id: 211, word: "sijo", meaning: "시조", category: "문화/미디어", emoji: "🖋️", 
+              def: "A traditional Korean poetic form consisting of three lines.", 
+              note: "3행(3장)의 형식으로 이루어진 전통적인 한국 시가(詩歌) 형태." },
+            { id: 212, word: "webtoon", meaning: "웹툰", category: "문화/미디어", emoji: "📱", 
+              def: "A type of digital comic designed to be read on computers and smartphones.", 
+              note: "컴퓨터나 스마트폰 화면에서 읽을 수 있도록 제작된 디지털 만화 형식." },
+            { id: 213, word: "yangban", meaning: "양반", category: "문화/미디어", emoji: "👑", 
+              def: "The traditional ruling class or gentry of dynastic Korea during the Joseon dynasty.", 
+              note: "조선 시대 왕조 한국의 전통적인 지배 계급이자 사대부 사족 집단." },
 
             // 3. 생활 / 공간 / 무술 (7개)
-            { id: 301, word: "hap kido", meaning: "합기도", category: "생활/무술", emoji: "🥋", note: "전통 무술의 일종", def: "A modern Korean martial art characterized by joint locks, throws, and kicks." },
-            { id: 302, word: "jjimjilbang", meaning: "찜질방", category: "생활/무술", emoji: "♨️", note: "한국식 대중목욕/휴식 공간", def: "A large, gender-segregated public bathhouse in Korea equipped with saunas and hot tubs." },
-            { id: 303, word: "ondol", meaning: "온돌", category: "생활/무술", emoji: "🔥", note: "전통 바닥 난방 방식", def: "Underfloor heating in traditional Korean architecture that uses direct heat transfer from wood smoke." },
-            { id: 304, word: "pc bang", meaning: "PC방", category: "생활/무술", emoji: "💻", note: "컴퓨터 게임 이용 공간", def: "A type of LAN gaming center in South Korea where patrons can play multiplayer computer games." },
-            { id: 305, word: "taekwondo", meaning: "태권도", category: "생활/무술", emoji: "🥋", note: "한국 대표 무도", def: "A Korean martial art involving head-height kicks, jumping spinning kicks, and fast kicking techniques." },
-            { id: 306, word: "won", meaning: "원", category: "생활/무술", emoji: "₩", note: "대한민국 화폐 단위", def: "The official monetary unit of South Korea." },
-            { id: 307, word: "ssireum", meaning: "씨름", category: "생활/무술", emoji: "🤼", note: "한국 전통 격투 스포츠", def: "A traditional Korean style of wrestling in which opponents try to force each other to the ground." },
+            { id: 301, word: "hap kido", meaning: "합기도", category: "생활/무술", emoji: "🥋", 
+              def: "A modern Korean martial art characterized by joint locks, throws, and kicks.", 
+              note: "관절 꺾기, 꺾고 던지기, 발차기 기술을 특징으로 하는 현대 한국 무술." },
+            { id: 302, word: "jjimjilbang", meaning: "찜질방", category: "생활/무술", emoji: "♨️", 
+              def: "A large, gender-segregated public bathhouse in Korea equipped with saunas and hot tubs.", 
+              note: "사우나, 온탕, 휴식 공간 등을 갖춘 한국의 대형 남녀 분리 공중목욕/찜질 시설." },
+            { id: 303, word: "ondol", meaning: "온돌", category: "생활/무술", emoji: "🔥", 
+              def: "Underfloor heating in traditional Korean architecture that uses direct heat transfer from wood smoke.", 
+              note: "장작 연기의 열을 직접 전달하여 바닥을 따뜻하게 하는 한국 전통 건축의 바닥 난방 방식." },
+            { id: 304, word: "pc bang", meaning: "PC방", category: "생활/무술", emoji: "💻", 
+              def: "A type of LAN gaming center in South Korea where patrons can play multiplayer computer games.", 
+              note: "이용자들이 다자간 네트워크 컴퓨터 게임을 즐길 수 있는 한국의 랜(LAN) 기반 게임 공간." },
+            { id: 305, word: "taekwondo", meaning: "태권도", category: "생활/무술", emoji: "🥋", 
+              def: "A Korean martial art involving head-height kicks, jumping spinning kicks, and fast kicking techniques.", 
+              note: "머리 높이의 발차기, 점프 회전 차기, 신속한 발차기 기술을 위주로 하는 한국의 무도 스포츠." },
+            { id: 306, word: "won", meaning: "원", category: "생활/무술", emoji: "₩", 
+              def: "The official monetary unit of South Korea.", 
+              note: "대한민국의 공식 화폐 단위." },
+            { id: 307, word: "ssireum", meaning: "씨름", category: "생활/무술", emoji: "🤼", 
+              def: "A traditional Korean style of wrestling in which opponents try to force each other to the ground.", 
+              note: "상대방의 삿바를 잡고 겨루어 상대를 모래판에 넘러뜨리는 한국 전통 형태의 격투 레슬링." },
 
             // 4. 호칭 / 대화 / 감탄사 (8개)
-            { id: 401, word: "agassi", meaning: "아가씨", category: "호칭/대화", emoji: "👩", note: "젊은 여성에 대한 호칭", def: "A young, unmarried woman or young lady in Korean." },
-            { id: 402, word: "ajumma", meaning: "아줌마", category: "호칭/대화", emoji: "👵", note: "중년 여성에 대한 호칭", def: "A polite or respectful term for a middle-aged or older married woman." },
-            { id: 403, word: "daebak", meaning: "대박", category: "호칭/대화", emoji: "👍", note: "감탄사 (대단하다, 감격 등)", def: "An exclamation expressing awe, excitement, or enthusiasm; awesome or amazing." },
-            { id: 404, word: "fighting", meaning: "파이팅", category: "호칭/대화", emoji: "✊", note: "응원 및 격려의 추임새", def: "An exclamation of encouragement, support, or cheer; 'Go for it!' or 'You can do it!'" },
-            { id: 405, word: "Konglish", meaning: "콩글리시", category: "호칭/대화", emoji: "🗣️", note: "한국식 영어 표현", def: "A style of English used by Korean speakers, incorporating Korean grammatical or vocabulary elements." },
-            { id: 406, word: "noona", meaning: "누나", category: "호칭/대화", emoji: "🙋‍♀️", note: "남성이 연상 여성을 부르는 말", def: "A male's older sister or a respectful address for an older female friend used by males." },
-            { id: 407, word: "oppa", meaning: "오빠", category: "호칭/대화", emoji: "🙋‍♂️", note: "여성이 연상 남성을 부르는 말", def: "A female's older brother, or an affectionate address for an older male friend/boyfriend used by females." },
-            { id: 408, word: "sunbae", meaning: "선배", category: "호칭/대화", emoji: "🎓", note: "학교/직장 등의 상급자", def: "A senior colleague or mentor at school, university, or work." }
+            { id: 401, word: "agassi", meaning: "아가씨", category: "호칭/대화", emoji: "👩", 
+              def: "A young, unmarried woman or young lady in Korean.", 
+              note: "한국어로 젊은 미혼 여성 또는 젊은 숙녀를 부르거나 칭하는 말." },
+            { id: 402, word: "ajumma", meaning: "아줌마", category: "호칭/대화", emoji: "👵", 
+              def: "A polite or respectful term for a middle-aged or older married woman.", 
+              note: "중년 또는 나이가 든 기혼 여성을 칭하거나 부르는 친근하고 친숙한 표현." },
+            { id: 403, word: "daebak", meaning: "대박", category: "호칭/대화", emoji: "👍", 
+              def: "An exclamation expressing awe, excitement, or enthusiasm; awesome or amazing.", 
+              note: "경외감, 감격, 열광적인 기쁨을 나타내는 감탄사. '대단하다', '끝내준다'라는 의미." },
+            { id: 404, word: "fighting", meaning: "파이팅", category: "호칭/대화", emoji: "✊", 
+              def: "An exclamation of encouragement, support, or cheer; 'Go for it!' or 'You can do it!'", 
+              note: "격려, 응원, 사기 진작을 위해 외치는 감탄사. '힘내라!', '잘해라!'라는 의미의 추임새." },
+            { id: 405, word: "Konglish", meaning: "콩글리시", category: "호칭/대화", emoji: "🗣️", 
+              def: "A style of English used by Korean speakers, incorporating Korean grammatical or vocabulary elements.", 
+              note: "한국어 어휘나 문법적 요소가 섞여 한국인에 의해 사용되는 한국식 영어 표현 방식." },
+            { id: 406, word: "noona", meaning: "누나", category: "호칭/대화", emoji: "🙋‍♀️", 
+              def: "A male's older sister or a respectful address for an older female friend used by males.", 
+              note: "남성이 자신의 친누나나 자신보다 나이가 많은 친한 여성 친구를 친근하게 부르는 호칭." },
+            { id: 407, word: "oppa", meaning: "오빠", category: "호칭/대화", emoji: "🙋‍♂️", 
+              def: "A female's older brother, or an affectionate address for an older male friend/boyfriend used by females.", 
+              note: "여성이 자신의 친오빠나 나이가 많은 남성 친구, 혹은 남자친구를 다정하게 부르는 호칭." },
+            { id: 408, word: "sunbae", meaning: "선배", category: "호칭/대화", emoji: "🎓", 
+              def: "A senior colleague or mentor at school, university, or work.", 
+              note: "학교, 대학, 직장 등에서 자신보다 상급자이거나 경험이 많은 연상자/선배." }
         ];
 
         let currentIndex = 0;
@@ -288,6 +384,9 @@
 
         let currentQuizCorrect = null;
         function generateQuiz() {
+            const feedbackBox = document.getElementById('quiz-feedback');
+            feedbackBox.classList.add('hidden');
+
             const correctIndex = Math.floor(Math.random() * wordsData.length);
             currentQuizCorrect = wordsData[correctIndex];
 
@@ -302,12 +401,20 @@
             }
             options.sort(() => Math.random() - 0.5);
 
+            const numberIcons = ["①", "②", "③", "④"];
             const optionsContainer = document.getElementById('quiz-options');
             optionsContainer.innerHTML = '';
-            options.forEach(opt => {
+            
+            options.forEach((opt, idx) => {
                 const btn = document.createElement('button');
-                btn.className = "w-full py-3.5 px-4 bg-white border border-slate-200 rounded-2xl text-left font-bold text-slate-700 hover:bg-indigo-50 hover:border-indigo-300 active:scale-95 transition flex justify-between items-center shadow-sm";
-                btn.innerHTML = `<span>${opt.emoji} ${opt.word}</span> <span class="text-xs text-slate-400 font-normal">${opt.meaning}</span>`;
+                btn.className = "w-full py-3 px-4 bg-white border border-slate-200 rounded-2xl text-left font-bold text-slate-700 hover:bg-indigo-50 hover:border-indigo-300 active:scale-95 transition flex justify-between items-center shadow-sm";
+                btn.innerHTML = `
+                    <div class="flex items-center gap-2.5">
+                        <span class="text-indigo-600 font-extrabold text-base">${numberIcons[idx]}</span>
+                        <span class="text-slate-900">${opt.emoji} ${opt.word}</span>
+                    </div>
+                    <span class="text-xs text-slate-400 font-normal">${opt.meaning}</span>
+                `;
                 btn.onclick = () => checkQuizAnswer(opt, btn);
                 optionsContainer.appendChild(btn);
             });
@@ -318,12 +425,31 @@
             for (let btn of optionsBtns) {
                 btn.disabled = true;
             }
+
+            const feedbackBox = document.getElementById('quiz-feedback');
+            const statusTitle = document.getElementById('quiz-status-title');
+            const translationText = document.getElementById('quiz-translation-text');
+            feedbackBox.classList.remove('hidden');
+
             if (selected.id === currentQuizCorrect.id) {
-                element.className = "w-full py-3.5 px-4 bg-emerald-500 text-white font-bold rounded-2xl text-left transition flex justify-between items-center shadow-md";
+                element.className = "w-full py-3 px-4 bg-emerald-500 text-white font-bold rounded-2xl text-left transition flex justify-between items-center shadow-md";
+                feedbackBox.className = "p-4 rounded-2xl mb-3 text-xs leading-relaxed transition-all bg-emerald-50 border border-emerald-200 text-emerald-900";
+                statusTitle.innerHTML = `<i class="fa-solid fa-circle-check text-emerald-600 text-lg"></i> 정답입니다! (+10점)`;
                 quizScore += 10;
             } else {
-                element.className = "w-full py-3.5 px-4 bg-rose-500 text-white font-bold rounded-2xl text-left transition flex justify-between items-center shadow-md";
+                element.className = "w-full py-3 px-4 bg-rose-500 text-white font-bold rounded-2xl text-left transition flex justify-between items-center shadow-md";
+                feedbackBox.className = "p-4 rounded-2xl mb-3 text-xs leading-relaxed transition-all bg-rose-50 border border-rose-200 text-rose-900";
+                statusTitle.innerHTML = `<i class="fa-solid fa-circle-xmark text-rose-600 text-lg"></i> 오답입니다! 정답: ${currentQuizCorrect.word} (${currentQuizCorrect.meaning})`;
+                
+                // 정답 버튼 초록색으로 표시
+                for (let btn of optionsBtns) {
+                    if (btn.innerText.includes(currentQuizCorrect.word)) {
+                        btn.className = "w-full py-3 px-4 bg-emerald-100 border-2 border-emerald-500 text-emerald-900 font-bold rounded-2xl text-left transition flex justify-between items-center shadow-sm";
+                    }
+                }
             }
+
+            translationText.innerHTML = `<strong>💡 영영 정의 우리말 풀이:</strong><br>${currentQuizCorrect.note}`;
             document.getElementById('quiz-score').innerText = `점수: ${quizScore}`;
         }
 
@@ -346,7 +472,7 @@
 
             const filtered = wordsData.filter(w => {
                 const matchCat = currentCategory === 'ALL' || w.category === currentCategory;
-                const matchQuery = w.word.toLowerCase().includes(query) || w.meaning.includes(query);
+                const matchQuery = w.word.toLowerCase().includes(query) || w.meaning.includes(query) || w.note.includes(query);
                 return matchCat && matchQuery;
             });
 
@@ -355,14 +481,14 @@
                 const item = document.createElement('div');
                 item.className = "bg-white p-3.5 rounded-2xl border border-slate-200/80 flex items-center justify-between shadow-sm hover:border-indigo-200 transition";
                 item.innerHTML = `
-                    <div>
+                    <div class="pr-2">
                         <div class="flex items-center gap-2">
                             <span class="font-bold text-slate-800 text-base">${w.emoji} ${w.word}</span>
                             <span class="text-[10px] font-extrabold text-indigo-600 bg-indigo-50 border border-indigo-100 px-1.5 py-0.5 rounded-md">${w.category}</span>
                         </div>
-                        <p class="text-xs text-slate-500 mt-0.5 font-medium">${w.meaning} - <span class="text-slate-400 font-normal">${w.note}</span></p>
+                        <p class="text-xs text-slate-600 mt-1 font-medium leading-normal">${w.note}</p>
                     </div>
-                    <button onclick="toggleBookmark(${w.id})" class="text-lg p-2 ${isBookmarked ? 'text-amber-500' : 'text-slate-300'} hover:text-amber-500 transition">
+                    <button onclick="toggleBookmark(${w.id})" class="text-lg p-2 ${isBookmarked ? 'text-amber-500' : 'text-slate-300'} hover:text-amber-500 transition flex-shrink-0">
                         <i class="fa-solid fa-star"></i>
                     </button>
                 `;
