@@ -170,7 +170,7 @@
         }
 
         .card-english-desc {
-            font-size: 1.1rem;
+            font-size: 1.05rem;
             color: #374151;
             line-height: 1.5;
             font-weight: 600;
@@ -194,9 +194,10 @@
         }
 
         .card-meaning {
-            font-size: 1.25rem;
+            font-size: 1.15rem;
             font-weight: 700;
             color: var(--accent);
+            word-break: keep-all;
         }
 
         .card-hint {
@@ -398,7 +399,7 @@
             </div>
             <div class="card-controls">
                 <button class="ctrl-btn" onclick="prevCard()">이전</button>
-                <span class="card-indicator" id="card-num">1 / 44</span>
+                <span class="card-indicator" id="card-num">1 / 39</span>
                 <button class="ctrl-btn" onclick="nextCard()">다음</button>
             </div>
         </div>
@@ -406,7 +407,7 @@
         <!-- 어휘 퀴즈 영역 -->
         <div id="tab-quiz" class="tab-content">
             <div class="quiz-header">
-                <span id="quiz-num">문제 1 / 44</span>
+                <span id="quiz-num">문제 1 / 39</span>
                 <span id="quiz-score">점수: 0</span>
             </div>
             
@@ -438,7 +439,7 @@
                     <span style="color:var(--subtext)">소요 시간</span>
                     <span id="res-time" style="font-weight:bold">0분 0초</span>
                 </div>
-                <div class="result-score-highlight" id="res-score">0 / 44</div>
+                <div class="result-score-highlight" id="res-score">0 / 39</div>
             </div>
 
             <button class="primary-btn" onclick="restartApp()">다시 학습하기</button>
@@ -447,51 +448,242 @@
 </div>
 
 <script>
+// 요청하신 풀이 그대로 반영 + 5개 제외 (총 39개 어휘)
 const data = [
-    { no: 1, word: "Kimchi", kor: "김치", desc: "Traditional Korean dish of fermented vegetables, usually napa cabbage or radish.", img: "https://images.unsplash.com/photo-1583224964978-2257b960c3d3?w=500&q=80" },
-    { no: 2, word: "Hallyu", kor: "한류", desc: "The increase in international popularity of South Korean culture (music, drama, movies).", img: "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=500&q=80" },
-    { no: 3, word: "Taekwondo", kor: "태권도", desc: "Traditional Korean martial art using hands and feet for attack and defense.", img: "https://images.unsplash.com/photo-1555597673-b21d5c935865?w=500&q=80" },
-    { no: 4, word: "Banchan", kor: "반찬", desc: "Small side dishes served along with cooked rice in Korean cuisine.", img: "https://images.unsplash.com/photo-1498654896293-37aacf113fd9?w=500&q=80" },
-    { no: 5, word: "Bulgogi", kor: "불고기", desc: "Thin slices of beef or pork marinated and grilled on a barbecue.", img: "https://images.unsplash.com/photo-1544025162-d76694265947?w=500&q=80" },
-    { no: 6, word: "Galbi", kor: "갈비", desc: "Dish of beef or pork ribs marinated and grilled.", img: "https://images.unsplash.com/photo-1529193591184-b1d58069ecdd?w=500&q=80" },
-    { no: 7, word: "Bibimbap", kor: "비빔밥", desc: "Dish of rice topped with vegetables, meat, and red chili paste, stirred together.", img: "https://images.unsplash.com/photo-1553163147-622ab57be1c7?w=500&q=80" },
-    { no: 8, word: "Japchae", kor: "잡채", desc: "Dish of stir-fried glass noodles with vegetables and meat.", img: "https://images.unsplash.com/photo-1617196034796-73dfa7b1fd56?w=500&q=80" },
-    { no: 9, word: "Gimbap", kor: "김밥", desc: "Korean dish consisting of cooked rice and ingredients rolled in dried sheets of laver.", img: "https://images.unsplash.com/photo-1563245372-f21724e3856d?w=500&q=80" },
-    { no: 10, word: "Tteokbokki", kor: "떡볶이", desc: "Popular street food made of simmered rice cakes with sweet and spicy sauce.", img: "https://images.unsplash.com/photo-1626777552726-4a6b54c97e46?w=500&q=80" },
-    { no: 11, word: "Hanbok", kor: "한복", desc: "Traditional Korean clothing consisting of a top (jeogori) and skirt/pants.", img: "https://images.unsplash.com/photo-1617802690992-15d93263d3a9?w=500&q=80" },
-    { no: 12, word: "Hanok", kor: "한옥", desc: "Traditional Korean house built with natural materials and unique architecture.", img: "https://images.unsplash.com/photo-1584467541268-b040f83be3fd?w=500&q=80" },
-    { no: 13, word: "Mukbang", kor: "먹방", desc: "Live-streamed show in which a host eats large quantities of food while interacting with viewers.", img: "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=500&q=80" },
-    { no: 14, word: "Chimaek", kor: "치맥", desc: "Combination of fried chicken and beer enjoyed as a casual meal/snack.", img: "https://images.unsplash.com/photo-1626082927389-6cd097cdc6ec?w=500&q=80" },
-    { no: 15, word: "Aegyo", kor: "애교", desc: "Cute and charming behavior or facial expressions used to show affection.", img: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=500&q=80" },
-    { no: 16, word: "Oppa", kor: "오빠", desc: "Term used by females to address an older brother or older male friend/partner.", img: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=500&q=80" },
-    { no: 17, word: "Unni", kor: "언니", desc: "Term used by females to address an older sister or older female friend.", img: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=500&q=80" },
-    { no: 18, word: "Hyung", kor: "형", desc: "Term used by males to address an older brother or older male friend.", img: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=500&q=80" },
-    { no: 19, word: "Noona", kor: "누나", desc: "Term used by males to address an older sister or older female friend.", img: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=500&q=80" },
-    { no: 20, word: "Daebak", kor: "대박", desc: "An exclamation expressing great enthusiasm, excitement, or shock (meaning 'great success').", img: "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=500&q=80" },
-    { no: 21, word: "Fighting", kor: "파이팅", desc: "An expression of encouragement and support used to wish someone good luck.", img: "https://images.unsplash.com/photo-1526676037777-05a232554f77?w=500&q=80" },
-    { no: 22, word: "K-pop", kor: "케이팝", desc: "Korean popular music incorporating various pop music styles.", img: "https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?w=500&q=80" },
-    { no: 23, word: "Trot", kor: "트롯", desc: "Traditional genre of Korean popular music known for its distinctive repetitive rhythm and vocal trills.", img: "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=500&q=80" },
-    { no: 24, word: "Pansori", kor: "판소리", desc: "Genre of musical storytelling performed by a singer and a drummer.", img: "https://images.unsplash.com/photo-1465847899084-d164df4dedc6?w=500&q=80" },
-    { no: 25, word: "Samulnori", kor: "사물놀이", desc: "Genre of traditional percussion music played on four instruments.", img: "https://images.unsplash.com/photo-1519892300165-cb5542fb47c7?w=500&q=80" },
-    { no: 26, word: "Samgyeopsal", kor: "삼겹살", desc: "Dish of pork belly grilled at the table.", img: "https://images.unsplash.com/photo-1544025162-d76694265947?w=500&q=80" },
-    { no: 27, word: "Mandu", kor: "만두", desc: "Korean dumplings filled with minced meat, tofu, and vegetables.", img: "https://images.unsplash.com/photo-1496116218417-1a781b1c416c?w=500&q=80" },
-    { no: 28, word: "Samgyetang", kor: "삼계탕", desc: "Traditional soup made with a whole young chicken stuffed with ginseng, garlic, and rice.", img: "https://images.unsplash.com/photo-1547592166-23ac45744acd?w=500&q=80" },
-    { no: 29, word: "Buldak", kor: "불닭", desc: "Dish of chicken cooked with an extremely spicy sauce.", img: "https://images.unsplash.com/photo-1562967914-608f82629710?w=500&q=80" },
-    { no: 30, word: "K-barbecue", kor: "K-바비큐", desc: "Style of cooking and dining where meat is grilled at the table.", img: "https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=500&q=80" },
-    { no: 31, word: "K-drama", kor: "K-드라마", desc: "Television drama series produced in South Korea.", img: "https://images.unsplash.com/photo-1574375927938-d5a98e8ffe85?w=500&q=80" },
-    { no: 32, word: "K-news", kor: "K-뉴스", desc: "News media and journalism originating from South Korea.", img: "https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=500&q=80" },
-    { no: 33, word: "K-beauty", kor: "K-뷰티", desc: "Korean skincare and cosmetics products and beauty techniques.", img: "https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=500&q=80" },
-    { no: 34, word: "Manhwa", kor: "만화", desc: "Korean cartoons, comic books, or webtoons.", img: "https://images.unsplash.com/photo-1534447677768-be436bb09401?w=500&q=80" },
-    { no: 35, word: "Ondol", kor: "온돌", desc: "Traditional Korean underfloor heating system.", img: "https://images.unsplash.com/photo-1513694203232-719a280e022f?w=500&q=80" },
-    { no: 36, word: "Doenjang", kor: "된장", desc: "Traditional Korean fermented soybean paste.", img: "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=500&q=80" },
-    { no: 37, word: "Gochujang", kor: "고추장", desc: "Traditional Korean fermented red chili paste.", img: "https://images.unsplash.com/photo-1584270354949-c26b0d5b4a0c?w=500&q=80" },
-    { no: 38, word: "Ssamjang", kor: "쌈장", desc: "Thick, spicy paste used as a dipping sauce for wraps in Korean barbecue.", img: "https://images.unsplash.com/photo-1541544741938-0af808871cc0?w=500&q=80" },
-    { no: 39, word: "Gayageum", kor: "가야금", desc: "Traditional Korean 12-string plucked zither.", img: "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=500&q=80" },
-    { no: 40, word: "Geomunggo", kor: "거문고", desc: "Traditional Korean 6-string plucked zither.", img: "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=500&q=80" },
-    { no: 41, word: "Haegeum", kor: "해금", desc: "Traditional Korean two-stringed vertical bowed fiddle.", img: "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=500&q=80" },
-    { no: 42, word: "Makgeolli", kor: "막걸리", desc: "Traditional Korean milky, sweet, and lightly sparkling rice wine.", img: "https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?w=500&q=80" },
-    { no: 43, word: "Soju", kor: "소주", desc: "Clear, distilled alcoholic beverage popular in South Korea.", img: "https://images.unsplash.com/photo-1563227812-0ea4c22e6cc8?w=500&q=80" },
-    { no: 44, word: "Anju", kor: "안주", desc: "Food or snacks served and consumed with alcoholic drinks.", img: "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=500&q=80" }
+    { 
+        word: "kimchi", 
+        kor: "김치", 
+        desc: "A traditional Korean dish made by fermenting vegetables with red pepper powder and other seasonings.", 
+        img: "https://images.unsplash.com/photo-1583224964978-2257b960c3d3?w=500&q=80" 
+    },
+    { 
+        word: "makkoli", 
+        kor: "막걸리", 
+        desc: "A traditional Korean rice wine with a milky appearance and a slightly sweet taste.", 
+        img: "https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?w=500&q=80" 
+    },
+    { 
+        word: "taekwondo", 
+        kor: "태권도", 
+        desc: "A Korean martial art that is famous for its powerful kicking techniques.", 
+        img: "https://images.unsplash.com/photo-1555597673-b21d5c935865?w=500&q=80" 
+    },
+    { 
+        word: "ondol", 
+        kor: "온돌", 
+        desc: "A traditional Korean floor-heating system that keeps rooms warm.", 
+        img: "https://images.unsplash.com/photo-1513694203232-719a280e022f?w=500&q=80" 
+    },
+    { 
+        word: "bibimbap", 
+        kor: "비빔밥", 
+        desc: "A Korean rice dish mixed with vegetables, meat, egg, and gochujang.", 
+        img: "https://images.unsplash.com/photo-1553163147-622ab57be1c7?w=500&q=80" 
+    },
+    { 
+        word: "soju", 
+        kor: "소주", 
+        desc: "A clear Korean alcoholic drink usually made from rice or other grains.", 
+        img: "https://images.unsplash.com/photo-1563227812-0ea4c22e6cc8?w=500&q=80" 
+    },
+    { 
+        word: "webtoon", 
+        kor: "웹툰", 
+        desc: "A digital comic designed mainly to be read on smartphones or computers.", 
+        img: "https://images.unsplash.com/photo-1534447677768-be436bb09401?w=500&q=80" 
+    },
+    { 
+        word: "K-pop", 
+        kor: "케이팝", 
+        desc: "Popular music from South Korea, known for its singers, dance performances, and global fans.", 
+        img: "https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?w=500&q=80" 
+    },
+    { 
+        word: "gochujang", 
+        kor: "고추장", 
+        desc: "A thick, spicy Korean paste made mainly from red chili powder, rice, and fermented soybeans.", 
+        img: "https://images.unsplash.com/photo-1584270354949-c26b0d5b4a0c?w=500&q=80" 
+    },
+    { 
+        word: "doenjang", 
+        kor: "된장", 
+        desc: "A traditional Korean paste made from fermented soybeans and used to season many dishes.", 
+        img: "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=500&q=80" 
+    },
+    { 
+        word: "aegyo", 
+        kor: "애교", 
+        desc: "Cute behavior or a charming way of speaking used to show affection.", 
+        img: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=500&q=80" 
+    },
+    { 
+        word: "banchan", 
+        kor: "반찬", 
+        desc: "Small side dishes served with rice as part of a Korean meal.", 
+        img: "https://images.unsplash.com/photo-1498654896293-37aacf113fd9?w=500&q=80" 
+    },
+    { 
+        word: "bulgogi", 
+        kor: "불고기", 
+        desc: "A Korean dish of thinly sliced meat that is marinated and then grilled or cooked.", 
+        img: "https://images.unsplash.com/photo-1544025162-d76694265947?w=500&q=80" 
+    },
+    { 
+        word: "chimaek", 
+        kor: "치맥", 
+        desc: "A popular Korean combination of fried chicken and beer.", 
+        img: "https://images.unsplash.com/photo-1626082927389-6cd097cdc6ec?w=500&q=80" 
+    },
+    { 
+        word: "daebak", 
+        kor: "대박", 
+        desc: "A Korean expression used when something is surprising, impressive, or very successful.", 
+        img: "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=500&q=80" 
+    },
+    { 
+        word: "fighting", 
+        kor: "파이팅", 
+        desc: "A Korean expression used to encourage someone and wish them success.", 
+        img: "https://images.unsplash.com/photo-1526676037777-05a232554f77?w=500&q=80" 
+    },
+    { 
+        word: "galbi", 
+        kor: "갈비", 
+        desc: "A Korean dish made from marinated beef or pork ribs, usually grilled.", 
+        img: "https://images.unsplash.com/photo-1529193591184-b1d58069ecdd?w=500&q=80" 
+    },
+    { 
+        word: "hallyu", 
+        kor: "한류", 
+        desc: "The worldwide popularity of South Korean culture, including music, television, film, and food.", 
+        img: "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=500&q=80" 
+    },
+    { 
+        word: "hanbok", 
+        kor: "한복", 
+        desc: "Traditional Korean clothing, often worn on holidays, weddings, and other special occasions.", 
+        img: "https://images.unsplash.com/photo-1617802690992-15d93263d3a9?w=500&q=80" 
+    },
+    { 
+        word: "japchae", 
+        kor: "잡채", 
+        desc: "A Korean dish of glass noodles stir-fried with vegetables and sometimes meat.", 
+        img: "https://images.unsplash.com/photo-1617196034796-73dfa7b1fd56?w=500&q=80" 
+    },
+    { 
+        word: "K-drama", 
+        kor: "케이드라마", 
+        desc: "A television drama made in South Korea, often watched by audiences around the world.", 
+        img: "https://images.unsplash.com/photo-1574375927938-d5a98e8ffe85?w=500&q=80" 
+    },
+    { 
+        word: "kimbap", 
+        kor: "김밥", 
+        desc: "A Korean dish of rice and other ingredients rolled in dried seaweed and cut into pieces.", 
+        img: "https://images.unsplash.com/photo-1563245372-f21724e3856d?w=500&q=80" 
+    },
+    { 
+        word: "manhwa", 
+        kor: "만화", 
+        desc: "A Korean comic book or a style of comics created in Korea.", 
+        img: "https://images.unsplash.com/photo-1534447677768-be436bb09401?w=500&q=80" 
+    },
+    { 
+        word: "mukbang", 
+        kor: "먹방", 
+        desc: "An online video or broadcast in which a person eats food while talking to viewers.", 
+        img: "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=500&q=80" 
+    },
+    { 
+        word: "noona", 
+        kor: "누나", 
+        desc: "A Korean word used by a male to address an older sister or an older female friend.", 
+        img: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=500&q=80" 
+    },
+    { 
+        word: "oppa", 
+        kor: "오빠", 
+        desc: "A Korean word used by a female to address an older brother or an older male friend.", 
+        img: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=500&q=80" 
+    },
+    { 
+        word: "samgyeopsal", 
+        kor: "삼겹살", 
+        desc: "A Korean dish of thick slices of pork belly, usually grilled at the table.", 
+        img: "https://images.unsplash.com/photo-1544025162-d76694265947?w=500&q=80" 
+    },
+    { 
+        word: "trot", 
+        kor: "트로트", 
+        desc: "A style of Korean popular music known for its strong rhythm and emotional singing.", 
+        img: "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=500&q=80" 
+    },
+    { 
+        word: "unni", 
+        kor: "언니", 
+        desc: "A Korean word used by a female to address an older sister or an older female friend.", 
+        img: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=500&q=80" 
+    },
+    { 
+        word: "dalgona", 
+        kor: "달고나", 
+        desc: "A Korean sweet made by heating sugar and baking soda, often shaped with a simple pattern.", 
+        img: "https://images.unsplash.com/photo-1582170083198-c068451b6cd0?w=500&q=80" 
+    },
+    { 
+        word: "hyung", 
+        kor: "형", 
+        desc: "A Korean word used by a male to address an older brother or an older male friend.", 
+        img: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=500&q=80" 
+    },
+    { 
+        word: "pansori", 
+        kor: "판소리", 
+        desc: "A traditional Korean musical performance in which a singer tells a long story with a drummer.", 
+        img: "https://images.unsplash.com/photo-1465847899084-d164df4dedc6?w=500&q=80" 
+    },
+    { 
+        word: "tteokbokki", 
+        kor: "떡볶이", 
+        desc: "A popular Korean dish of rice cakes cooked in a spicy red sauce.", 
+        img: "https://images.unsplash.com/photo-1626777552726-4a6b54c97e46?w=500&q=80" 
+    },
+    { 
+        word: "bingsu", 
+        kor: "빙수", 
+        desc: "A Korean dessert made with finely shaved ice and sweet toppings such as fruit or red beans.", 
+        img: "https://images.unsplash.com/photo-1563805042-7684c019e1cb?w=500&q=80" 
+    },
+    { 
+        word: "ramyeon", 
+        kor: "라면", 
+        desc: "Korean-style instant noodles, usually cooked and served in a hot, spicy soup.", 
+        img: "https://images.unsplash.com/photo-1612929633738-8fe44f7ec841?w=500&q=80" 
+    },
+    { 
+        word: "sunbae", 
+        kor: "선배", 
+        desc: "A person with more experience or a higher position in a school, workplace, or group.", 
+        img: "https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=500&q=80" 
+    },
+    { 
+        word: "jjimjilbang", 
+        kor: "찜질방", 
+        desc: "A large Korean public bathhouse with hot rooms, saunas, and shared resting areas.", 
+        img: "https://images.unsplash.com/photo-1540555700478-4be289fbecef?w=500&q=80" 
+    },
+    { 
+        word: "ajumma", 
+        kor: "아줌마", 
+        desc: "A Korean term for a married or middle-aged woman, sometimes used as a form of address.", 
+        img: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=500&q=80" 
+    },
+    { 
+        word: "Korean barbecue", 
+        kor: "코리안 바비큐", 
+        desc: "A style of Korean meal in which meat is grilled at the table and eaten with side dishes.", 
+        img: "https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=500&q=80" 
+    }
 ];
 
 let studentId = "";
@@ -578,7 +770,7 @@ function loadQuiz() {
     document.getElementById('quiz-score').innerText = `점수: ${quizScore}`;
     document.getElementById('quiz-q-text').innerText = item.desc;
 
-    // 보기 생성 (4지선다, 단어 객체 포함)
+    // 보기 생성 (4지선다)
     let choices = [{ word: item.word, kor: item.kor }];
     while (choices.length < 4) {
         let randItem = data[Math.floor(Math.random() * data.length)];
@@ -593,13 +785,11 @@ function loadQuiz() {
     choices.forEach((choiceObj, idx) => {
         const btn = document.createElement('button');
         btn.className = 'option-btn';
-        // 선택지 양식: 번호) 영어단어 (우리말)
         btn.innerText = `${idx + 1}) ${choiceObj.word} (${choiceObj.kor})`;
         btn.onclick = () => selectQuizOption(choiceObj.word, btn);
         optionsDiv.appendChild(btn);
     });
 
-    // 해설 초기화
     document.getElementById('expl-toggle-btn').style.display = 'none';
     document.getElementById('quiz-expl').style.display = 'none';
     document.getElementById('quiz-next-btn').style.display = 'none';
@@ -627,7 +817,6 @@ function selectQuizOption(choiceWord, btnElem) {
         });
     }
 
-    // 풀이 내용 (우리말 뜻 중심)
     const explBox = document.getElementById('quiz-expl');
     explBox.innerHTML = `<strong>정답: ${item.word}</strong><br><span>우리말 뜻: ${item.kor}</span>`;
 
