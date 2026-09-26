@@ -3,298 +3,313 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>영어 어휘 및 영영풀이 평가</title>
+    <title>OED 우리말 퀴즈 앱</title>
     <style>
+        :root {
+            --primary: #1e3a8a;
+            --primary-light: #3b82f6;
+            --bg: #f8fafc;
+            --card-bg: #ffffff;
+            --text: #0f172a;
+            --correct: #16a34a;
+            --wrong: #dc2626;
+        }
+
         body {
-            font-family: '맑은 고딕', malgun gothic, sans-serif;
-            max-width: 900px;
-            margin: 0 auto;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
             padding: 20px;
-            background-color: #f4f6f9;
-            color: #333;
-            line-height: 1.6;
-        }
-        .paper-container {
-            background-color: #ffffff;
-            padding: 40px;
-            border-radius: 8px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-        }
-        h1 {
-            text-align: center;
-            color: #1a365d;
-            border-bottom: 2px solid #1a365d;
-            padding-bottom: 15px;
-        }
-        .student-info {
             display: flex;
-            gap: 20px;
-            background: #edf2f7;
-            padding: 15px;
-            border-radius: 6px;
-            margin-bottom: 30px;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
         }
-        .student-info label {
-            font-weight: bold;
-        }
-        .student-info input {
-            padding: 6px 10px;
-            border: 1px solid #cbd5e0;
-            border-radius: 4px;
-        }
-        .vocab-box {
-            background-color: #f8fafc;
-            border: 1px solid #e2e8f0;
-            padding: 20px;
-            border-radius: 6px;
-            margin-bottom: 30px;
-        }
-        .vocab-box h2 {
-            margin-top: 0;
-            font-size: 1.2rem;
-            color: #2b6cb0;
-        }
-        .vocab-item {
-            margin-bottom: 12px;
-        }
-        .vocab-item strong {
-            color: #2d3748;
-        }
-        .vocab-en {
-            margin-left: 10px;
-            color: #4a5568;
-        }
-        .vocab-ko {
-            margin-left: 10px;
-            color: #718096;
-            font-size: 0.95rem;
-        }
-        .question-card {
-            border: 1px solid #e2e8f0;
-            padding: 15px 20px;
-            margin-bottom: 20px;
-            border-radius: 6px;
-            background-color: #fff;
-        }
-        .question-title {
-            font-weight: bold;
-            font-size: 1.05rem;
-            margin-bottom: 8px;
-        }
-        .def-en {
-            font-style: italic;
-            color: #2d3748;
-            margin-bottom: 4px;
-        }
-        .def-ko {
-            color: #4a5568;
-            margin-bottom: 10px;
-        }
-        .answer-input {
-            width: 200px;
-            padding: 6px 10px;
-            border: 1px solid #cbd5e0;
-            border-radius: 4px;
-            font-size: 1rem;
-        }
-        .submit-btn {
-            display: block;
+
+        .container {
             width: 100%;
-            padding: 15px;
-            background-color: #3182ce;
-            color: white;
-            font-size: 1.2rem;
-            font-weight: bold;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            margin-top: 30px;
+            max-width: 600px;
+            background: var(--card-bg);
+            border-radius: 16px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+            padding: 24px;
+            box-sizing: border-box;
         }
-        .submit-btn:hover {
-            background-color: #2b6cb0;
-        }
-        /* 결과 캡처용 영역 */
-        #result-section {
-            display: none;
-            margin-top: 30px;
-            padding: 30px;
-            border: 3px solid #3182ce;
-            border-radius: 8px;
-            background-color: #ebf8ff;
+
+        header {
             text-align: center;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #f1f5f9;
+            padding-bottom: 16px;
         }
-        #result-section h2 {
-            color: #2b6cb0;
-            margin-top: 0;
+
+        h1 {
+            font-size: 1.4rem;
+            color: var(--primary);
+            margin: 0 0 8px 0;
         }
-        .score-display {
-            font-size: 2rem;
-            font-weight: bold;
-            color: #2c5282;
-            margin: 15px 0;
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #e2e8f0;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-top: 12px;
         }
-        .capture-notice {
-            color: #e53e3e;
-            font-weight: bold;
-            margin-top: 15px;
+
+        .progress {
+            height: 100%;
+            background: var(--primary-light);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .status {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.9rem;
+            color: #64748b;
+            margin-top: 8px;
+        }
+
+        .question-card {
+            margin-top: 20px;
+        }
+
+        .question-text {
+            font-size: 1.1rem;
+            font-weight: 600;
+            line-height: 1.5;
+            margin-bottom: 20px;
+            word-break: keep-all;
+        }
+
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .option-btn {
+            background: #f1f5f9;
+            border: 2px solid transparent;
+            border-radius: 10px;
+            padding: 14px 16px;
+            font-size: 1rem;
+            text-align: left;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-weight: 500;
+            color: var(--text);
+        }
+
+        .option-btn:hover:not(:disabled) {
+            background: #e2e8f0;
+        }
+
+        .option-btn.correct {
+            background-color: #dcfce7;
+            border-color: var(--correct);
+            color: #14532d;
+        }
+
+        .option-btn.wrong {
+            background-color: #fee2e2;
+            border-color: var(--wrong);
+            color: #7f1d1d;
+        }
+
+        .next-btn {
+            width: 100%;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            padding: 14px;
+            font-size: 1rem;
+            font-weight: 600;
+            margin-top: 20px;
+            cursor: pointer;
+            display: none;
+        }
+
+        .next-btn:hover {
+            background: #1e40af;
+        }
+
+        .result-screen {
+            text-align: center;
+            display: none;
+        }
+
+        .result-score {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin: 16px 0;
+        }
+
+        .restart-btn {
+            background: var(--primary-light);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            padding: 12px 24px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
         }
     </style>
 </head>
 <body>
 
-<div class="paper-container">
-    <h1>어휘 및 영영풀이 정기 평가 (총 44문항)</h1>
-
-    <!-- 학번 및 이름 입력란 -->
-    <div class="student-info">
-        <div>
-            <label for="student-id">학번:</label>
-            <input type="text" id="student-id" placeholder="예: 10101">
+<div class="container">
+    <header>
+        <h1>옥스포드 영어 사전(OED) 등재 우리말 퀴즈</h1>
+        <div class="progress-bar"><div class="progress" id="progress"></div></div>
+        <div class="status">
+            <span id="question-count">문제 1 / 44</span>
+            <span id="score-count">점수: 0</span>
         </div>
-        <div>
-            <label for="student-name">이름:</label>
-            <input type="text" id="student-name" placeholder="예: 홍길동">
+    </header>
+
+    <main id="quiz-screen">
+        <div class="question-card">
+            <div class="question-text" id="question">문제를 불러오는 중...</div>
+            <div class="options" id="options"></div>
         </div>
-    </div>
+        <button class="next-btn" id="next-btn" onclick="nextQuestion()">다음 문제</button>
+    </main>
 
-    <!-- 어휘 영영풀이 및 상세 우리말 참고 목록 -->
-    <div class="vocab-box">
-        <h2>[어휘 목록 및 영영풀이 참조 (Detailed Vocabulary List)]</h2>
-        <div id="vocab-list-container"></div>
-    </div>
-
-    <h2>[평가 문항 (1번 ~ 44번)]</h2>
-    <form id="quiz-form">
-        <div id="questions-container"></div>
-        <button type="button" class="submit-btn" onclick="calculateScore()">시험 제출 및 결과 확인</button>
-    </form>
-
-    <!-- 맨 마지막 성적 확인 및 캡처 영역 -->
-    <div id="result-section">
-        <h2>평가 결과 성적표</h2>
-        <p><strong>학번:</strong> <span id="res-id"></span> | <strong>이름:</strong> <span id="res-name"></span></p>
-        <div class="score-display">
-            맞힌 개수: <span id="res-count">0</span> / 44 개<br>
-            최종 점수: <span id="res-score">0</span> / 100 점
-        </div>
-        <p class="capture-notice">※ 본 화면을 캡처하여 제출해 주세요. (100점 만점 환산 기준)</p>
+    <div class="result-screen" id="result-screen">
+        <h2>퀴즈 종료!</h2>
+        <p>수고하셨습니다. 최종 점수입니다.</p>
+        <div class="result-score" id="final-score">0 / 44</div>
+        <button class="restart-btn" onclick="restartQuiz()">다시 풀기</button>
     </div>
 </div>
 
 <script>
-// 44개 단어 데이터베이스 (단어, 영영풀이, 상세 우리말 뜻)
-const vocabData = [
-    { word: "adapt", en: "To change your behavior or ideas in order to deal successfully with a new situation.", ko: "새로운 상황이나 환경에 성공적으로 적응하기 위해 행동이나 생각을 바꾸다." },
-    { word: "analyze", en: "To examine something in detail in order to understand it or discover more about it.", ko: "어떤 것을 제대로 이해하거나 더 자세히 알아내기 위해 상세히 조사하고 분석하다." },
-    { word: "benefit", en: "An advantage or helpful effect that something has on a person or a situation.", ko: "어떤 것이 사람이나 특정 상황에 가져다주는 이점, 유용한 효과, 혜택." },
-    { word: "challenge", en: "A new or difficult task that tests somebody's ability and skill.", ko: "누군가의 능력과 기술을 시험하는 새롭고 어려운 과제, 도전." },
-    { word: "diversity", en: "A range of many different things, people, or ideas being included in something.", ko: "다양한 사물, 사람, 아이디어 등이 포함되어 있는 다양성." },
-    { word: "environment", en: "The conditions that you live or work in, or the natural world around us.", ko: "사람이 살아가는 환경이나 우리를 둘러싼 자연 환경." },
-    { word: "feature", en: "A typical quality or an important part of something.", ko: "어떤 대상의 전형적인 특징, 특색 또는 중요한 부분." },
-    { word: "global", en: "Covering or affecting the whole world; international.", ko: "전 세계에 걸치거나 영향을 미치는, 세계적인, 지구 전체의." },
-    { word: "impact", en: "The powerful effect that something has on a situation or person.", ko: "어떤 상황이나 사람에게 미치는 강력한 영향, 충격." },
-    { word: "journey", en: "An act of traveling from one place to another, especially over a long distance.", ko: " 한 곳에서 다른 곳으로 이동하는 여행, 특히 먼 거리의 여정." },
-    { word: "knowledge", en: "Information, understanding, or skills that you get through experience or education.", ko: "경험이나 교육을 통해 얻게 되는 정보, 이해 및 지식." },
-    { word: "limit", en: "A point or line beyond which somebody or something cannot or is not allowed to go.", ko: "누군가나 어떤 것이 넘어갈 수 없거나 허용되지 않는 한계, 제한." },
-    { word: "method", en: "A particular way of doing something in a structured manner.", ko: "무언가를 체계적으로 수행하는 특정한 방법, 방식." },
-    { word: "notice", en: "To see, hear, or feel something and become aware of it.", ko: "무언가를 보거나 듣거나 느껴서 알아차리다, 인지하다." },
-    { word: "opportunity", en: "A time or situation that makes it possible to do something you want to do.", ko: "원하는 것을 할 수 있게 해주는 좋은 기회, 시기." },
-    { word: "perform", en: "To do a piece of work, task, or activity, or entertain people by acting or singing.", ko: "일이나 과제를 수행하다, 또는 연기나 노래 등으로 공연하다." },
-    { word: "quality", en: "How good or bad something is, or a high standard of excellence.", ko: "어떤 것의 품질, 질, 또는 우수성의 수준." },
-    { word: "reduce", en: "To make something less or smaller in size, quantity, or price.", ko: "크기, 수량, 가격 등을 더 적게 만들거나 줄이다." },
-    { word: "solution", en: "A way of solving a problem or dealing with a difficult situation.", ko: "문제나 어려운 상황을 해결하기 위한 해결책, 정답." },
-    { word: "tradition", en: "A custom or belief that has existed for a long time among a group of people.", ko: "집단 내에서 오랫동안 전해 내려오는 습속, 전통, 관습." },
-    { word: "attitude", en: "The way that you think and feel about somebody or something.", ko: "누군가나 어떤 것에 대해 생각하고 느끼는 마음가짐, 태도." },
-    { word: "community", en: "All the people who live in a particular area or share common interests.", ko: "특정 지역에 살거나 공통의 관심을 공유하는 공동체, 지역사회." },
-    { word: "effort", en: "The physical or mental energy that you need to do something.", ko: "무언가를 하기 위해 들이는 육체적, 정신적 노력, 수고." },
-    { word: "focus", en: "To give all your attention to something specific.", ko: "특정한 대상에 모든 주의를 집중하다, 초점을 맞추다." },
-    { word: "goal", en: "Something that you hope to achieve in the future.", ko: "앞으로 이루고자 목적하는 바, 목표." },
-    { word: "improve", en: "To become better than before, or to make something better.", ko: "이전보다 더 좋게 되다, 혹은 개선하다." },
-    { word: "judge", en: "To form an opinion about somebody or something after thinking carefully.", ko: "신중히 생각한 후 누군가나 어떤 것에 대해 판단을 내리다." },
-    { word: "lead", en: "To show the way to a group or to be in charge of an organization.", ko: "무리를 이끌다, 안내하다, 조직을 지도하다." },
-    { word: "manage", en: "To succeed in doing something difficult, or to control a business or system.", ko: "어려운 일을 해내다, 또는 사업이나 시스템을 관리하고 경영하다." },
-    { word: "necessary", en: "Needed in order to achieve a particular result or for a purpose.", ko: "특정한 목적이나 결과를 얻기 위해 반드시 필요한." },
-    { word: "opinion", en: "Your feelings or thoughts about somebody or something, not based on fact.", ko: "사실에만 기반한 것이 아닌, 누군가나 어떤 것에 대한 개인의 의견, 견해." },
-    { word: "patient", en: "Able to wait calmly for a long time without getting angry.", ko: "화내지 않고 오랜 시간 동안 조용히 기다릴 수 있는, 인내심 있는." },
-    { word: "reason", en: "A cause or explanation for why something happens or why someone does something.", ko: "어떤 일이 일어나거나 누군가가 행동하는 이유, 까닭." },
-    { word: "support", en: "To help somebody or agree with an idea, giving encouragement.", ko: "누군가를 돕거나 아이디어에 동의하여 지지하다, 후원하다." },
-    { word: "value", en: "How useful or important something is to someone.", ko: "어떤 것이 누군가에게 얼마나 유용하고 중요한지를 나타내는 가치." },
-    { word: "allow", en: "To let somebody do something or let something happen.", ko: "누군가가 무언가를 하도록 허락하다, 가능하게 하다." },
-    { word: "create", en: "To make something happen or exist that did not exist before.", ko: "이전에 없던 새로운 것을 만들어내다, 창조하다." },
-    { word: "discover", en: "To find information, a place, or an object for the first time.", ko: "정보, 장소, 물건 등을 처음으로 찾아내다, 발견하다." },
-    { word: "express", en: "To show a feeling, opinion, or fact by words or actions.", ko: "말이나 행동으로 감정, 의견, 사실을 표현하다." },
-    { word: "include", en: "To contain something as a part of a whole.", ko: "전체의 일부분으로 어떤 것을 포함하다." },
-    { word: "protect", en: "To keep someone or something safe from harm, damage, or illness.", ko: "해로움, 손상, 질병 등으로부터 누군가나 어떤 것을 안전하게 보호하다." },
-    { word: "respect", en: "A feeling of admiration for somebody because of their qualities or achievements.", ko: "누군가의 자질이나 업적에 대해 가지는 존경, 경의, 존중." },
-    { word: "suggest", en: "To mention an idea or plan for other people to consider.", ko: "다른 사람들이 고려해볼 수 있도록 아이디어나 계획을 제안하다." },
-    { word: "unique", en: "Being the only one of its kind, or very special and unusual.", ko: "유일무이한, 독특한, 매우 특별한." }
+const quizData = [
+    { q: "한국의 대표적인 발효 채소 음식으로 배추, 무 등에 고춧가루와 양념을 더해 만드는 요리는?", options: ["Kimchi", "Bulgogi", "K-barbecue", "Banchan"], answer: 0 },
+    { q: "한국의 대중문화(음악, 드라마, 영화 등)가 전 세계적으로 인기를 얻는 현상을 뜻하는 단어는?", options: ["Hanbok", "Hallyu", "Mukbang", "Daebak"], answer: 1 },
+    { q: "한국의 고유 무술로, 손과 발을 사용해 공격과 방어를 하며 올림픽 정식 종목인 스포츠는?", options: ["Taekwondo", "Tangsoodo", "K-pop", "Aegyo"], answer: 0 },
+    { q: "한국 식사 때 밥과 함께 제공되는 작은 접시의 여러 가지 밑반찬을 뜻하는 단어는?", options: ["Galbi", "Banchan", "Japchae", "Gimbap"], answer: 1 },
+    { q: "양념한 쇠고기를 불에 구워 먹는 대표적인 한국 전통 고기 요리는?", options: ["Samgyeopsal", "Bulgogi", "Galbi", "Chimaek"], answer: 1 },
+    { q: "소나 돼지의 갈비 부위에 양념을 하거나 생으로 구워 먹는 요리는?", options: ["Galbi", "Buldak", "Tangsuyuk", "Trot"], answer: 0 },
+    { q: "밥 위에 여러 나물과 고기, 고추장 등을 넣고 비벼 먹는 요리는?", options: ["Gimbap", "Bibimbap", "Tteokbokki", "Japchae"], answer: 1 },
+    { q: "당면과 여러 채소, 고기를 함께 볶아 만드는 한국 전통 면 요리는?", options: ["K-noodle", "Ramyeon", "Japchae", "Naengmyeon"], answer: 2 },
+    { q: "김 위에 밥과 여러 재료를 올리고 말아서 썰어 먹는 음식은?", options: ["Gimbap", "Rice cake", "Mandu", "Ssambu"], answer: 0 },
+    { q: "떡과 어묵 등을 매콤달콤한 양념에 볶아서 만드는 길거리 인기 간식은?", options: ["Tteokbokki", "Sundae", "Odeng", "Hotteok"], answer: 0 },
+    { q: "한국 전통 상의(저고리)와 하의(치마/바지)로 구성된 옷은?", options: ["Hanbok", "Hanok", "K-style", "Cheongsam"], answer: 0 },
+    { q: "한국 전통 건축 양식으로 지어진 기와집이나 초가집 등의 집을 뜻하는 단어는?", options: ["Hanok", "Ondol", "Hanbok", "Maru"], answer: 0 },
+    { q: "음식을 먹는 방송이나 영상을 뜻하는 단어로, 사전에도 그대로 등재된 표현은?", options: ["Cookbang", "Mukbang", "Meokja", "Foodcam"], answer: 1 },
+    { q: "치킨과 맥주를 함께 즐기는 한국 특유의 식문화를 일컫는 단어는?", options: ["Chimaek", "Somaek", "Chicken-beer", "Anju"], answer: 0 },
+    { q: "여성이나 남성이 상대방에게 보이는 귀여운 행동이나 표정을 뜻하는 단어는?", options: ["Aegyo", "Oppa", "Unni", "K-cute"], answer: 0 },
+    { q: "여성이 자신보다 나이가 많은 남성(친오빠나 남선배)을 부르는 호칭은?", options: ["Oppa", "Hyung", "Unni", "Noona"], answer: 0 },
+    { q: "여성이 자신보다 나이가 많은 여성(친언니나 여선배)을 부르는 호칭은?", options: ["Unni", "Noona", "Oppa", "Hyung"], answer: 0 },
+    { q: "남성이 자신보다 나이가 많은 남성(친형이나 남선배)을 부르는 호칭은?", options: ["Hyung", "Oppa", "Sunbae", "Noona"], answer: 0 },
+    { q: "남성이 자신보다 나이가 많은 여성(친누나나 여선배)을 부르는 호칭은?", options: ["Noona", "Unni", "Oppa", "Imo"], answer: 0 },
+    { q: "대단하다!, 성공했다! 등의 감탄을 나타낼 때 쓰는 한국어 표현은?", options: ["Daebak", "Fighting", "Jjang", "Hul"], answer: 0 },
+    { q: "한국에서 응원하거나 힘을 낼 때 자주 쓰는 외침(파이팅)은?", options: ["Fighting", "Aja", "Bravo", "Cheer"], answer: 0 },
+    { q: "한국의 대중음악 장르로, 전 세계적인 팬덤을 가지고 있는 음악은?", options: ["K-pop", "Trot", "Gugak", "K-rock"], answer: 0 },
+    { q: "한국의 전통 대중가요 장르 중 하나로, 독특한 꺾기 가창법이 특징인 음악은?", options: ["Trot", "Arirang", "Pansori", "K-ballad"], answer: 0 },
+    { q: "한국 전통 소리꾼이 고수의 북 장단에 맞춰 이야기와 노래를 풀어내는 전통 공연 예술은?", options: ["Pansori", "Samulnori", "Minyo", "Talchum"], answer: 0 },
+    { q: "꽹과리, 장구, 북, 징의 네 가지 악기로 연주하는 한국 전통 풍물놀이는?", options: ["Samulnori", "Nongak", "Namsadang", "Pansori"], answer: 0 },
+    { q: "얇게 썬 돼지 삼겹살 부위를 불판에 구워 먹는 한국인들이 좋아하는 구이 요리는?", options: ["Samgyeopsal", "Bossam", "Jokbal", "Daktagalbi"], answer: 0 },
+    { q: "한국식 수제 만두 피에 고기, 채소 등을 넣어 찌거나 튀겨 먹는 음식은?", options: ["Mandu", "Dimsum", "Gyoza", "Buns"], answer: 0 },
+    { q: "국물에 인삼, 대추, 찹쌀 등을 넣고 영계 한 마리를 통째로 삶아 내는 보양식은?", options: ["Samgyetang", "Galbitang", "Seolleongtang", "Dakbokkeumtang"], answer: 0 },
+    { q: "매우 매운 양념으로 조리된 닭고기 요리로, 매운 맛으로 잘 알려진 요리는?", options: ["Buldak", "Dakgalbi", "Chimaek", "Fried Chicken"], answer: 0 },
+    { q: "테이블에서 손님이 직접 고기나 채소를 구워 먹는 한국 특유의 바비큐 문화를 뜻하는 말은?", options: ["K-barbecue", "K-food", "Roast Pork", "Table Grill"], answer: 0 },
+    { q: "한국의 드라마 작품들을 통틀어 부르는 단어는?", options: ["K-drama", "K-movie", "Soap opera", "Han-drama"], answer: 0 },
+    { q: "한국 신문, 방송, 포털 사이트 등에서 전하는 대중적인 소식이나 언론 매체를 뜻하는 단어는?", options: ["K-news", "Han-news", "Press", "Media"], answer: 0 },
+    { q: "한국의 뷰티 상품, 화장품, 피부 관리 기술 등을 종합적으로 이르는 단어는?", options: ["K-beauty", "K-style", "Skin-care", "Han-beauty"], answer: 0 },
+    { q: "한국에서 제작되거나 한국 고유의 양식으로 만들어진 만화/웹툰을 이르는 단어는?", options: ["Manhwa", "Manga", "Comic", "Webtoon"], answer: 0 },
+    { q: "한국의 온돌 방바닥이나 거실 마루 등 바닥에 직접 앉는 생활 방식을 뜻하는 단어는?", options: ["Ondol", "Sedentary", "Maru", "Floor life"], answer: 0 },
+    { q: "한국의 장류 중 하나로, 콩을 발효시켜 만드는 전통 구수한 양념장은?", options: ["Doenjang", "Gochujang", "Ganjang", "Ssamjang"], answer: 0 },
+    { q: "붉은 고추와 찹쌀, 메주 등을 넣어 만드는 매콤한 한국 전통 장류는?", options: ["Gochujang", "Doenjang", "Ssamjang", "Chogochujang"], answer: 0 },
+    { q: "고기나 밥을 상추, 깻잎 등에 싸서 먹을 때 함께 넣어 먹는 양념 쌈장은?", options: ["Ssamjang", "Gochujang", "Doenjang", "Ganjang"], answer: 0 },
+    { q: "한국의 전통 현악기로, 12개의 줄을 손가락으로 뜯거나 튕겨 소리를 내는 악기는?", options: ["Gayageum", "Geomunggo", "Haegeum", "Ajaeng"], answer: 0 },
+    { q: "6개의 줄을 거문고 채로 두드리거나 뜯어 소리를 내는 한국 전통 현악기는?", options: ["Geomunggo", "Gayageum", "Piri", "Bipa"], answer: 0 },
+    { q: "활로 줄을 문질러 소리를 내며, 2개의 줄을 가진 한국 전통 찰현악기는?", options: ["Haegeum", "Gayageum", "Danso", "Daegeum"], answer: 0 },
+    { q: "한국의 전통 술 중 하나로, 쌀 등을 발효시켜 만든 탁하고 흰 빛깔의 전통주는?", options: ["Makgeolli", "Soju", "Cheongju", "Yakju"], answer: 0 },
+    { q: "한국에서 가장 흔하게 마시는 증류식 또는 희석식 투명한 알코올 음료는?", options: ["Soju", "Makgeolli", "Poktanju", "Maehwashu"], answer: 0 },
+    { q: "술을 마실 때 함께 곁들여 먹는 안주를 뜻하는 단어는?", options: ["Anju", "Banchan", "Side-dish", "Snack"], answer: 0 }
 ];
 
-// 페이지 로드 시 44개 문제 및 어휘목록 생성
-window.onload = function() {
-    const vocabContainer = document.getElementById('vocab-list-container');
-    const questionsContainer = document.getElementById('questions-container');
+let currentIdx = 0;
+let score = 0;
 
-    vocabData.forEach((item, index) => {
-        const num = index + 1;
-
-        // 1. 어휘 참조 목록 생성
-        const vDiv = document.createElement('div');
-        vDiv.className = 'vocab-item';
-        vDiv.innerHTML = `<strong>${num}. ${item.word}</strong> <span class="vocab-en">- ${item.en}</span><br><span class="vocab-ko">└ 우리말: ${item.ko}</span>`;
-        vocabContainer.appendChild(vDiv);
-
-        // 2. 44개 영영풀이 시험 문제 생성 (번호 부여)
-        const qDiv = document.createElement('div');
-        qDiv.className = 'question-card';
-        qDiv.innerHTML = `
-            <div class="question-title">문제 ${num}. 다음 영영풀이와 우리말 뜻에 해당하는 단어를 쓰시오.</div>
-            <div class="def-en"><strong>English Definition:</strong> ${item.en}</div>
-            <div class="def-ko"><strong>우리말 뜻:</strong> ${item.ko}</div>
-            <div>
-                <label for="q${num}"><strong>정답 작성:</strong> </label>
-                <input type="text" id="q${num}" class="answer-input" placeholder="영단어 입력" autocomplete="off">
-            </div>
-        `;
-        questionsContainer.appendChild(qDiv);
+function loadQuestion() {
+    const data = quizData[currentIdx];
+    document.getElementById('question').innerText = `${currentIdx + 1}. ${data.q}`;
+    document.getElementById('question-count').innerText = `문제 ${currentIdx + 1} / ${quizData.length}`;
+    document.getElementById('progress').style.width = `${((currentIdx + 1) / quizData.length) * 100}%`;
+    
+    const optionsDiv = document.getElementById('options');
+    optionsDiv.innerHTML = '';
+    
+    data.options.forEach((opt, idx) => {
+        const btn = document.createElement('button');
+        btn.className = 'option-btn';
+        btn.innerText = `${idx + 1}) ${opt}`;
+        btn.onclick = () => checkAnswer(idx);
+        optionsDiv.appendChild(btn);
     });
-};
 
-// 점수 계산 및 최종 캡처 영역 출력 함수 (100점 만점 환산)
-function calculateScore() {
-    const studentId = document.getElementById('student-id').value.trim();
-    const studentName = document.getElementById('student-name').value.trim();
+    document.getElementById('next-btn').style.display = 'none';
+}
 
-    if (!studentId || !studentName) {
-        alert("학번과 이름을 입력해 주세요.");
-        return;
-    }
-
-    let correctCount = 0;
-    const totalQuestions = vocabData.length; // 44개
-
-    vocabData.forEach((item, index) => {
-        const userAns = document.getElementById(`q${index + 1}`).value.trim().toLowerCase();
-        if (userAns === item.word.toLowerCase()) {
-            correctCount++;
+function checkAnswer(selectedIdx) {
+    const data = quizData[currentIdx];
+    const buttons = document.querySelectorAll('.option-btn');
+    
+    buttons.forEach((btn, idx) => {
+        btn.disabled = true;
+        if (idx === data.answer) {
+            btn.classList.add('correct');
+        }
+        if (idx === selectedIdx && selectedIdx !== data.answer) {
+            btn.classList.add('wrong');
         }
     });
 
-    // 100점 만점 환산 계산 (소수점 첫째자리 반올림)
-    const calculatedScore = ((correctCount / totalQuestions) * 100).toFixed(1);
+    if (selectedIdx === data.answer) {
+        score++;
+        document.getElementById('score-count').innerText = `점수: ${score}`;
+    }
 
-    // 결과 표시
-    document.getElementById('res-id').innerText = studentId;
-    document.getElementById('res-name').innerText = studentName;
-    document.getElementById('res-count').innerText = correctCount;
-    document.getElementById('res-score').innerText = calculatedScore;
-
-    const resultSection = document.getElementById('result-section');
-    resultSection.style.display = 'block';
-    
-    // 화면을 성적표 위치로 스크롤 이동
-    resultSection.scrollIntoView({ behavior: 'smooth' });
+    document.getElementById('next-btn').style.display = 'block';
 }
+
+function nextQuestion() {
+    currentIdx++;
+    if (currentIdx < quizData.length) {
+        loadQuestion();
+    } else {
+        showResult();
+    }
+}
+
+function showResult() {
+    document.getElementById('quiz-screen').style.display = 'none';
+    document.getElementById('result-screen').style.display = 'block';
+    document.getElementById('final-score').innerText = `${score} / ${quizData.length}`;
+}
+
+function restartQuiz() {
+    currentIdx = 0;
+    score = 0;
+    document.getElementById('score-count').innerText = `점수: 0`;
+    document.getElementById('quiz-screen').style.display = 'block';
+    document.getElementById('result-screen').style.display = 'none';
+    loadQuestion();
+}
+
+// 최초 실행
+loadQuestion();
 </script>
 
 </body>
