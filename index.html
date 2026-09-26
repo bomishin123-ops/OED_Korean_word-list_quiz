@@ -13,174 +13,195 @@
         .rotate-y-180 { transform: rotateY(180deg); }
     </style>
 </head>
-<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col font-sans">
+<body class="bg-slate-100 text-slate-800 min-h-screen flex flex-col font-sans select-none">
 
     <!-- 상단 헤더 -->
-    <header class="bg-indigo-600 text-white shadow-md">
-        <div class="max-w-md mx-auto px-4 py-4 flex items-center justify-between">
-            <h1 class="text-xl font-bold flex items-center gap-2">
-                <i class="fa-solid me-1 fa-book-bookmark"></i> OED 우리말 어휘장
+    <header class="bg-indigo-600 text-white shadow-md sticky top-0 z-50">
+        <div class="max-w-md mx-auto px-4 py-3.5 flex items-center justify-between">
+            <h1 class="text-lg sm:text-xl font-bold flex items-center gap-2">
+                <i class="fa-solid fa-book-bookmark text-indigo-200"></i> OED 우리말 어휘장 🇰🇷
             </h1>
-            <span class="text-xs bg-indigo-800 px-2.5 py-1 rounded-full font-medium">34 단어</span>
+            <span id="header-count" class="text-xs bg-indigo-800 text-indigo-100 px-2.5 py-1 rounded-full font-semibold">44 단어</span>
         </div>
     </header>
 
     <!-- 메인 컨텐츠 영역 -->
-    <main class="flex-1 max-w-md w-full mx-auto p-4 flex flex-col">
+    <main class="flex-1 max-w-md w-full mx-auto p-4 flex flex-col justify-between">
         
-        <!-- 네비게이션 탭 (모바일 텍스트 깨짐 방지 완벽 반영) -->
-        <nav class="grid grid-cols-3 gap-1 bg-slate-200 p-1 rounded-xl mb-4 text-center">
+        <!-- 네비게이션 탭 -->
+        <nav class="grid grid-cols-3 gap-1 bg-slate-200 p-1.5 rounded-2xl mb-4 text-center shadow-inner">
             <button id="tab-flashcard" onclick="switchTab('flashcard')" 
-                class="tab-btn py-2.5 px-1 rounded-lg text-xs sm:text-sm font-semibold transition-all duration-200 bg-white text-indigo-600 shadow-sm flex items-center justify-center gap-1.5 min-w-0">
-                <i class="fa-solid fa-clone text-sm flex-shrink-0"></i>
+                class="tab-btn py-2.5 px-1 rounded-xl text-xs sm:text-sm font-bold transition-all duration-200 bg-white text-indigo-600 shadow-sm flex items-center justify-center gap-1.5 min-w-0">
+                <i class="fa-solid fa-clone text-xs sm:text-sm flex-shrink-0"></i>
                 <span class="truncate">플래시카드</span>
             </button>
             <button id="tab-quiz" onclick="switchTab('quiz')" 
-                class="tab-btn py-2.5 px-1 rounded-lg text-xs sm:text-sm font-semibold transition-all duration-200 text-slate-600 hover:text-slate-900 flex items-center justify-center gap-1.5 min-w-0">
-                <i class="fa-solid fa-circle-question text-sm flex-shrink-0"></i>
+                class="tab-btn py-2.5 px-1 rounded-xl text-xs sm:text-sm font-bold transition-all duration-200 text-slate-600 hover:text-slate-900 flex items-center justify-center gap-1.5 min-w-0">
+                <i class="fa-solid fa-circle-question text-xs sm:text-sm flex-shrink-0"></i>
                 <span class="truncate">영영 퀴즈</span>
             </button>
             <button id="tab-list" onclick="switchTab('list')" 
-                class="tab-btn py-2.5 px-1 rounded-lg text-xs sm:text-sm font-semibold transition-all duration-200 text-slate-600 hover:text-slate-900 flex items-center justify-center gap-1.5 min-w-0">
-                <i class="fa-solid fa-list-check text-sm flex-shrink-0"></i>
+                class="tab-btn py-2.5 px-1 rounded-xl text-xs sm:text-sm font-bold transition-all duration-200 text-slate-600 hover:text-slate-900 flex items-center justify-center gap-1.5 min-w-0">
+                <i class="fa-solid fa-list-check text-xs sm:text-sm flex-shrink-0"></i>
                 <span class="truncate">전체 단어장</span>
             </button>
         </nav>
 
         <!-- 1. 플래시카드 섹션 -->
-        <section id="sec-flashcard" class="flex-1 flex flex-col justify-between">
-            <div class="flex justify-between items-center mb-2 px-1">
-                <span id="card-progress" class="text-xs font-bold text-slate-500">1 / 34</span>
-                <span id="card-category" class="text-xs font-semibold text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded">음식</span>
+        <section id="sec-flashcard" class="flex-1 flex flex-col justify-between my-2">
+            <div class="flex justify-between items-center mb-3 px-1">
+                <span id="card-progress" class="text-xs font-extrabold text-slate-400">1 / 44</span>
+                <span id="card-category" class="text-xs font-bold text-indigo-600 bg-indigo-50 border border-indigo-100 px-2.5 py-1 rounded-full">🍚 음식</span>
             </div>
 
             <!-- 카드 컨테이너 -->
-            <div class="perspective h-72 w-full cursor-pointer my-auto" onclick="flipCard()">
-                <div id="card-inner" class="relative w-full h-full duration-500 transform-style-3d shadow-lg rounded-2xl border border-slate-200 bg-white">
-                    <!-- 앞면 (영단어) -->
-                    <div class="absolute inset-0 w-full h-full backface-hidden rounded-2xl p-6 flex flex-col justify-between items-center text-center">
-                        <button onclick="event.stopPropagation(); speakCurrentWord();" class="self-end text-slate-400 hover:text-indigo-600 p-2 text-xl">
-                            <i class="fa-solid fa-volume-high"></i>
+            <div class="perspective h-96 w-full cursor-pointer my-auto" onclick="flipCard()">
+                <div id="card-inner" class="relative w-full h-full duration-500 transform-style-3d shadow-xl rounded-3xl border border-slate-200/80 bg-white">
+                    <!-- 앞면 (영단어 & 이모지) -->
+                    <div class="absolute inset-0 w-full h-full backface-hidden rounded-3xl p-6 flex flex-col justify-between items-center text-center">
+                        <button onclick="event.stopPropagation(); speakCurrentWord();" class="self-end text-slate-400 hover:text-indigo-600 active:scale-95 p-2.5 rounded-full hover:bg-slate-100 transition">
+                            <i class="fa-solid fa-volume-high text-xl"></i>
                         </button>
-                        <div>
-                            <h2 id="card-word" class="text-3xl font-extrabold text-indigo-900 mb-2">bibimbap</h2>
-                            <p id="card-pos" class="text-sm text-slate-400 italic">noun</p>
+                        <div class="my-auto">
+                            <div id="card-emoji" class="text-5xl mb-3">🍲</div>
+                            <h2 id="card-word" class="text-3xl sm:text-4xl font-extrabold text-indigo-950 mb-2 tracking-tight">bibimbap</h2>
+                            <p id="card-pos" class="text-xs font-semibold text-slate-400 uppercase tracking-widest">noun</p>
                         </div>
-                        <p class="text-xs text-slate-400"><i class="fa-solid fa-rotate text-indigo-400 mr-1"></i> 카드를 터치하여 뜻 확인</p>
+                        <p class="text-xs font-medium text-slate-400 flex items-center gap-1"><i class="fa-solid fa-rotate text-indigo-500"></i> 터치해서 영영 설명 & 한글 뜻 확인</p>
                     </div>
-                    <!-- 뒷면 (한글 뜻 & 설명) -->
-                    <div class="absolute inset-0 w-full h-full backface-hidden rotate-y-180 rounded-2xl p-6 flex flex-col justify-between items-center text-center bg-indigo-50/50">
+                    <!-- 뒷면 (영영 설명 & 한글 뜻/설명) -->
+                    <div class="absolute inset-0 w-full h-full backface-hidden rotate-y-180 rounded-3xl p-5 flex flex-col justify-between items-center text-center bg-gradient-to-b from-indigo-50/70 to-white overflow-y-auto">
                         <div class="w-full text-right">
-                            <span id="card-meaning-title" class="text-xs text-indigo-500 font-bold">의미</span>
+                            <span class="text-[10px] text-indigo-500 font-extrabold uppercase bg-indigo-100/70 px-2 py-0.5 rounded">OED Definition</span>
                         </div>
-                        <div>
-                            <h3 id="card-meaning" class="text-2xl font-bold text-slate-800 mb-3">비빔밥</h3>
-                            <p id="card-note" class="text-sm text-slate-600 px-2 leading-relaxed">대표적인 한국 혼합 밥 요리</p>
+                        <div class="my-auto space-y-3">
+                            <h3 id="card-meaning" class="text-2xl font-extrabold text-slate-900">비빔밥</h3>
+                            <p id="card-def" class="text-xs sm:text-sm text-indigo-900 font-medium italic bg-white/80 p-3 rounded-2xl border border-indigo-100 shadow-sm leading-relaxed">
+                                "A Korean dish consisting of rice topped with vegetables, meat, an egg, and chilli pepper paste."
+                            </p>
+                            <p id="card-note" class="text-xs text-slate-600 px-2 font-medium">대표적인 한국 혼합 밥 요리</p>
                         </div>
-                        <p class="text-xs text-slate-400">카드를 다시 터치하여 앞면으로</p>
+                        <p class="text-xs font-medium text-slate-400">카드를 다시 터치하면 앞면으로</p>
                     </div>
                 </div>
             </div>
 
-            <!-- 카드로직 컨트롤 -->
-            <div class="flex items-center gap-3 mt-4">
-                <button onclick="prevCard()" class="flex-1 py-3 bg-white border border-slate-200 rounded-xl shadow-sm text-slate-700 font-bold hover:bg-slate-50 active:scale-95 transition">
-                    <i class="fa-solid fa-chevron-left mr-1"></i> 이전
+            <!-- 컨트롤 버튼 -->
+            <div class="flex items-center gap-3 mt-6">
+                <button onclick="prevCard()" class="flex-1 py-3.5 bg-white border border-slate-200 rounded-2xl shadow-sm text-slate-700 font-bold hover:bg-slate-50 active:scale-95 transition flex items-center justify-center gap-1">
+                    <i class="fa-solid fa-chevron-left text-xs"></i> 이전
                 </button>
-                <button onclick="toggleBookmarkCurrent()" id="btn-bookmark" class="p-3 bg-white border border-slate-200 rounded-xl shadow-sm text-slate-400 hover:text-amber-500 transition">
+                <button onclick="toggleBookmarkCurrent()" id="btn-bookmark" class="p-3.5 bg-white border border-slate-200 rounded-2xl shadow-sm text-slate-400 hover:text-amber-500 active:scale-95 transition">
                     <i class="fa-solid fa-star text-lg"></i>
                 </button>
-                <button onclick="nextCard()" class="flex-1 py-3 bg-indigo-600 rounded-xl shadow-sm text-white font-bold hover:bg-indigo-700 active:scale-95 transition">
-                    다음 <i class="fa-solid fa-chevron-right ml-1"></i>
+                <button onclick="nextCard()" class="flex-1 py-3.5 bg-indigo-600 rounded-2xl shadow-md text-white font-bold hover:bg-indigo-700 active:scale-95 transition flex items-center justify-center gap-1">
+                    다음 <i class="fa-solid fa-chevron-right text-xs"></i>
                 </button>
             </div>
         </section>
 
         <!-- 2. 영영 퀴즈 섹션 -->
-        <section id="sec-quiz" class="hidden flex-1 flex-col justify-between">
-            <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 mb-4">
+        <section id="sec-quiz" class="hidden flex-1 flex-col justify-between my-2">
+            <div class="bg-white p-5 rounded-3xl shadow-sm border border-slate-200 mb-4">
                 <div class="flex justify-between items-center mb-3">
-                    <span class="text-xs font-bold text-indigo-600 bg-indigo-50 px-2.5 py-1 rounded-full">OED 영영 정의</span>
-                    <span id="quiz-score" class="text-xs font-extrabold text-slate-500">점수: 0</span>
+                    <span class="text-xs font-bold text-indigo-600 bg-indigo-50 border border-indigo-100 px-2.5 py-1 rounded-full">OED 영영 정의</span>
+                    <span id="quiz-score" class="text-xs font-extrabold text-slate-500 bg-slate-100 px-2.5 py-1 rounded-full">점수: 0</span>
                 </div>
-                <p id="quiz-definition" class="text-base text-slate-700 font-medium leading-relaxed min-h-[4rem] flex items-center">
+                <p id="quiz-definition" class="text-sm text-slate-700 font-medium leading-relaxed min-h-[4.5rem] flex items-center">
                     A Korean dish of rice topped with cooked vegetables, meat, and often a raw or fried egg...
                 </p>
             </div>
 
             <!-- 보기 4개 -->
             <div id="quiz-options" class="grid grid-cols-1 gap-2.5 mb-4">
-                <!-- 자바스크립트로 동적 생성 -->
+                <!-- 동적 생성 -->
             </div>
 
-            <button onclick="generateQuiz()" class="w-full py-3 bg-slate-800 text-white font-bold rounded-xl shadow hover:bg-slate-900 transition">
-                다음 문제 <i class="fa-solid fa-arrow-right ml-1"></i>
+            <button onclick="generateQuiz()" class="w-full py-3.5 bg-slate-900 text-white font-bold rounded-2xl shadow-md hover:bg-slate-800 active:scale-95 transition flex items-center justify-center gap-2">
+                다음 문제 <i class="fa-solid fa-arrow-right text-xs"></i>
             </button>
         </section>
 
         <!-- 3. 전체 단어장 섹션 -->
-        <section id="sec-list" class="hidden flex-1 flex-col">
-            <!-- 검색 및 필터 -->
-            <div class="space-y-2 mb-3">
+        <section id="sec-list" class="hidden flex-1 flex-col my-2">
+            <!-- 검색 및 카테고리 필터 -->
+            <div class="space-y-2.5 mb-3">
                 <div class="relative">
-                    <i class="fa-solid fa-magnifying-glass absolute left-3 top-3.5 text-slate-400 text-sm"></i>
-                    <input type="text" id="search-input" oninput="renderList()" placeholder="단어 또는 한글 뜻 검색..." 
-                        class="w-full pl-9 pr-4 py-2.5 bg-white border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-indigo-500 shadow-sm">
+                    <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-3.5 text-slate-400 text-sm"></i>
+                    <input type="text" id="search-input" oninput="renderList()" placeholder="영단어 또는 한글 뜻 검색..." 
+                        class="w-full pl-10 pr-4 py-2.5 bg-white border border-slate-200 rounded-2xl text-sm focus:outline-none focus:border-indigo-500 shadow-sm">
                 </div>
-                <div class="flex gap-1 overflow-x-auto pb-1 text-xs">
-                    <button onclick="filterCategory('ALL')" class="cat-filter-btn px-3 py-1.5 rounded-lg bg-indigo-600 text-white font-medium whitespace-nowrap">전체</button>
-                    <button onclick="filterCategory('음식')" class="cat-filter-btn px-3 py-1.5 rounded-lg bg-white border border-slate-200 text-slate-600 font-medium whitespace-nowrap">음식</button>
-                    <button onclick="filterCategory('문화/미디어')" class="cat-filter-btn px-3 py-1.5 rounded-lg bg-white border border-slate-200 text-slate-600 font-medium whitespace-nowrap">문화/미디어</button>
-                    <button onclick="filterCategory('생활/무술')" class="cat-filter-btn px-3 py-1.5 rounded-lg bg-white border border-slate-200 text-slate-600 font-medium whitespace-nowrap">생활/무술</button>
-                    <button onclick="filterCategory('호칭/대화')" class="cat-filter-btn px-3 py-1.5 rounded-lg bg-white border border-slate-200 text-slate-600 font-medium whitespace-nowrap">호칭/대화</button>
+                <div class="flex gap-1.5 overflow-x-auto pb-1 text-xs no-scrollbar">
+                    <button onclick="filterCategory('ALL')" class="cat-filter-btn px-3 py-1.5 rounded-xl bg-indigo-600 text-white font-bold whitespace-nowrap shadow-sm">전체</button>
+                    <button onclick="filterCategory('음식')" class="cat-filter-btn px-3 py-1.5 rounded-xl bg-white border border-slate-200 text-slate-600 font-bold whitespace-nowrap">🍚 음식</button>
+                    <button onclick="filterCategory('문화/미디어')" class="cat-filter-btn px-3 py-1.5 rounded-xl bg-white border border-slate-200 text-slate-600 font-bold whitespace-nowrap">🎬 문화/미디어</button>
+                    <button onclick="filterCategory('생활/무술')" class="cat-filter-btn px-3 py-1.5 rounded-xl bg-white border border-slate-200 text-slate-600 font-bold whitespace-nowrap">🥋 생활/무술</button>
+                    <button onclick="filterCategory('호칭/대화')" class="cat-filter-btn px-3 py-1.5 rounded-xl bg-white border border-slate-200 text-slate-600 font-bold whitespace-nowrap">💬 호칭/대화</button>
                 </div>
             </div>
 
-            <!-- 단어 리스트 -->
-            <div id="word-list" class="flex-1 overflow-y-auto space-y-2 pr-1 max-h-[calc(100vh-250px)]">
-                <!-- 자바스크립트로 동적 생성 -->
+            <!-- 단어 목록 -->
+            <div id="word-list" class="flex-1 overflow-y-auto space-y-2 pr-1 max-h-[calc(100vh-270px)]">
+                <!-- 동적 생성 -->
             </div>
         </section>
 
     </main>
 
     <script>
-        // OED 등재 어휘 34개 데이터 세트 (요청하신 5개 단어 완전 제외 및 기생 포함)
+        // OED 등재 어휘 44개 정밀 구축 데이터 (고노, 주체, 리, 언문, 당수도 5개 제외)
         const wordsData = [
-            { id: 101, word: "bibimbap", meaning: "비빔밥", category: "음식", note: "대표적인 한국 혼합 밥 요리", def: "A Korean dish consisting of rice topped with vegetables, meat, an egg, and chilli pepper paste." },
-            { id: 102, word: "bingsu", meaning: "빙수", category: "음식", note: "얼음을 갈아 만든 디저트", def: "A Korean shaved ice dessert with sweet toppings such as chopped fruit, condensed milk, fruit syrup, and red beans." },
-            { id: 103, word: "bulgogi", meaning: "불고기", category: "음식", note: "양념에 재운 고기 구이", def: "A Korean dish of thin slices of beef or pork marinated and grilled or stir-fried." },
-            { id: 104, word: "chimaek", meaning: "치맥", category: "음식", note: "치킨과 맥주의 합성어", def: "Fried chicken served with beer, considered a popular evening snack in South Korea." },
-            { id: 105, word: "galbi", meaning: "갈비", category: "음식", note: "양념한 갈비 구이 요리", def: "A Korean dish of ribs, usually beef or pork, marinated in soy sauce and cooked on a grill." },
-            { id: 106, word: "gochujang", meaning: "고추장", category: "음식", note: "전통 발효 고추장", def: "A savoury, sweet, and spicy fermented condiment made from red chilli powder, glutinous rice, and fermented soybeans." },
-            { id: 107, word: "japchae", meaning: "잡채", category: "음식", note: "당면과 채소를 볶은 요리", def: "A Korean dish of glass noodles stir-fried with vegetables and savory seasonings." },
-            { id: 108, word: "kimbap", meaning: "김밥", category: "음식", note: "김으로 밥과 재료를 말아낸 요리", def: "A Korean dish made from cooked rice and other ingredients rolled in dried sheets of laver seaweed." },
-            { id: 109, word: "kimchi", meaning: "김치", category: "음식", note: "한국의 대표 발효 채소 요리", def: "A traditional Korean side dish of salted and fermented vegetables, such as napa cabbage and Korean radish." },
-            { id: 110, word: "mukbang", meaning: "먹방", category: "음식", note: "음식을 먹는 방송/영상", def: "A video, especially a livestream, that features a person eating large quantities of food while talking to the audience." },
-            { id: 111, word: "tteokbokki", meaning: "떡볶이", category: "음식", note: "매콤한 떡 볶음 요리", def: "A popular Korean food made from small-sized rice cakes simmered in spicy gochujang sauce." },
-            { id: 201, word: "chaebol", meaning: "재벌", category: "문화/미디어", note: "대기업 집단", def: "A large family-owned business conglomerate in South Korea." },
-            { id: 202, word: "gisaeng", meaning: "기생", category: "문화/미디어", note: "전통 예능과 예술을 담당했던 여성 예인", def: "A female entertainer in traditional Korea trained in music, poetry, and conversation." },
-            { id: 203, word: "hallyu", meaning: "한류", category: "문화/미디어", note: "한국 대중문화의 세계적 유행 현상", def: "The increase in global popularity of South Korean culture, especially music, television, and cinema." },
-            { id: 204, word: "Hangul", meaning: "한글", category: "문화/미디어", note: "한국의 고유 문자", def: "The Korean alphabetic script created in 1443 under King Sejong the Great." },
-            { id: 205, word: "K-pop", meaning: "케이팝", category: "문화/미디어", note: "한국 대중음악", def: "Korean popular music originating from South Korea." },
-            { id: 206, word: "manhwa", meaning: "만화", category: "문화/미디어", note: "한국 출판 만화", def: "A genre of Korean comic books and print cartoons." },
-            { id: 207, word: "panswori", meaning: "판소리", category: "문화/미디어", note: "전통 소리 및 서사 예술", def: "A Korean genre of musical storytelling performed by a singer and a drummer." },
-            { id: 208, word: "sijo", meaning: "시조", category: "문화/미디어", note: "전통 시가 양식", def: "A traditional Korean poetic form consisting of three lines." },
-            { id: 209, word: "webtoon", meaning: "웹툰", category: "문화/미디어", note: "디지털 모바일 만화", def: "A type of digital comic designed to be read on computers and smartphones." },
-            { id: 210, word: "yangban", meaning: "양반", category: "문화/미디어", note: "조선 시대 지배 계층", def: "The traditional ruling class or gentry of dynastic Korea during the Joseon dynasty." },
-            { id: 301, word: "hap kido", meaning: "합기도", category: "생활/무술", note: "전통 무술의 일종", def: "A modern Korean martial art characterized by joint locks, throws, and kicks." },
-            { id: 302, word: "jjimjilbang", meaning: "찜질방", category: "생활/무술", note: "한국식 대중목욕/휴식 공간", def: "A large, gender-segregated public bathhouse in Korea equipped with saunas and hot tubs." },
-            { id: 303, word: "ondol", meaning: "온돌", category: "생활/무술", note: "전통 바닥 난방 방식", def: "Underfloor heating in traditional Korean architecture that uses direct heat transfer from wood smoke." },
-            { id: 304, word: "taekwondo", meaning: "태권도", category: "생활/무술", note: "한국 대표 무도", def: "A Korean martial art involving head-height kicks, jumping spinning kicks, and fast kicking techniques." },
-            { id: 305, word: "won", meaning: "원", category: "생활/무술", note: "대한민국 화폐 단위", def: "The official monetary unit of South Korea." },
-            { id: 401, word: "agassi", meaning: "아가씨", category: "호칭/대화", note: "젊은 여성에 대한 호칭", def: "A young, unmarried woman or young lady in Korean." },
-            { id: 402, word: "ajumma", meaning: "아줌마", category: "호칭/대화", note: "중년 여성에 대한 호칭", def: "A polite or respectful term for a middle-aged or older married woman." },
-            { id: 403, word: "daebak", meaning: "대박", category: "호칭/대화", note: "감탄사 (대단하다, 감격 등)", def: "An exclamation expressing awe, excitement, or enthusiasm; awesome or amazing." },
-            { id: 404, word: "fighting", meaning: "파이팅", category: "호칭/대화", note: "응원 및 격려의 추임새", def: "An exclamation of encouragement, support, or cheer; 'Go for it!' or 'You can do it!'" },
-            { id: 405, word: "Konglish", meaning: "콩글리시", category: "호칭/대화", note: "한국식 영어 표현", def: "A style of English used by Korean speakers, incorporating Korean grammatical or vocabulary elements." },
-            { id: 406, word: "noona", meaning: "누나", category: "호칭/대화", note: "남성이 연상 여성을 부르는 말", def: "A male's older sister or a respectful address for an older female friend used by males." },
-            { id: 407, word: "oppa", meaning: "오빠", category: "호칭/대화", note: "여성이 연상 남성을 부르는 말", def: "A female's older brother, or an affectionate address for an older male friend/boyfriend used by females." },
-            { id: 408, word: "sunbae", meaning: "선배", category: "호칭/대화", note: "학교/직장 등의 상급자", def: "A senior colleague or mentor at school, university, or work." }
+            // 1. 음식 (16개)
+            { id: 101, word: "banchan", meaning: "반찬", category: "음식", emoji: "🥗", note: "밥과 함께 먹는 소형 측면 요리", def: "Small side dishes served along with cooked rice in Korean cuisine." },
+            { id: 102, word: "bibimbap", meaning: "비빔밥", category: "음식", emoji: "🍲", note: "대표적인 한국 혼합 밥 요리", def: "A Korean dish consisting of rice topped with vegetables, meat, an egg, and chilli pepper paste." },
+            { id: 103, word: "bingsu", meaning: "빙수", category: "음식", emoji: "🍧", note: "얼음을 갈아 만든 디저트", def: "A Korean shaved ice dessert with sweet toppings such as chopped fruit, condensed milk, fruit syrup, and red beans." },
+            { id: 104, word: "bulgogi", meaning: "불고기", category: "음식", emoji: "🥩", note: "양념에 재운 고기 구이", def: "A Korean dish of thin slices of beef or pork marinated and grilled or stir-fried." },
+            { id: 105, word: "chimaek", meaning: "치맥", category: "음식", emoji: "🍗🍺", note: "치킨과 맥주의 합성어", def: "Fried chicken served with beer, considered a popular evening snack in South Korea." },
+            { id: 106, word: "galbi", meaning: "갈비", category: "음식", emoji: "🍖", note: "양념한 갈비 구이 요리", def: "A Korean dish of ribs, usually beef or pork, marinated in soy sauce and cooked on a grill." },
+            { id: 107, word: "gochujang", meaning: "고추장", category: "음식", emoji: "🌶️", note: "전통 발효 고추장", def: "A savoury, sweet, and spicy fermented condiment made from red chilli powder, glutinous rice, and fermented soybeans." },
+            { id: 108, word: "japchae", meaning: "잡채", category: "음식", emoji: "🍜", note: "당면과 채소를 볶은 요리", def: "A Korean dish of glass noodles stir-fried with vegetables and savory seasonings." },
+            { id: 109, word: "kimbap", meaning: "김밥", category: "음식", emoji: "🍙", note: "김으로 밥과 재료를 말아낸 요리", def: "A Korean dish made from cooked rice and other ingredients rolled in dried sheets of laver seaweed." },
+            { id: 110, word: "kimchi", meaning: "김치", category: "음식", emoji: "🥬", note: "한국의 대표 발효 채소 요리", def: "A traditional Korean side dish of salted and fermented vegetables, such as napa cabbage and Korean radish." },
+            { id: 111, word: "makgeolli", meaning: "막걸리", category: "음식", emoji: "🥛", note: "한국의 전통 발효 탁주", def: "A traditional Korean alcoholic beverage made from rice and fermented with a starter culture." },
+            { id: 112, word: "mukbang", meaning: "먹방", category: "음식", emoji: "📺", note: "음식을 먹는 방송/영상", def: "A video, especially a livestream, that features a person eating large quantities of food while talking to the audience." },
+            { id: 113, word: "samgyeopsal", meaning: "삼겹살", category: "음식", emoji: "🥓", note: "돼지 삼겹살 구이 요리", def: "A popular Korean dish that consists of thick, fatty slices of pork belly meat grilled at the table." },
+            { id: 114, word: "soju", meaning: "소주", category: "음식", emoji: "🍶", note: "한국의 전통 증류주", def: "A clear, distilled alcoholic beverage of Korean origin." },
+            { id: 115, word: "tteokbokki", meaning: "떡볶이", category: "음식", emoji: "🍢", note: "매콤한 떡 볶음 요리", def: "A popular Korean food made from small-sized rice cakes simmered in spicy gochujang sauce." },
+            { id: 116, word: "bulgogi (dupbab)", meaning: "갈비탕 (galbitang)", category: "음식", emoji: "🍲", note: "갈비를 넣고 고아낸 탕", def: "A variety of guk, or Korean soup, made primarily from beef short ribs along with stew meat." },
+
+            // 2. 문화 / 미디어 / 역사의식 (13개)
+            { id: 201, word: "chaebol", meaning: "재벌", category: "문화/미디어", emoji: "🏢", note: "대기업 집단", def: "A large family-owned business conglomerate in South Korea." },
+            { id: 202, word: "gisaeng", meaning: "기생", category: "문화/미디어", emoji: "🪕", note: "전통 예능과 예술을 담당했던 여성 예인", def: "A female entertainer in traditional Korea trained in music, poetry, and conversation." },
+            { id: 203, word: "hallyu", meaning: "한류", category: "문화/미디어", emoji: "🌊", note: "한국 대중문화의 세계적 유행 현상", def: "The increase in global popularity of South Korean culture, especially music, television, and cinema." },
+            { id: 204, word: "hanbok", meaning: "한복", category: "문화/미디어", emoji: "👘", note: "한국의 전통 의상", def: "A traditional Korean costume consisting of a long-sleeved jacket and a long full skirt or trousers." },
+            { id: 205, word: "Hangul", meaning: "한글", category: "문화/미디어", emoji: "📜", note: "한국의 고유 문자", def: "The Korean alphabetic script created in 1443 under King Sejong the Great." },
+            { id: 206, word: "K-wave", meaning: "K-웨이브", category: "문화/미디어", emoji: "✨", note: "한국 문화 트렌드 전반", def: "Another term for Hallyu; the international popularity of South Korean culture and pop industry." },
+            { id: 207, word: "K-pop", meaning: "케이팝", category: "문화/미디어", emoji: "🎤", note: "한국 대중음악", def: "Korean popular music originating from South Korea." },
+            { id: 208, word: "K-drama", meaning: "케이 드라마", category: "문화/미디어", emoji: "🎬", note: "한국의 텔레비전 드라마", def: "A television drama series in the Korean language, produced in South Korea." },
+            { id: 209, word: "manhwa", meaning: "만화", category: "문화/미디어", emoji: "📚", note: "한국 출판 만화", def: "A genre of Korean comic books and print cartoons." },
+            { id: 210, word: "pansori", meaning: "판소리", category: "문화/미디어", emoji: "🥁", note: "전통 소리 및 서사 예술", def: "A Korean genre of musical storytelling performed by a singer and a drummer." },
+            { id: 211, word: "sijo", meaning: "시조", category: "문화/미디어", emoji: "🖋️", note: "전통 시가 양식", def: "A traditional Korean poetic form consisting of three lines." },
+            { id: 212, word: "webtoon", meaning: "웹툰", category: "문화/미디어", emoji: "📱", note: "디지털 모바일 만화", def: "A type of digital comic designed to be read on computers and smartphones." },
+            { id: 213, word: "yangban", meaning: "양반", category: "문화/미디어", emoji: "👑", note: "조선 시대 지배 계층", def: "The traditional ruling class or gentry of dynastic Korea during the Joseon dynasty." },
+
+            // 3. 생활 / 공간 / 무술 (7개)
+            { id: 301, word: "hap kido", meaning: "합기도", category: "생활/무술", emoji: "🥋", note: "전통 무술의 일종", def: "A modern Korean martial art characterized by joint locks, throws, and kicks." },
+            { id: 302, word: "jjimjilbang", meaning: "찜질방", category: "생활/무술", emoji: "♨️", note: "한국식 대중목욕/휴식 공간", def: "A large, gender-segregated public bathhouse in Korea equipped with saunas and hot tubs." },
+            { id: 303, word: "ondol", meaning: "온돌", category: "생활/무술", emoji: "🔥", note: "전통 바닥 난방 방식", def: "Underfloor heating in traditional Korean architecture that uses direct heat transfer from wood smoke." },
+            { id: 304, word: "pc bang", meaning: "PC방", category: "생활/무술", emoji: "💻", note: "컴퓨터 게임 이용 공간", def: "A type of LAN gaming center in South Korea where patrons can play multiplayer computer games." },
+            { id: 305, word: "taekwondo", meaning: "태권도", category: "생활/무술", emoji: "🥋", note: "한국 대표 무도", def: "A Korean martial art involving head-height kicks, jumping spinning kicks, and fast kicking techniques." },
+            { id: 306, word: "won", meaning: "원", category: "생활/무술", emoji: "₩", note: "대한민국 화폐 단위", def: "The official monetary unit of South Korea." },
+            { id: 307, word: "ssireum", meaning: "씨름", category: "생활/무술", emoji: "🤼", note: "한국 전통 격투 스포츠", def: "A traditional Korean style of wrestling in which opponents try to force each other to the ground." },
+
+            // 4. 호칭 / 대화 / 감탄사 (8개)
+            { id: 401, word: "agassi", meaning: "아가씨", category: "호칭/대화", emoji: "👩", note: "젊은 여성에 대한 호칭", def: "A young, unmarried woman or young lady in Korean." },
+            { id: 402, word: "ajumma", meaning: "아줌마", category: "호칭/대화", emoji: "👵", note: "중년 여성에 대한 호칭", def: "A polite or respectful term for a middle-aged or older married woman." },
+            { id: 403, word: "daebak", meaning: "대박", category: "호칭/대화", emoji: "👍", note: "감탄사 (대단하다, 감격 등)", def: "An exclamation expressing awe, excitement, or enthusiasm; awesome or amazing." },
+            { id: 404, word: "fighting", meaning: "파이팅", category: "호칭/대화", emoji: "✊", note: "응원 및 격려의 추임새", def: "An exclamation of encouragement, support, or cheer; 'Go for it!' or 'You can do it!'" },
+            { id: 405, word: "Konglish", meaning: "콩글리시", category: "호칭/대화", emoji: "🗣️", note: "한국식 영어 표현", def: "A style of English used by Korean speakers, incorporating Korean grammatical or vocabulary elements." },
+            { id: 406, word: "noona", meaning: "누나", category: "호칭/대화", emoji: "🙋‍♀️", note: "남성이 연상 여성을 부르는 말", def: "A male's older sister or a respectful address for an older female friend used by males." },
+            { id: 407, word: "oppa", meaning: "오빠", category: "호칭/대화", emoji: "🙋‍♂️", note: "여성이 연상 남성을 부르는 말", def: "A female's older brother, or an affectionate address for an older male friend/boyfriend used by females." },
+            { id: 408, word: "sunbae", meaning: "선배", category: "호칭/대화", emoji: "🎓", note: "학교/직장 등의 상급자", def: "A senior colleague or mentor at school, university, or work." }
         ];
 
         let currentIndex = 0;
@@ -189,7 +210,6 @@
         let quizScore = 0;
         let currentCategory = 'ALL';
 
-        // TTS 발음 재생
         function speakCurrentWord() {
             const word = wordsData[currentIndex].word;
             const utterance = new SpeechSynthesisUtterance(word);
@@ -197,7 +217,6 @@
             window.speechSynthesis.speak(utterance);
         }
 
-        // 플래시카드 회전
         function flipCard() {
             isFlipped = !isFlipped;
             const cardInner = document.getElementById('card-inner');
@@ -208,7 +227,6 @@
             }
         }
 
-        // 플래시카드 업데이트
         function updateCard() {
             const data = wordsData[currentIndex];
             if (isFlipped) flipCard();
@@ -216,17 +234,19 @@
             setTimeout(() => {
                 document.getElementById('card-word').innerText = data.word;
                 document.getElementById('card-meaning').innerText = data.meaning;
+                document.getElementById('card-def').innerText = `"${data.def}"`;
                 document.getElementById('card-note').innerText = data.note;
-                document.getElementById('card-category').innerText = data.category;
+                document.getElementById('card-emoji').innerText = data.emoji;
+                document.getElementById('card-category').innerText = `${data.emoji} ${data.category}`;
                 document.getElementById('card-progress').innerText = `${currentIndex + 1} / ${wordsData.length}`;
                 
                 const btnBookmark = document.getElementById('btn-bookmark');
                 if (bookmarks.includes(data.id)) {
-                    btnBookmark.className = "p-3 bg-white border border-slate-200 rounded-xl shadow-sm text-amber-500 transition";
+                    btnBookmark.className = "p-3.5 bg-white border border-slate-200 rounded-2xl shadow-sm text-amber-500 active:scale-95 transition";
                 } else {
-                    btnBookmark.className = "p-3 bg-white border border-slate-200 rounded-xl shadow-sm text-slate-400 hover:text-amber-500 transition";
+                    btnBookmark.className = "p-3.5 bg-white border border-slate-200 rounded-2xl shadow-sm text-slate-400 hover:text-amber-500 active:scale-95 transition";
                 }
-            }, isFlipped ? 200 : 0);
+            }, isFlipped ? 180 : 0);
         }
 
         function nextCard() {
@@ -251,12 +271,11 @@
             renderList();
         }
 
-        // 탭 전환
         function switchTab(tabName) {
             document.querySelectorAll('.tab-btn').forEach(btn => {
-                btn.className = "tab-btn py-2.5 px-1 rounded-lg text-xs sm:text-sm font-semibold transition-all duration-200 text-slate-600 hover:text-slate-900 flex items-center justify-center gap-1.5 min-w-0";
+                btn.className = "tab-btn py-2.5 px-1 rounded-xl text-xs sm:text-sm font-bold transition-all duration-200 text-slate-600 hover:text-slate-900 flex items-center justify-center gap-1.5 min-w-0";
             });
-            document.getElementById(`tab-${tabName}`).className = "tab-btn py-2.5 px-1 rounded-lg text-xs sm:text-sm font-semibold transition-all duration-200 bg-white text-indigo-600 shadow-sm flex items-center justify-center gap-1.5 min-w-0";
+            document.getElementById(`tab-${tabName}`).className = "tab-btn py-2.5 px-1 rounded-xl text-xs sm:text-sm font-bold transition-all duration-200 bg-white text-indigo-600 shadow-sm flex items-center justify-center gap-1.5 min-w-0";
 
             document.getElementById('sec-flashcard').classList.add('hidden');
             document.getElementById('sec-quiz').classList.add('hidden');
@@ -267,7 +286,6 @@
             if (tabName === 'list') renderList();
         }
 
-        // 영영 퀴즈 생성
         let currentQuizCorrect = null;
         function generateQuiz() {
             const correctIndex = Math.floor(Math.random() * wordsData.length);
@@ -288,8 +306,8 @@
             optionsContainer.innerHTML = '';
             options.forEach(opt => {
                 const btn = document.createElement('button');
-                btn.className = "w-full py-3 px-4 bg-white border border-slate-200 rounded-xl text-left font-bold text-slate-700 hover:bg-indigo-50 hover:border-indigo-300 transition flex justify-between items-center";
-                btn.innerHTML = `<span>${opt.word}</span> <span class="text-xs text-slate-400 font-normal">${opt.meaning}</span>`;
+                btn.className = "w-full py-3.5 px-4 bg-white border border-slate-200 rounded-2xl text-left font-bold text-slate-700 hover:bg-indigo-50 hover:border-indigo-300 active:scale-95 transition flex justify-between items-center shadow-sm";
+                btn.innerHTML = `<span>${opt.emoji} ${opt.word}</span> <span class="text-xs text-slate-400 font-normal">${opt.meaning}</span>`;
                 btn.onclick = () => checkQuizAnswer(opt, btn);
                 optionsContainer.appendChild(btn);
             });
@@ -301,22 +319,21 @@
                 btn.disabled = true;
             }
             if (selected.id === currentQuizCorrect.id) {
-                element.className = "w-full py-3 px-4 bg-emerald-500 text-white font-bold rounded-xl text-left transition flex justify-between items-center";
+                element.className = "w-full py-3.5 px-4 bg-emerald-500 text-white font-bold rounded-2xl text-left transition flex justify-between items-center shadow-md";
                 quizScore += 10;
             } else {
-                element.className = "w-full py-3 px-4 bg-rose-500 text-white font-bold rounded-xl text-left transition flex justify-between items-center";
+                element.className = "w-full py-3.5 px-4 bg-rose-500 text-white font-bold rounded-2xl text-left transition flex justify-between items-center shadow-md";
             }
             document.getElementById('quiz-score').innerText = `점수: ${quizScore}`;
         }
 
-        // 전체 단어장 필터 및 렌더링
         function filterCategory(cat) {
             currentCategory = cat;
             document.querySelectorAll('.cat-filter-btn').forEach(btn => {
-                if (btn.innerText === (cat === 'ALL' ? '전체' : cat)) {
-                    btn.className = "cat-filter-btn px-3 py-1.5 rounded-lg bg-indigo-600 text-white font-medium whitespace-nowrap";
+                if (btn.innerText.includes(cat === 'ALL' ? '전체' : cat)) {
+                    btn.className = "cat-filter-btn px-3 py-1.5 rounded-xl bg-indigo-600 text-white font-bold whitespace-nowrap shadow-sm";
                 } else {
-                    btn.className = "cat-filter-btn px-3 py-1.5 rounded-lg bg-white border border-slate-200 text-slate-600 font-medium whitespace-nowrap";
+                    btn.className = "cat-filter-btn px-3 py-1.5 rounded-xl bg-white border border-slate-200 text-slate-600 font-bold whitespace-nowrap";
                 }
             });
             renderList();
@@ -336,16 +353,16 @@
             filtered.forEach(w => {
                 const isBookmarked = bookmarks.includes(w.id);
                 const item = document.createElement('div');
-                item.className = "bg-white p-3 rounded-xl border border-slate-200 flex items-center justify-between shadow-sm";
+                item.className = "bg-white p-3.5 rounded-2xl border border-slate-200/80 flex items-center justify-between shadow-sm hover:border-indigo-200 transition";
                 item.innerHTML = `
                     <div>
                         <div class="flex items-center gap-2">
-                            <span class="font-bold text-slate-800 text-base">${w.word}</span>
-                            <span class="text-[10px] font-semibold text-indigo-600 bg-indigo-50 px-1.5 py-0.5 rounded">${w.category}</span>
+                            <span class="font-bold text-slate-800 text-base">${w.emoji} ${w.word}</span>
+                            <span class="text-[10px] font-extrabold text-indigo-600 bg-indigo-50 border border-indigo-100 px-1.5 py-0.5 rounded-md">${w.category}</span>
                         </div>
-                        <p class="text-xs text-slate-500 mt-0.5">${w.meaning} - <span class="text-slate-400">${w.note}</span></p>
+                        <p class="text-xs text-slate-500 mt-0.5 font-medium">${w.meaning} - <span class="text-slate-400 font-normal">${w.note}</span></p>
                     </div>
-                    <button onclick="toggleBookmark(${w.id})" class="text-lg p-1 ${isBookmarked ? 'text-amber-500' : 'text-slate-300'} hover:text-amber-500">
+                    <button onclick="toggleBookmark(${w.id})" class="text-lg p-2 ${isBookmarked ? 'text-amber-500' : 'text-slate-300'} hover:text-amber-500 transition">
                         <i class="fa-solid fa-star"></i>
                     </button>
                 `;
@@ -364,7 +381,6 @@
             updateCard();
         }
 
-        // 초기화
         updateCard();
     </script>
 </body>
