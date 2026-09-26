@@ -278,14 +278,18 @@
 
         .quiz-explanation {
             margin-top: 14px;
-            padding: 14px;
+            padding: 14px 16px;
             border-radius: 12px;
-            font-size: 0.95rem;
+            font-size: 0.9rem;
             background: #eef2ff;
             border: 1px solid #c7d2fe;
             line-height: 1.5;
             display: none;
             color: #374151;
+        }
+
+        .quiz-explanation strong {
+            color: var(--primary);
         }
 
         .quiz-nav-btn {
@@ -391,7 +395,7 @@
 
             <div class="options" id="quiz-options"></div>
 
-            <!-- 정답 클릭 시 바로 표시되는 해설 영역 -->
+            <!-- 정답 클릭 시 바로 표시되는 해설 영역 (영영 풀이의 한국어 해석 포함) -->
             <div class="quiz-explanation" id="quiz-expl"></div>
 
             <button class="primary-btn quiz-nav-btn" id="quiz-next-btn" style="display: none;" onclick="nextQuiz()">다음 문제</button>
@@ -424,66 +428,66 @@
 </div>
 
 <script>
-// 데이터 원문 (고노, 리, 언문, 주체, 당수도 제외 총 50개)
+// 데이터 원문 (고노, 리, 언문, 주체, 당수도 제외 총 50개어휘 및 각 문장의 우리말 번역 추가)
 const rawData = [
-    { word: "Korean", kor: "한국어", desc: "The language spoken by the people of Korea and written mainly in Hangul." },
-    { word: "gisaeng", kor: "기생", desc: "A female entertainer in traditional Korea who was trained in music, dance, and poetry." },
-    { word: "Hangul", kor: "한글", desc: "The writing system used to write the Korean language, created during the Joseon Dynasty." },
-    { word: "kimchi", kor: "김치", desc: "A traditional Korean dish made by fermenting vegetables with red pepper powder and other seasonings." },
-    { word: "myon", kor: "면", desc: "A Korean word meaning noodles, used in the names of many Korean noodle dishes." },
-    { word: "makkoli", kor: "막걸리", desc: "A traditional Korean rice wine with a milky appearance and a slightly sweet taste." },
-    { word: "sijo", kor: "시조", desc: "A traditional Korean poem with a fixed form and rhythm." },
-    { word: "taekwondo", kor: "태권도", desc: "A Korean martial art that is famous for its powerful kicking techniques." },
-    { word: "won", kor: "원", desc: "The official unit of money used in South Korea." },
-    { word: "yangban", kor: "양반", desc: "A member of the highest social class during the Joseon Dynasty." },
-    { word: "ondol", kor: "온돌", desc: "A traditional Korean floor-heating system that keeps rooms warm." },
-    { word: "hapkido", kor: "합기도", desc: "A Korean martial art that uses kicks, punches, throws, and joint-locking techniques." },
-    { word: "bibimbap", kor: "비빔밥", desc: "A Korean rice dish mixed with vegetables, meat, egg, and gochujang." },
-    { word: "soju", kor: "소주", desc: "A clear Korean alcoholic drink usually made from rice or other grains." },
-    { word: "webtoon", kor: "웹툰", desc: "A digital comic designed mainly to be read on smartphones or computers." },
-    { word: "K-pop", kor: "케이팝", desc: "Popular music from South Korea, known for its singers, dance performances, and global fans." },
-    { word: "gochujang", kor: "고추장", desc: "A thick, spicy Korean paste made mainly from red chili powder, rice, and fermented soybeans." },
-    { word: "doenjang", kor: "된장", desc: "A traditional Korean paste made from fermented soybeans and used to season many dishes." },
-    { word: "chaebol", kor: "재벌", desc: "A large South Korean business group owned or controlled by one family." },
-    { word: "aegyo", kor: "애교", desc: "Cute behavior or a charming way of speaking used to show affection." },
-    { word: "banchan", kor: "반찬", desc: "Small side dishes served with rice as part of a Korean meal." },
-    { word: "bulgogi", kor: "불고기", desc: "A Korean dish of thinly sliced meat that is marinated and then grilled or cooked." },
-    { word: "chimaek", kor: "치맥", desc: "A popular Korean combination of fried chicken and beer." },
-    { word: "daebak", kor: "대박", desc: "A Korean expression used when something is surprising, impressive, or very successful." },
-    { word: "dongchimi", kor: "동치미", desc: "A type of kimchi made with radish in a cool, clear, and lightly seasoned liquid." },
-    { word: "fighting", kor: "파이팅", desc: "A Korean expression used to encourage someone and wish them success." },
-    { word: "galbi", kor: "갈비", desc: "A Korean dish made from marinated beef or pork ribs, usually grilled." },
-    { word: "hallyu", kor: "한류 (Korean wave)", desc: "The worldwide popularity of South Korean culture, including music, television, film, and food." },
-    { word: "hanbok", kor: "한복", desc: "Traditional Korean clothing, often worn on holidays, weddings, and other special occasions." },
-    { word: "japchae", kor: "잡채", desc: "A Korean dish of glass noodles stir-fried with vegetables and sometimes meat." },
-    { word: "K-", kor: "케이-", desc: "A prefix used to show that something comes from or is connected with Korea." },
-    { word: "K-drama", kor: "케이드라마", desc: "A television drama made in South Korea, often watched by audiences around the world." },
-    { word: "kimbap", kor: "김밥", desc: "A Korean dish of rice and other ingredients rolled in dried seaweed and cut into pieces." },
-    { word: "Konglish", kor: "콩글리시", desc: "English words or expressions used in Korean in ways that may differ from standard English." },
-    { word: "manhwa", kor: "만화", desc: "A Korean comic book or a style of comics created in Korea." },
-    { word: "mukbang", kor: "먹방", desc: "An online video or broadcast in which a person eats food while talking to viewers." },
-    { word: "noona", kor: "누나", desc: "A Korean word used by a male to address an older sister or an older female friend." },
-    { word: "oppa", kor: "오빠", desc: "A Korean word used by a female to address an older brother or an older male friend." },
-    { word: "PC bang", kor: "피시방", desc: "An internet café in Korea where people use computers, especially to play online games." },
-    { word: "samgyeopsal", kor: "삼겹살", desc: "A Korean dish of thick slices of pork belly, usually grilled at the table." },
-    { word: "skinship", kor: "스킨십", desc: "Physical contact used to show closeness or affection between people." },
-    { word: "trot", kor: "트로트", desc: "A style of Korean popular music known for its strong rhythm and emotional singing." },
-    { word: "unni", kor: "언니", desc: "A Korean word used by a female to address an older sister or an older female friend." },
-    { word: "dalgona", kor: "달고나", desc: "A Korean sweet made by heating sugar and baking soda, often shaped with a simple pattern." },
-    { word: "hyung", kor: "형", desc: "A Korean word used by a male to address an older brother or an older male friend." },
-    { word: "jjigae", kor: "찌개", desc: "A Korean stew made with meat, seafood, tofu, or vegetables and served hot." },
-    { word: "maknae", kor: "막내", desc: "The youngest member of a family, group, or team." },
-    { word: "noraebang", kor: "노래방", desc: "A private singing room in Korea where people sing along to recorded music." },
-    { word: "pansori", kor: "판소리", desc: "A traditional Korean musical performance in which a singer tells a long story with a drummer." },
-    { word: "tteokbokki", kor: "떡볶이", desc: "A popular Korean dish of rice cakes cooked in a spicy red sauce." },
-    { word: "haenyeo", kor: "해녀", desc: "A female diver, especially from Jeju Island, who collects seafood without using breathing equipment." },
-    { word: "bingsu", kor: "빙수", desc: "A Korean dessert made with finely shaved ice and sweet toppings such as fruit or red beans." },
-    { word: "officetel", kor: "오피스텔", desc: "A building or room in Korea designed to be used as both an office and a home." },
-    { word: "ramyeon", kor: "라면", desc: "Korean-style instant noodles, usually cooked and served in a hot, spicy soup." },
-    { word: "sunbae", kor: "선배", desc: "A person with more experience or a higher position in a school, workplace, or group." },
-    { word: "jjimjilbang", kor: "찜질방", desc: "A large Korean public bathhouse with hot rooms, saunas, and shared resting areas." },
-    { word: "ajumma", kor: "아줌마", desc: "A Korean term for a married or middle-aged woman, sometimes used as a form of address." },
-    { word: "Korean barbecue", kor: "코리안 바비큐", desc: "A style of Korean meal in which meat is grilled at the table and eaten with side dishes." }
+    { word: "Korean", kor: "한국어", desc: "The language spoken by the people of Korea and written mainly in Hangul.", trans: "한국인들이 사용하며 주로 한글로 표기되는 언어." },
+    { word: "gisaeng", kor: "기생", desc: "A female entertainer in traditional Korea who was trained in music, dance, and poetry.", trans: "음악, 무용, 시 등에 수련을 받은 전통 한국의 여성 예인." },
+    { word: "Hangul", kor: "한글", desc: "The writing system used to write the Korean language, created during the Joseon Dynasty.", trans: "조선시대에 창제된 한국어를 적는 문자 체계." },
+    { word: "kimchi", kor: "김치", desc: "A traditional Korean dish made by fermenting vegetables with red pepper powder and other seasonings.", trans: "채소를 고춧가루 및 기타 양념과 함께 발효시켜 만든 한국의 전통 음식." },
+    { word: "myon", kor: "면", desc: "A Korean word meaning noodles, used in the names of many Korean noodle dishes.", trans: "국수를 뜻하는 한국어로, 다양한 국수 요리 이름에 사용됨." },
+    { word: "makkoli", kor: "막걸리", desc: "A traditional Korean rice wine with a milky appearance and a slightly sweet taste.", trans: "탁한 빛깔과 약간 단맛이 나는 한국의 전통 쌀막걸리(탁주)." },
+    { word: "sijo", kor: "시조", desc: "A traditional Korean poem with a fixed form and rhythm.", trans: "정해진 형식과 운율을 가진 한국의 전통 시가." },
+    { word: "taekwondo", kor: "태권도", desc: "A Korean martial art that is famous for its powerful kicking techniques.", trans: "강력한 발차기 기술로 유명한 한국의 무술." },
+    { word: "won", kor: "원", desc: "The official unit of money used in South Korea.", trans: "대한민국에서 사용되는 공식 화폐 단위." },
+    { word: "yangban", kor: "양반", desc: "A member of the highest social class during the Joseon Dynasty.", trans: "조선시대 최고 사회 계급의 구성원." },
+    { word: "ondol", kor: "온돌", desc: "A traditional Korean floor-heating system that keeps rooms warm.", trans: "방을 따뜻하게 유지하는 한국의 전통 바닥 난방 방식." },
+    { word: "hapkido", kor: "합기도", desc: "A Korean martial art that uses kicks, punches, throws, and joint-locking techniques.", trans: "발차기, 주먹 지르기, 던지기, 관절 꺾기 기술 등을 사용하는 한국의 무술." },
+    { word: "bibimbap", kor: "비빔밥", desc: "A Korean rice dish mixed with vegetables, meat, egg, and gochujang.", trans: "채소, 고기, 계란, 고추장을 밥과 함께 비벼 먹는 한국의 요리." },
+    { word: "soju", kor: "소주", desc: "A clear Korean alcoholic drink usually made from rice or other grains.", trans: "주로 쌀이나 다른 곡물로 만드는 투명한 한국의 알코올 음료." },
+    { word: "webtoon", kor: "웹툰", desc: "A digital comic designed mainly to be read on smartphones or computers.", trans: "주로 스마트폰이나 컴퓨터로 보도록 제작된 디지털 만화." },
+    { word: "K-pop", kor: "케이팝", desc: "Popular music from South Korea, known for its singers, dance performances, and global fans.", trans: "가수, 댄스 퍼포먼스, 전 세계적 팬덤으로 유명한 한국의 대중음악." },
+    { word: "gochujang", kor: "고추장", desc: "A thick, spicy Korean paste made mainly from red chili powder, rice, and fermented soybeans.", trans: "주로 고춧가루, 쌀, 메주 등을 이용하여 만든 붉고 매운 걸쭉한 한국의 장." },
+    { word: "doenjang", kor: "된장", desc: "A traditional Korean paste made from fermented soybeans and used to season many dishes.", trans: "발효된 콩으로 만들며 다양한 요리의 간을 맞추는 데 쓰이는 한국의 전통 장." },
+    { word: "chaebol", kor: "재벌", desc: "A large South Korean business group owned or controlled by one family.", trans: "한 가문이 소유하거나 지배하는 한국의 대기업 집단." },
+    { word: "aegyo", kor: "애교", desc: "Cute behavior or a charming way of speaking used to show affection.", trans: "애정을 표현하기 위해 사용하는 귀여운 행동이나 애교 섞인 말투." },
+    { word: "banchan", kor: "반찬", desc: "Small side dishes served with rice as part of a Korean meal.", trans: "한국 식사에서 밥과 함께 제공되는 작은 부식들." },
+    { word: "bulgogi", kor: "불고기", desc: "A Korean dish of thinly sliced meat that is marinated and then grilled or cooked.", trans: "얇게 썬 고기를 양념에 재운 뒤 굽거나 볶아 먹는 한국 요리." },
+    { word: "chimaek", kor: "치맥", desc: "A popular Korean combination of fried chicken and beer.", trans: "프라이드치킨과 맥주를 함께 즐기는 인기 있는 한국의 조합." },
+    { word: "daebak", kor: "대박", desc: "A Korean expression used when something is surprising, impressive, or very successful.", trans: "놀랍거나 감명 깊거나 대단히 성공적일 때 사용하는 한국어 표현." },
+    { word: "dongchimi", kor: "동치미", desc: "A type of kimchi made with radish in a cool, clear, and lightly seasoned liquid.", trans: "무를 넣어 시원하고 국물이 맑으며 슴슴하게 담근 김치의 한 종류." },
+    { word: "fighting", kor: "파이팅", desc: "A Korean expression used to encourage someone and wish them success.", trans: "누군가를 응원하고 성공을 빌어줄 때 사용하는 한국식 응원 표현." },
+    { word: "galbi", kor: "갈비", desc: "A Korean dish made from marinated beef or pork ribs, usually grilled.", trans: "양념한 소나 돼지의 갈비뼈 부위로 만들며 주로 구워 먹는 한국 요리." },
+    { word: "hallyu", kor: "한류", desc: "The worldwide popularity of South Korean culture, including music, television, film, and food.", trans: "음악, 드라마, 영화, 음식 등을 포함한 한국 대중문화의 전 세계적 열풍." },
+    { word: "hanbok", kor: "한복", desc: "Traditional Korean clothing, often worn on holidays, weddings, and other special occasions.", trans: "명절, 결혼식 등 특별한 날에 주로 입는 한국의 전통 의상." },
+    { word: "japchae", kor: "잡채", desc: "A Korean dish of glass noodles stir-fried with vegetables and sometimes meat.", trans: "당면을 채소 및 고기와 함께 볶아 만든 한국 요리." },
+    { word: "K-", kor: "케이-", desc: "A prefix used to show that something comes from or is connected with Korea.", trans: "어떤 것이 한국에서 유래했거나 한국과 관련되어 있음을 나타내는 접두사." },
+    { word: "K-drama", kor: "케이드라마", desc: "A television drama made in South Korea, often watched by audiences around the world.", trans: "전 세계 시청자들이 즐겨보는 한국에서 제작된 TV 드라마." },
+    { word: "kimbap", kor: "김밥", desc: "A Korean dish of rice and other ingredients rolled in dried seaweed and cut into pieces.", trans: "밥과 여러 재료를 김으로 말아 썰어 먹는 한국 요리." },
+    { word: "Konglish", kor: "콩글리시", desc: "English words or expressions used in Korean in ways that may differ from standard English.", trans: "표준 영어와는 다른 방식으로 한국에서 쓰이는 영어 단어나 표현." },
+    { word: "manhwa", kor: "만화", desc: "A Korean comic book or a style of comics created in Korea.", trans: "한국에서 제작된 만화책 또는 한국 양식의 만화." },
+    { word: "mukbang", kor: "먹방", desc: "An online video or broadcast in which a person eats food while talking to viewers.", trans: "진행자가 음식을 먹으며 시청자와 소통하는 온라인 영상 또는 방송." },
+    { word: "noona", kor: "누나", desc: "A Korean word used by a male to address an older sister or an older female friend.", trans: "남성이 손위 누이 시스터나 나이가 더 많은 여성 지인을 부를 때 쓰는 말." },
+    { word: "oppa", kor: "오빠", desc: "A Korean word used by a female to address an older brother or an older male friend.", trans: "여성이 손위 오빠나 나이가 더 많은 남성 지인을 부를 때 쓰는 말." },
+    { word: "PC bang", kor: "피시방", desc: "An internet café in Korea where people use computers, especially to play online games.", trans: "주로 온라인 게임을 하기 위해 컴퓨터를 이용하는 한국의 인터넷 카페." },
+    { word: "samgyeopsal", kor: "삼겹살", desc: "A Korean dish of thick slices of pork belly, usually grilled at the table.", trans: "두툼하게 썬 돼지 삼겹살 부위를 식탁에서 바로 구워 먹는 한국 요리." },
+    { word: "skinship", kor: "스킨십", desc: "Physical contact used to show closeness or affection between people.", trans: "사람들 간의 친밀함이나 애정을 나타내기 위해 나누는 신체 접촉." },
+    { word: "trot", kor: "트로트", desc: "A style of Korean popular music known for its strong rhythm and emotional singing.", trans: "특유의 신나는 꺾기 가창법과 강렬한 리듬이 특징인 한국 대중가요의 한 장르." },
+    { word: "unni", kor: "언니", desc: "A Korean word used by a female to address an older sister or an older female friend.", trans: "여성이 손위 자매나 나이가 더 많은 여성 지인을 부를 때 쓰는 말." },
+    { word: "dalgona", kor: "달고나", desc: "A Korean sweet made by heating sugar and baking soda, often shaped with a simple pattern.", trans: "설탕과 식소다를 열에 녹여 만들며 간단한 모양이 찍혀있는 한국의 옛날 과자." },
+    { word: "hyung", kor: "형", desc: "A Korean word used by a male to address an older brother or an older male friend.", trans: "남성이 손위 형제나 나이가 더 많은 남성 지인을 부를 때 쓰는 말." },
+    { word: "jjigae", kor: "찌개", desc: "A Korean stew made with meat, seafood, tofu, or vegetables and served hot.", trans: "고기, 해산물, 두부, 채소 등을 넣어 국물 있게 끓여 따뜻하게 먹는 한국의 찌개 요리." },
+    { word: "maknae", kor: "막내", desc: "The youngest member of a family, group, or team.", trans: "가족, 조직, 모임 등의 구성원 중 가장 나이가 어린 사람." },
+    { word: "noraebang", kor: "노래방", desc: "A private singing room in Korea where people sing along to recorded music.", trans: "반주에 맞춰 노래를 부를 수 있도록 만든 한국의 사설 노래 공간." },
+    { word: "pansori", kor: "판소리", desc: "A traditional Korean musical performance in which a singer tells a long story with a drummer.", trans: "소리꾼이 고수의 북장단에 맞춰 긴 이야기를 노래와 사설로 전달하는 한국의 전통 공연." },
+    { word: "tteokbokki", kor: "떡볶이", desc: "A popular Korean dish of rice cakes cooked in a spicy red sauce.", trans: "매콤한 양념 소스에 떡을 넣어 자작하게 졸여 만든 대표적인 한국의 분식 요리." },
+    { word: "haenyeo", kor: "해녀", desc: "A female diver, especially from Jeju Island, who collects seafood without using breathing equipment.", trans: "별도의 호흡 장비 없이 바닷속에 들어가 해산물을 채취하는 여류 해녀(특히 제주도)." },
+    { word: "bingsu", kor: "빙수", desc: "A Korean dessert made with finely shaved ice and sweet toppings such as fruit or red beans.", trans: "곱게 갈은 얼음 위에 팥, 과일 등 달콤한 고명을 얹어 먹는 한국의 디저트." },
+    { word: "officetel", kor: "오피스텔", desc: "A building or room in Korea designed to be used as both an office and a home.", trans: "사무실 기능과 주거 기능을 겸할 수 있도록 건축된 한국의 건물 형태." },
+    { word: "ramyeon", kor: "라면", desc: "Korean-style instant noodles, usually cooked and served in a hot, spicy soup.", trans: "주로 매콤하고 뜨거운 국물에 끓여 먹는 한국식 인스턴트 국수." },
+    { word: "sunbae", kor: "선배", desc: "A person with more experience or a higher position in a school, workplace, or group.", trans: "학교, 직장, 단체 등에서 경험이나 학년·지위가 자신보다 앞선 사람." },
+    { word: "jjimjilbang", kor: "찜질방", desc: "A large Korean public bathhouse with hot rooms, saunas, and shared resting areas.", trans: "온열실, 사우나, 휴게실 등을 갖춘 대형 한국식 대중 목욕/휴식 공간." },
+    { word: "ajumma", kor: "아줌마", desc: "A Korean term for a married or middle-aged woman, sometimes used as a form of address.", trans: "결혼했거나 나이가 든 중년 여성을 친근하게 이르는 한국어 호칭." },
+    { word: "Korean barbecue", kor: "코리안 바비큐", desc: "A style of Korean meal in which meat is grilled at the table and eaten with side dishes.", trans: "식탁 위에 구이판을 놓고 고기를 직접 구워 여러 반찬과 함께 싸 먹는 한국식 식사 문화." }
 ];
 
 let quizData = [];
@@ -620,9 +624,12 @@ function selectQuizOption(choiceWord, btnElem) {
         });
     }
 
-    // 정답 클릭 즉시 우리말 뜻과 정답 해설을 바로 표시
+    // 정답 클릭 즉시 정답 어휘 + 우리말 뜻 + 영영 풀이 전체 한국어 번역 해석 표시
     const explBox = document.getElementById('quiz-expl');
-    explBox.innerHTML = `💡 <strong>정답: ${item.word}</strong><br>📌 우리말 뜻: <strong>${item.kor}</strong>`;
+    explBox.innerHTML = `
+        <strong>💡 정답: ${item.word} (${item.kor})</strong><br>
+        📖 <strong>해설 번역:</strong> ${item.trans}
+    `;
     explBox.style.display = 'block';
 
     document.getElementById('quiz-next-btn').style.display = 'block';
